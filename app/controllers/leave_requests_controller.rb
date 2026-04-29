@@ -21,9 +21,9 @@ class LeaveRequestsController < ApplicationController
       report_ids = @my_employee&.reports&.pluck(:id) || []
       visible_ids = if current_user.role_hr? || current_user.role_superadmin?
                       Employee.kept.where(company: @company).pluck(:id)
-                    else
+      else
                       report_ids
-                    end
+      end
       @team_pending = LeaveRequest.kept.includes(:employee, :leave_type)
                                     .where(employee_id: visible_ids)
                                     .where(state: %w[submitted manager_approved])
@@ -291,12 +291,12 @@ class LeaveRequestsController < ApplicationController
         s = s.permit!.to_h if s.respond_to?(:permit!)
         dir = s["dir"] == "desc" ? "desc" : "asc"
         clause = case s["field"]
-                 when "started_on"    then "leave_requests.started_on #{dir}"
-                 when "days"          then "leave_requests.days #{dir}"
-                 when "state"         then "leave_requests.state #{dir}"
-                 when "employee_name" then "employees.last_name #{dir}, employees.first_name #{dir}"
-                 when "leave_type"    then "leave_types.name #{dir}"
-                 end
+        when "started_on"    then "leave_requests.started_on #{dir}"
+        when "days"          then "leave_requests.days #{dir}"
+        when "state"         then "leave_requests.state #{dir}"
+        when "employee_name" then "employees.last_name #{dir}, employees.first_name #{dir}"
+        when "leave_type"    then "leave_types.name #{dir}"
+        end
         scope = scope.order(Arel.sql(clause)) if clause
       end
     else
@@ -306,7 +306,7 @@ class LeaveRequestsController < ApplicationController
     page = (params[:page] || 1).to_i.clamp(1, 100_000)
     size = (params[:size] || 50).to_i.clamp(1, 500)
     total = scope.count
-    pages = [(total.to_f / size).ceil, 1].max
+    pages = [ (total.to_f / size).ceil, 1 ].max
     rows  = scope.offset((page - 1) * size).limit(size)
 
     {

@@ -38,15 +38,15 @@ class Employee < ApplicationRecord
   scope :active_only, -> { kept.where(state: :active) }
 
   def full_name
-    [last_name, first_name, middle_name].compact_blank.join(" ")
+    [ last_name, first_name, middle_name ].compact_blank.join(" ")
   end
 
   def short_name
-    [last_name, first_name&.first&.upcase].compact_blank.join(" ").then { |s| s.present? ? "#{s}." : "" }
+    [ last_name, first_name&.first&.upcase ].compact_blank.join(" ").then { |s| s.present? ? "#{s}." : "" }
   end
 
   def initials
-    [last_name, first_name].compact.map { |n| n.first&.upcase }.join
+    [ last_name, first_name ].compact.map { |n| n.first&.upcase }.join
   end
 
   # Gender resolution: prefers configured Gender record, falls back to legacy

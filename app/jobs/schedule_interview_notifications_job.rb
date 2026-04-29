@@ -63,6 +63,6 @@ class ScheduleInterviewNotificationsJob < ApplicationJob
 
   # Получатели — интервьюер + ответственный recruiter (owner кандидата).
   def recipients_for(round)
-    [round.interviewer, round.job_applicant&.owner].compact.uniq
+    [ round.interviewer, round.job_applicant&.owner ].compact.uniq
   end
 end

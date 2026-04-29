@@ -118,9 +118,9 @@ class LeaveAnalytics
       next unless no_leave || low_kpi
 
       reason = if no_leave && low_kpi then :both
-               elsif no_leave         then :no_leave_long
-               else                        :low_kpi
-               end
+      elsif no_leave         then :no_leave_long
+      else                        :low_kpi
+      end
 
       rows << {
         employee:         emp,
@@ -133,7 +133,7 @@ class LeaveAnalytics
 
     # Sort by severity: both > no_leave > low_kpi; then by days_since_leave desc
     severity_score = { both: 0, no_leave_long: 1, low_kpi: 2 }
-    rows.sort_by { |r| [severity_score[r[:reason]], -(r[:days_since_leave] || 9_999)] }.first(limit)
+    rows.sort_by { |r| [ severity_score[r[:reason]], -(r[:days_since_leave] || 9_999) ] }.first(limit)
   end
 
   # ── Days taken per calendar month of current year ────────────────────────

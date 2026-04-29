@@ -63,15 +63,15 @@ class CareersSettings
       "privacy" => { "body" => {
         "ru" => "Текст политики конфиденциальности по 152-ФЗ.\n\nОтредактируйте в Настройки → Страница найма → Юридические страницы.",
         "en" => "Privacy policy text per applicable law (GDPR / CCPA / 152-FZ).\n\nEdit in Settings → Careers → Legal pages."
-      }},
+      } },
       "terms" => { "body" => {
         "ru" => "Текст пользовательского соглашения. Отредактируйте в админке.",
         "en" => "Terms of service text. Edit in admin."
-      }},
+      } },
       "cookies" => { "body" => {
         "ru" => "Информация о том, какие cookies используются на сайте.\n\nКатегории: технические, аналитика, маркетинг.",
         "en" => "Information about cookies used on this site.\n\nCategories: essential, analytics, marketing."
-      }}
+      } }
     },
 
     # Структура категорий cookie-banner. Лейбл/описание берётся из i18n

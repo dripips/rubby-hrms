@@ -20,15 +20,15 @@ module TabulatorFilterable
   # Возвращает [oператор, число] или [nil, nil] если не парсится.
   def parse_numeric_filter(raw)
     s = raw.to_s.strip
-    return [nil, nil] if s.empty?
+    return [ nil, nil ] if s.empty?
 
     m = s.match(NUMERIC_RE)
-    return [nil, nil] unless m
+    return [ nil, nil ] unless m
 
     op  = NUMERIC_OPERATORS[m[1] || "="]
     num = m[2].tr(",", ".")
     num = num.include?(".") ? num.to_f : num.to_i
-    [op, num]
+    [ op, num ]
   end
 
   # Применяет numeric-compare фильтр к полю scope.

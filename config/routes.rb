@@ -117,7 +117,7 @@ Rails.application.routes.draw do
       post "onboarding_processes/:id/welcome_letter",   to: "onboarding#welcome_letter",   as: :welcome_letter_onboarding
       post "onboarding_processes/:id/mentor_match",     to: "onboarding#mentor_match",     as: :mentor_match_onboarding
       post "onboarding_processes/:id/probation_review", to: "onboarding#probation_review", as: :probation_review_onboarding
-      post "onboarding_runs/:id/materialize_tasks",     to: "onboarding#materialize_tasks",as: :materialize_tasks_onboarding_run
+      post "onboarding_runs/:id/materialize_tasks",     to: "onboarding#materialize_tasks", as: :materialize_tasks_onboarding_run
 
       # Offboarding agents
       post "offboarding_processes/:id/knowledge_transfer_plan", to: "offboarding#knowledge_transfer_plan", as: :knowledge_transfer_plan_offboarding
@@ -186,16 +186,16 @@ Rails.application.routes.draw do
       resource  :smtp, only: %i[show update] do
         post :test
       end
-      resource  :ai, only: %i[show update] do
+      resource :ai, only: %i[show update] do
         post :test
       end
       resource  :notifications, only: %i[show update]
       resource  :communications, only: %i[show update]
       resource  :careers,        only: %i[show update]
       resource  :leaves,         only: %i[show update], controller: "leaves"
-      resources :leave_approval_rules, except: [:show]
-      resources :genders, except: [:show]
-      resources :process_templates, except: [:show]
+      resources :leave_approval_rules, except: [ :show ]
+      resources :genders, except: [ :show ]
+      resources :process_templates, except: [ :show ]
     end
   end
 

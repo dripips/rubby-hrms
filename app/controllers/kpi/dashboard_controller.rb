@@ -58,7 +58,7 @@ module Kpi
 
     def team_leaderboard(from, to, limit: 5)
       ids = team_employees.pluck(:id)
-      return [[], []] if ids.empty?
+      return [ [], [] ] if ids.empty?
 
       scope = KpiEvaluation
                 .joins(kpi_assignment: :employee)
@@ -66,10 +66,10 @@ module Kpi
       scope = scope.where(kpi_assignments: { period_start: ..to, period_end: from.. }) if from && to
 
       grouped = scope.group("employees.id").average(:score)
-      ranked = grouped.map { |emp_id, avg| [Employee.find(emp_id), avg.to_f.round(1)] }
+      ranked = grouped.map { |emp_id, avg| [ Employee.find(emp_id), avg.to_f.round(1) ] }
                       .sort_by { |_, avg| -avg }
 
-      [ranked.first(limit), ranked.last(limit).reverse]
+      [ ranked.first(limit), ranked.last(limit).reverse ]
     end
 
     def company_avg_score(from, to)
@@ -118,12 +118,12 @@ module Kpi
     def period_range(key)
       today = Date.current
       case key
-      when "current_week"    then [today.beginning_of_week, today.end_of_week]
-      when "current_month"   then [today.beginning_of_month, today.end_of_month]
-      when "current_quarter" then [today.beginning_of_quarter, today.end_of_quarter]
-      when "all"             then [nil, nil]
+      when "current_week"    then [ today.beginning_of_week, today.end_of_week ]
+      when "current_month"   then [ today.beginning_of_month, today.end_of_month ]
+      when "current_quarter" then [ today.beginning_of_quarter, today.end_of_quarter ]
+      when "all"             then [ nil, nil ]
       else
-        [today.beginning_of_week, today.end_of_week]
+        [ today.beginning_of_week, today.end_of_week ]
       end
     end
   end

@@ -25,7 +25,7 @@ class LeaveRequestPolicy < ApplicationPolicy
       return scope.none unless emp
 
       report_ids = emp.reports.pluck(:id)
-      scope.kept.where(employee_id: ([emp.id] + report_ids))
+      scope.kept.where(employee_id: ([ emp.id ] + report_ids))
     end
   end
 

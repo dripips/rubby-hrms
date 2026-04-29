@@ -85,7 +85,7 @@ class Settings::CareersController < SettingsController
     @setting.data = CareersSettings.deep_merge_defaults(@setting.data || {}, CareersSettings::DEFAULTS)
   end
 
-  def truthy(v) = ["1", "true", true, 1].include?(v)
+  def truthy(v) = [ "1", "true", true, 1 ].include?(v)
 
   def clean_id(v)
     return nil if v.blank?

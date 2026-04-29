@@ -24,7 +24,7 @@ class MessageDispatcher
   RECIPIENT_TYPES = %w[candidate staff].freeze
 
   CHANNELS = {
-    "email" => MessageDispatcher::EmailChannel  = Module.new,
+    "email" => MessageDispatcher::EmailChannel  = Module.new
     # будущие — через адаптеры:
     # "telegram" => MessageDispatcher::TelegramChannel,
     # "whatsapp" => MessageDispatcher::WhatsappChannel,
@@ -32,11 +32,11 @@ class MessageDispatcher
 
   # Дефолтная матрица — на случай если AppSetting communication не настроен.
   DEFAULT_MATRIX = {
-    "test_assignment_sent" => { "candidate" => ["email"], "staff" => [] },
-    "candidate_rejected"   => { "candidate" => ["email"], "staff" => [] },
-    "candidate_next_stage" => { "candidate" => ["email"], "staff" => [] },
-    "application_received" => { "candidate" => ["email"], "staff" => [] },
-    "new_application"      => { "candidate" => [],        "staff" => ["email"] }
+    "test_assignment_sent" => { "candidate" => [ "email" ], "staff" => [] },
+    "candidate_rejected"   => { "candidate" => [ "email" ], "staff" => [] },
+    "candidate_next_stage" => { "candidate" => [ "email" ], "staff" => [] },
+    "application_received" => { "candidate" => [ "email" ], "staff" => [] },
+    "new_application"      => { "candidate" => [],        "staff" => [ "email" ] }
   }.freeze
 
   class << self

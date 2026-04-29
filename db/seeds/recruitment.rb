@@ -60,7 +60,7 @@ linked_to = [
 ].dup
 
 sources = %w[manual careers_page hh linkedin referral email]
-owners  = [hr, manager, admin].compact
+owners  = [ hr, manager, admin ].compact
 
 recruiter_pool = User.kept.where(role: %i[hr superadmin manager]).to_a
 
@@ -99,12 +99,12 @@ build_resume_pdf = lambda do |applicant|
       pdf.fill_color "1d1d1f"
       pdf.move_down 4
       [
-        ["Email",     applicant.email],
-        ["Phone",     applicant.phone],
-        ["Location",  applicant.location],
-        ["LinkedIn",  applicant.linkedin_url],
-        ["GitHub",    applicant.github_url],
-        ["Portfolio", applicant.portfolio_url]
+        [ "Email",     applicant.email ],
+        [ "Phone",     applicant.phone ],
+        [ "Location",  applicant.location ],
+        [ "LinkedIn",  applicant.linkedin_url ],
+        [ "GitHub",    applicant.github_url ],
+        [ "Portfolio", applicant.portfolio_url ]
       ].compact.each do |label, value|
         next if value.blank?
         pdf.text "<b>#{label}:</b> #{value}", inline_format: true, leading: 2
@@ -144,7 +144,7 @@ end
 
 stages_distribution.each do |stage, count|
   count.times do
-    gender = [:male, :female].sample
+    gender = [ :male, :female ].sample
 
     last  = gender == :female ? Faker::Name.last_name + "а" : Faker::Name.last_name
     first = gender == :female ? Faker::Name.female_first_name : Faker::Name.male_first_name
@@ -162,11 +162,11 @@ stages_distribution.each do |stage, count|
       last_name:           last,
       email:               Faker::Internet.unique.email(domain: "example.com"),
       phone:               Faker::PhoneNumber.cell_phone,
-      location:            ["Москва", "Санкт-Петербург", "Казань", "Новосибирск", "Удалённо"].sample,
+      location:            [ "Москва", "Санкт-Петербург", "Казань", "Новосибирск", "Удалённо" ].sample,
       current_company:     Faker::Company.name,
-      current_position:    ["Backend Developer", "Frontend Developer", "QA Engineer", "Product Designer", "Project Manager"].sample,
+      current_position:    [ "Backend Developer", "Frontend Developer", "QA Engineer", "Product Designer", "Project Manager" ].sample,
       years_of_experience: rand(2..12),
-      expected_salary:     [120_000, 180_000, 220_000, 280_000, 350_000].sample,
+      expected_salary:     [ 120_000, 180_000, 220_000, 280_000, 350_000 ].sample,
       portfolio_url:       "https://#{Faker::Internet.domain_name}",
       linkedin_url:        "https://linkedin.com/in/#{Faker::Internet.username}",
       github_url:          "https://github.com/#{Faker::Internet.username}",
@@ -189,12 +189,12 @@ stages_distribution.each do |stage, count|
     # История переходов
     if stage != "applied"
       flow = case stage
-             when "screening" then %w[applied screening]
-             when "interview" then %w[applied screening interview]
-             when "offered"   then %w[applied screening interview offered]
-             when "hired"     then %w[applied screening interview offered hired]
-             when "rejected"  then ["applied", %w[screening interview].sample, "rejected"]
-             end
+      when "screening" then %w[applied screening]
+      when "interview" then %w[applied screening interview]
+      when "offered"   then %w[applied screening interview offered]
+      when "hired"     then %w[applied screening interview offered hired]
+      when "rejected"  then [ "applied", %w[screening interview].sample, "rejected" ]
+      end
       flow.each_cons(2).each_with_index do |(from, to), i|
         ApplicationStageChange.create!(
           job_applicant: applicant,
@@ -230,10 +230,10 @@ stages_distribution.each do |stage, count|
           kind:             kind,
           state:            state,
           scheduled_at:     scheduled_at,
-          duration_minutes: [45, 60, 90].sample,
+          duration_minutes: [ 45, 60, 90 ].sample,
           interviewer:      recruiter_pool.sample,
           created_by:       hr || admin,
-          location:         ["Зум", "Офис, переговорка 3.14", "Google Meet"].sample,
+          location:         [ "Зум", "Офис, переговорка 3.14", "Google Meet" ].sample,
           meeting_url:      "https://meet.google.com/#{SecureRandom.alphanumeric(10)}",
           competency_scores: scores,
           recommendation:   recommendation,

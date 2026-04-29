@@ -24,7 +24,7 @@ class EmployeeLeaveQuota
         accrued:    accrued,
         used:       used,
         pending:    pending,
-        remaining:  [accrued - used, 0].max
+        remaining:  [ accrued - used, 0 ].max
       )
     end
   end

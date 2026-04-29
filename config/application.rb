@@ -26,7 +26,7 @@ module Hrms
     config.i18n.default_locale = :ru
     # ru — primary локаль разработки. Любой missing ключ в en/de фолбэчится на ru,
     # чтобы UI не ломался при отстающих переводах.
-    config.i18n.fallbacks = { en: [:ru], de: [:ru] }
+    config.i18n.fallbacks = { en: [ :ru ], de: [ :ru ] }
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
 
     config.generators do |g|

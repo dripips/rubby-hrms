@@ -115,7 +115,7 @@ class EmployeesController < ApplicationController
     page = (params[:page]  || 1).to_i.clamp(1, 100_000)
     size = (params[:size]  || 50).to_i.clamp(1, 500)
     total = scope.count
-    pages = [(total.to_f / size).ceil, 1].max
+    pages = [ (total.to_f / size).ceil, 1 ].max
     rows  = scope.offset((page - 1) * size).limit(size)
 
     {
@@ -163,16 +163,16 @@ class EmployeesController < ApplicationController
     sorts.each do |s|
       dir = s["dir"] == "desc" ? "desc" : "asc"
       clause = case s["field"].to_s
-               when "personnel_number"      then "employees.personnel_number #{dir}"
-               when "full_name"             then "employees.last_name #{dir}, employees.first_name #{dir}"
-               when "email"                 then "users.email #{dir} NULLS LAST"
-               when "department"            then "departments.name #{dir} NULLS LAST"
-               when "position"              then "positions.name #{dir} NULLS LAST"
-               when "grade"                 then "grades.level #{dir} NULLS LAST"
-               when "hired_at"              then "employees.hired_at #{dir}"
-               when "state_label"           then "employees.state #{dir}"
-               when "employment_type_label" then "employees.employment_type #{dir}"
-               end
+      when "personnel_number"      then "employees.personnel_number #{dir}"
+      when "full_name"             then "employees.last_name #{dir}, employees.first_name #{dir}"
+      when "email"                 then "users.email #{dir} NULLS LAST"
+      when "department"            then "departments.name #{dir} NULLS LAST"
+      when "position"              then "positions.name #{dir} NULLS LAST"
+      when "grade"                 then "grades.level #{dir} NULLS LAST"
+      when "hired_at"              then "employees.hired_at #{dir}"
+      when "state_label"           then "employees.state #{dir}"
+      when "employment_type_label" then "employees.employment_type #{dir}"
+      end
       scope = scope.order(Arel.sql(clause)) if clause
     end
     scope
@@ -203,7 +203,7 @@ class EmployeesController < ApplicationController
     CSV.generate(force_quotes: true, col_sep: ";") do |csv|
       csv << %w[Таб№ ФИО Email Отдел Должность Грейд Принят Статус Телефон]
       Employee.kept.where(company: @company).includes(:department, :position, :grade, :user).find_each do |e|
-        csv << [e.personnel_number, e.full_name, e.user&.email, e.department&.name, e.position&.name, e.grade&.name, e.hired_at, I18n.t("employees.states.#{e.state}"), e.phone]
+        csv << [ e.personnel_number, e.full_name, e.user&.email, e.department&.name, e.position&.name, e.grade&.name, e.hired_at, I18n.t("employees.states.#{e.state}"), e.phone ]
       end
     end
   end

@@ -7,6 +7,11 @@ CI.run do
   step "Security: Importmap vulnerability audit", "bin/importmap audit"
   step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
 
+  step "Lint: Rubocop", "bin/rubocop --no-color"
+
+  step "DB: prepare test schema", "bin/rails db:test:prepare RAILS_ENV=test"
+  step "Tests: RSpec", "bin/rspec --format documentation"
+
 
   # Optional: set a green GitHub commit status to unblock PR merge.
   # Requires the `gh` CLI and `gh extension install basecamp/gh-signoff`.

@@ -13,7 +13,7 @@ class Ai::LeavesController < ApplicationController
   def suggest_leave_window
     @employee  = Employee.kept.find(params[:id])
     leave_type = LeaveType.find_by(id: params[:leave_type_id]) || LeaveType.active.first
-    days       = [params[:days_needed].to_i, 1].max
+    days       = [ params[:days_needed].to_i, 1 ].max
 
     enqueue_employee_task(
       "suggest_leave_window",

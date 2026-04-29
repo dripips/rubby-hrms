@@ -74,12 +74,12 @@ module Kpi
     def period_range(key)
       today = Date.current
       case key
-      when "current_week"    then [today.beginning_of_week, today.end_of_week]
-      when "current_month"   then [today.beginning_of_month, today.end_of_month]
-      when "current_quarter" then [today.beginning_of_quarter, today.end_of_quarter]
-      when "all"             then [nil, nil]
+      when "current_week"    then [ today.beginning_of_week, today.end_of_week ]
+      when "current_month"   then [ today.beginning_of_month, today.end_of_month ]
+      when "current_quarter" then [ today.beginning_of_quarter, today.end_of_quarter ]
+      when "all"             then [ nil, nil ]
       else
-        [today.beginning_of_week, today.end_of_week]
+        [ today.beginning_of_week, today.end_of_week ]
       end
     end
   end

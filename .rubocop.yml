@@ -1,0 +1,43 @@
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+
+AllCops:
+  TargetRubyVersion: 4.0
+  NewCops: enable
+  Exclude:
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "db/migrate/*.rb"
+    - "node_modules/**/*"
+    - "vendor/**/*"
+    - "tmp/**/*"
+    - "log/**/*"
+    - "storage/**/*"
+    - "public/**/*"
+
+# Don't enforce documentation comments on every class.
+Style/Documentation:
+  Enabled: false
+
+# Allow long view-helper methods and AI service files.
+Metrics/MethodLength:
+  Max: 50
+Metrics/AbcSize:
+  Max: 40
+Metrics/ClassLength:
+  Max: 400
+Metrics/BlockLength:
+  Exclude:
+    - "config/routes.rb"
+    - "spec/**/*"
+    - "config/environments/*.rb"
+
+# UTF-8 strings with Cyrillic are everywhere — let them through.
+Style/AsciiComments:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 140
+  Exclude:
+    - "config/initializers/*.rb"
+    - "spec/**/*"

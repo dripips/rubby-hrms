@@ -112,7 +112,7 @@ class JobOpeningsController < ApplicationController
     page = (params[:page] || 1).to_i.clamp(1, 100_000)
     size = (params[:size] || 50).to_i.clamp(1, 500)
     total = scope.count
-    pages = [(total.to_f / size).ceil, 1].max
+    pages = [ (total.to_f / size).ceil, 1 ].max
     rows  = scope.offset((page - 1) * size).limit(size)
 
     {
@@ -149,14 +149,14 @@ class JobOpeningsController < ApplicationController
     sorts.each do |s|
       dir = s["dir"] == "desc" ? "desc" : "asc"
       clause = case s["field"].to_s
-               when "code"           then "job_openings.code #{dir}"
-               when "title"          then "job_openings.title #{dir}"
-               when "department"     then "departments.name #{dir} NULLS LAST"
-               when "owner"          then "users.email #{dir} NULLS LAST"
-               when "openings_count" then "job_openings.openings_count #{dir}"
-               when "state"          then "job_openings.state #{dir}"
-               when "published_at"   then "job_openings.published_at #{dir} NULLS LAST"
-               end
+      when "code"           then "job_openings.code #{dir}"
+      when "title"          then "job_openings.title #{dir}"
+      when "department"     then "departments.name #{dir} NULLS LAST"
+      when "owner"          then "users.email #{dir} NULLS LAST"
+      when "openings_count" then "job_openings.openings_count #{dir}"
+      when "state"          then "job_openings.state #{dir}"
+      when "published_at"   then "job_openings.published_at #{dir} NULLS LAST"
+      end
       scope = scope.order(Arel.sql(clause)) if clause
     end
     scope

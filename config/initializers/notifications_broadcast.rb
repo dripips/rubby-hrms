@@ -9,7 +9,7 @@ Rails.application.config.to_prepare do
       return unless recipient.is_a?(User)
 
       Turbo::StreamsChannel.broadcast_replace_to(
-        [recipient, "notifications"],
+        [ recipient, "notifications" ],
         target:  "topbar-bell",
         partial: "shared/notifications_bell",
         locals:  { user: recipient }

@@ -55,7 +55,7 @@ class Settings::TranslationsController < SettingsController
     walk = ->(prefix, node) do
       case node
       when Hash
-        node.each { |k, v| walk.call([prefix, k].compact.join("."), v) }
+        node.each { |k, v| walk.call([ prefix, k ].compact.join("."), v) }
       else
         flat[prefix] = node
       end
@@ -74,7 +74,7 @@ class Settings::TranslationsController < SettingsController
     backends = if I18n.backend.is_a?(I18n::Backend::Chain)
       I18n.backend.backends
     else
-      [I18n.backend]
+      [ I18n.backend ]
     end
     simple = backends.find { |b| b.is_a?(I18n::Backend::Simple) } || I18n.backend
     simple.send(:init_translations) unless simple.send(:initialized?)

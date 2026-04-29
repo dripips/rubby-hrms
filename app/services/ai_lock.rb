@@ -62,7 +62,7 @@ class AiLock
     def broadcast_applicant_controls(id)
       applicant = JobApplicant.kept.find_by(id: id) or return
       Turbo::StreamsChannel.broadcast_replace_to(
-        [applicant, "ai_panel"],
+        [ applicant, "ai_panel" ],
         target:  "ai-controls-applicant-#{applicant.id}",
         partial: "ai/applicants/controls",
         locals:  { applicant: applicant }
@@ -72,7 +72,7 @@ class AiLock
     def broadcast_round_controls(id)
       round = InterviewRound.kept.find_by(id: id) or return
       Turbo::StreamsChannel.broadcast_replace_to(
-        [round, "ai_questions"],
+        [ round, "ai_questions" ],
         target:  "ai-controls-round-#{round.id}",
         partial: "ai/rounds/controls",
         locals:  { round: round }
@@ -82,7 +82,7 @@ class AiLock
     def broadcast_opening_controls(id)
       opening = JobOpening.kept.find_by(id: id) or return
       Turbo::StreamsChannel.broadcast_replace_to(
-        [opening, "ai_compare"],
+        [ opening, "ai_compare" ],
         target:  "ai-controls-opening-#{opening.id}",
         partial: "ai/openings/controls",
         locals:  { opening: opening }
@@ -92,7 +92,7 @@ class AiLock
     def broadcast_employee_controls(id)
       employee = Employee.kept.find_by(id: id) or return
       Turbo::StreamsChannel.broadcast_replace_to(
-        [employee, "ai_leaves"],
+        [ employee, "ai_leaves" ],
         target:  "ai-controls-employee-#{employee.id}",
         partial: "ai/leaves/controls",
         locals:  { employee: employee }
@@ -102,7 +102,7 @@ class AiLock
     def broadcast_onboarding_controls(id)
       process = OnboardingProcess.kept.find_by(id: id) or return
       Turbo::StreamsChannel.broadcast_replace_to(
-        [process, "ai_panel"],
+        [ process, "ai_panel" ],
         target:  "ai-controls-onboarding-#{process.id}",
         partial: "ai/onboarding/controls",
         locals:  { process: process }
@@ -112,7 +112,7 @@ class AiLock
     def broadcast_offboarding_controls(id)
       process = OffboardingProcess.kept.find_by(id: id) or return
       Turbo::StreamsChannel.broadcast_replace_to(
-        [process, "ai_panel"],
+        [ process, "ai_panel" ],
         target:  "ai-controls-offboarding-#{process.id}",
         partial: "ai/offboarding/controls",
         locals:  { process: process }
@@ -122,7 +122,7 @@ class AiLock
     def broadcast_kpi_team_controls(scope_type, scope_id)
       company_id = Company.kept.first&.id or return
       Turbo::StreamsChannel.broadcast_replace_to(
-        ["company-#{company_id}", "kpi_team"],
+        [ "company-#{company_id}", "kpi_team" ],
         target:  "ai-controls-kpi-team",
         partial: "ai/kpi/controls",
         locals:  { scope_type: scope_type, scope_id: scope_id == "all" ? nil : scope_id }

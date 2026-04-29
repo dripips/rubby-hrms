@@ -69,10 +69,10 @@ class JobApplicantsController < ApplicationController
   # который уважает настройки в Settings → Коммуникации).
   def notify_candidate_about_stage(new_stage, comment)
     event = case new_stage
-            when "rejected"  then :candidate_rejected
-            when "applied"   then nil # переоткрытие — не шлём, иначе spam
-            else :candidate_next_stage
-            end
+    when "rejected"  then :candidate_rejected
+    when "applied"   then nil # переоткрытие — не шлём, иначе spam
+    else :candidate_next_stage
+    end
     return unless event
 
     MessageDispatcher.deliver!(

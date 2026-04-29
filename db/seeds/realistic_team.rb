@@ -49,39 +49,39 @@ raise "Grades missing"       if grades.empty?
 # Format: [last, first, middle, gender, hired_years_ago, has_children?]
 roster = [
   # Founders & leadership
-  ["Бобков",     "Вадим",    "Александрович", :m, 7, true],
-  ["Лебедев",    "Олег",     "Игоревич",      :m, 6, true],
-  ["Морозова",   "Анна",     "Сергеевна",     :f, 5, false],
+  [ "Бобков",     "Вадим",    "Александрович", :m, 7, true ],
+  [ "Лебедев",    "Олег",     "Игоревич",      :m, 6, true ],
+  [ "Морозова",   "Анна",     "Сергеевна",     :f, 5, false ],
   # Engineering
-  ["Соколов",    "Артём",    "Николаевич",    :m, 4, true],
-  ["Кузнецова",  "Екатерина","Викторовна",    :f, 4, true],
-  ["Иванов",     "Алексей",  "Сергеевич",     :m, 3, false],
-  ["Петров",     "Дмитрий",  "Александрович", :m, 3, true],
-  ["Волков",     "Денис",    "Дмитриевич",    :m, 2, false],
-  ["Зайцева",    "Мария",    "Викторовна",    :f, 2, false],
-  ["Новиков",    "Кирилл",   "Юрьевич",       :m, 2, true],
+  [ "Соколов",    "Артём",    "Николаевич",    :m, 4, true ],
+  [ "Кузнецова",  "Екатерина", "Викторовна",    :f, 4, true ],
+  [ "Иванов",     "Алексей",  "Сергеевич",     :m, 3, false ],
+  [ "Петров",     "Дмитрий",  "Александрович", :m, 3, true ],
+  [ "Волков",     "Денис",    "Дмитриевич",    :m, 2, false ],
+  [ "Зайцева",    "Мария",    "Викторовна",    :f, 2, false ],
+  [ "Новиков",    "Кирилл",   "Юрьевич",       :m, 2, true ],
   # Sales & Marketing
-  ["Орлова",     "София",    "Олеговна",      :f, 5, true],
-  ["Семёнов",    "Олег",     "Михайлович",    :m, 4, true],
-  ["Васильева",  "Юлия",     "Алексеевна",    :f, 3, false],
-  ["Михайлова",  "Анастасия","Павловна",      :f, 3, true],
-  ["Голубев",    "Роман",    "Викторович",    :m, 2, false],
+  [ "Орлова",     "София",    "Олеговна",      :f, 5, true ],
+  [ "Семёнов",    "Олег",     "Михайлович",    :m, 4, true ],
+  [ "Васильева",  "Юлия",     "Алексеевна",    :f, 3, false ],
+  [ "Михайлова",  "Анастасия", "Павловна",      :f, 3, true ],
+  [ "Голубев",    "Роман",    "Викторович",    :m, 2, false ],
   # HR & Operations
-  ["Попова",     "Дарья",    "Николаевна",    :f, 5, true],
-  ["Смирнова",   "Елена",    "Дмитриевна",    :f, 4, true],
-  ["Фёдорова",   "Татьяна",  "Андреевна",     :f, 3, false],
+  [ "Попова",     "Дарья",    "Николаевна",    :f, 5, true ],
+  [ "Смирнова",   "Елена",    "Дмитриевна",    :f, 4, true ],
+  [ "Фёдорова",   "Татьяна",  "Андреевна",     :f, 3, false ],
   # Design
-  ["Богданов",   "Тимур",    "Эдуардович",    :m, 3, false],
-  ["Виноградова","Полина",   "Анатольевна",   :f, 2, false],
+  [ "Богданов",   "Тимур",    "Эдуардович",    :m, 3, false ],
+  [ "Виноградова", "Полина",   "Анатольевна",   :f, 2, false ],
   # Finance & Legal
-  ["Павлов",     "Игорь",    "Романович",     :m, 6, true],
-  ["Козлова",    "Ольга",    "Игоревна",      :f, 4, true],
-  ["Захаров",    "Андрей",   "Викторович",    :m, 1, false],
+  [ "Павлов",     "Игорь",    "Романович",     :m, 6, true ],
+  [ "Козлова",    "Ольга",    "Игоревна",      :f, 4, true ],
+  [ "Захаров",    "Андрей",   "Викторович",    :m, 1, false ],
   # Junior bench
-  ["Никитина",   "Алина",    "Максимовна",    :f, 1, false],
-  ["Романов",    "Никита",   "Олегович",      :m, 1, false],
-  ["Соловьёва",  "Ева",      "Артёмовна",     :f, 1, false],
-  ["Беляев",     "Максим",   "Андреевич",     :m, 0, false]
+  [ "Никитина",   "Алина",    "Максимовна",    :f, 1, false ],
+  [ "Романов",    "Никита",   "Олегович",      :m, 1, false ],
+  [ "Соловьёва",  "Ева",      "Артёмовна",     :f, 1, false ],
+  [ "Беляев",     "Максим",   "Андреевич",     :m, 0, false ]
 ]
 
 dept_distribution = {
@@ -117,7 +117,7 @@ hobbies_pool = [
   "Театр, концерты"
 ]
 shirt_sizes = %w[S M L XL XXL]
-diets       = ["—", "—", "—", "Вегетарианец", "Без глютена", "Лактозная непереносимость"]
+diets       = [ "—", "—", "—", "Вегетарианец", "Без глютена", "Лактозная непереносимость" ]
 emergency_relations = %w[супруга супруг мать отец брат сестра]
 
 male_first_names_kids   = %w[Артём Максим Михаил Иван Дмитрий Александр Никита Егор Лев Кирилл]
@@ -153,13 +153,13 @@ roster.each_with_index do |(last, first, middle, gender, years, has_kids), idx|
     shirt_size:      shirt_sizes[idx % shirt_sizes.size],
     dietary_restrictions: diets[idx % diets.size],
     tax_id:          rand(10**11...10**12).to_s,
-    insurance_id:    "%03d-%03d-%03d %02d" % [rand(1000), rand(1000), rand(1000), rand(100)],
-    passport_number: "%04d %06d" % [rand(10**4), rand(10**6)],
+    insurance_id:    "%03d-%03d-%03d %02d" % [ rand(1000), rand(1000), rand(1000), rand(100) ],
+    passport_number: "%04d %06d" % [ rand(10**4), rand(10**6) ],
     passport_issued_at: birth + 14.years,
-    passport_issued_by:  ["ОВД г. Москвы", "УФМС России по Московской области", "ОВД Центрального округа"].sample,
+    passport_issued_by:  [ "ОВД г. Москвы", "УФМС России по Московской области", "ОВД Центрального округа" ].sample,
     native_city:     %w[Москва Санкт-Петербург Екатеринбург Новосибирск Казань Воронеж Самара].sample,
     education_level: %w[Высшее Высшее Высшее Среднее\ профессиональное].sample,
-    education_institution: ["МГУ", "МФТИ", "СПбГУ", "ВШЭ", "МГТУ\ им.\ Баумана", "УрФУ"].sample,
+    education_institution: [ "МГУ", "МФТИ", "СПбГУ", "ВШЭ", "МГТУ\ им.\ Баумана", "УрФУ" ].sample,
     emergency_contact_name:    "#{%w[Александр Сергей Дмитрий Елена Анна Ольга].sample} #{last}",
     emergency_contact_phone:   "+7 9#{rand(10..99)} #{rand(100..999)}-#{rand(10..99)}-#{rand(10..99)}",
     emergency_contact_relation: emergency_relations.sample
@@ -217,11 +217,11 @@ end
 
 # ── Notes (sample HR observations) -------------------------------------------
 note_samples = [
-  ["Отлично провёл проект — выделить премию", true,  false],
-  ["Запросил гибкий график на ближайшие 2 месяца", true, false],
-  ["Хорошо отрабатывает feedback на 1:1", false, false],
-  ["Готовится к сертификации, выдать budget на курсы", true, false],
-  ["Конфликт с командой решён, стороны помирились", true, true]
+  [ "Отлично провёл проект — выделить премию", true,  false ],
+  [ "Запросил гибкий график на ближайшие 2 месяца", true, false ],
+  [ "Хорошо отрабатывает feedback на 1:1", false, false ],
+  [ "Готовится к сертификации, выдать budget на курсы", true, false ],
+  [ "Конфликт с командой решён, стороны помирились", true, true ]
 ]
 created_employees.sample(8).each do |emp|
   note_samples.sample(rand(1..2)).each do |body, hr_only, pinned|
@@ -248,7 +248,7 @@ created_employees.first(18).sample(9).each do |emp|
   next if not_taken_set.include?(emp)
   start = today - rand(60..240).days
   ending  = start + rand(5..14).days
-  type   = [annual, annual, sick].sample
+  type   = [ annual, annual, sick ].sample
   next if type.nil?
   LeaveRequest.create!(
     employee:     emp,
@@ -299,7 +299,7 @@ metrics = KpiMetric.active.where(company: company).to_a
 if metrics.any?
   trend_buckets = {
     rising:  created_employees.sample(8),     # score grows over time
-    falling: created_employees.sample(6),     # declining
+    falling: created_employees.sample(6)     # declining
   }
   rising_set  = trend_buckets[:rising].to_set
   falling_set = trend_buckets[:falling].to_set
@@ -315,14 +315,14 @@ if metrics.any?
 
       assigned.each do |metric|
         target = case metric.code
-                 when "SALES_REVENUE"   then 1_000_000
-                 when "DEALS_CLOSED"    then 12
-                 when "RESPONSE_TIME"   then 4
-                 when "NPS"             then 75
-                 when "DEFECT_RATE"     then 2
-                 when "ONTIME_DELIVERY" then 95
-                 else 100
-                 end
+        when "SALES_REVENUE"   then 1_000_000
+        when "DEALS_CLOSED"    then 12
+        when "RESPONSE_TIME"   then 4
+        when "NPS"             then 75
+        when "DEFECT_RATE"     then 2
+        when "ONTIME_DELIVERY" then 95
+        else 100
+        end
 
         a = KpiAssignment.find_or_initialize_by(
           employee: emp, kpi_metric: metric, period_start: week_start
@@ -334,12 +334,12 @@ if metrics.any?
         base = if rising_set.include?(emp)
                  # Older weeks = lower score, recent = higher
                  50 + ((12 - weeks_ago) * 4) + rng.rand(-5..5)
-               elsif falling_set.include?(emp)
+        elsif falling_set.include?(emp)
                  # Older weeks = high, recent = lower
                  90 - ((12 - weeks_ago) * 3) + rng.rand(-5..5)
-               else
+        else
                  60 + rng.rand(0..30)
-               end
+        end
         score = base.clamp(0, 100)
         actual = (target.to_f * score / 100.0).round(2)
 

@@ -33,6 +33,6 @@ class JobOpening < ApplicationRecord
   def salary_range
     return nil if salary_from.blank? && salary_to.blank?
 
-    [salary_from, salary_to].compact.map { |v| v.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1 ').reverse }.join(" – ") + " #{currency}"
+    [ salary_from, salary_to ].compact.map { |v| v.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1 ').reverse }.join(" – ") + " #{currency}"
   end
 end

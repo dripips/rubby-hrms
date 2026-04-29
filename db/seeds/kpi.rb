@@ -37,13 +37,13 @@ mgr_user  = User.kept.find_by(role: User.roles[:manager]) || hr_user
 
     chosen.each do |metric|
       target_value = case metric.code
-                     when "SALES_REVENUE"   then rng.rand(800_000..1_500_000)
-                     when "DEALS_CLOSED"    then rng.rand(8..20)
-                     when "RESPONSE_TIME"   then rng.rand(2..6)
-                     when "NPS"             then rng.rand(60..85)
-                     when "DEFECT_RATE"     then rng.rand(1..5)
-                     when "ONTIME_DELIVERY" then 95
-                     end
+      when "SALES_REVENUE"   then rng.rand(800_000..1_500_000)
+      when "DEALS_CLOSED"    then rng.rand(8..20)
+      when "RESPONSE_TIME"   then rng.rand(2..6)
+      when "NPS"             then rng.rand(60..85)
+      when "DEFECT_RATE"     then rng.rand(1..5)
+      when "ONTIME_DELIVERY" then 95
+      end
 
       assignment = KpiAssignment.find_or_initialize_by(
         employee: emp, kpi_metric: metric, period_start: period_start
@@ -59,22 +59,22 @@ mgr_user  = User.kept.find_by(role: User.roles[:manager]) || hr_user
 
       # Score: trends upward over time (recent weeks slightly higher).
       base = case weeks_ago
-             when 0..2 then rng.rand(70..95)
-             when 3..5 then rng.rand(60..90)
-             else            rng.rand(45..80)
-             end
+      when 0..2 then rng.rand(70..95)
+      when 3..5 then rng.rand(60..90)
+      else            rng.rand(45..80)
+      end
       # Add per-employee personality bias (some are stars, some struggling).
       bias = (emp.id % 5 == 0 ? 10 : (emp.id % 7 == 0 ? -15 : 0))
       score = (base + bias).clamp(0, 100)
 
       actual = case metric.code
-               when "SALES_REVENUE"   then (target_value.to_f * score / 100).round
-               when "DEALS_CLOSED"    then (target_value.to_f * score / 100).round
-               when "RESPONSE_TIME"   then (target_value.to_f * (200 - score) / 100).round(1)
-               when "NPS"             then score
-               when "DEFECT_RATE"     then ((100 - score) / 20.0).round(1)
-               when "ONTIME_DELIVERY" then [score + rng.rand(-3..3), 100].min
-               end
+      when "SALES_REVENUE"   then (target_value.to_f * score / 100).round
+      when "DEALS_CLOSED"    then (target_value.to_f * score / 100).round
+      when "RESPONSE_TIME"   then (target_value.to_f * (200 - score) / 100).round(1)
+      when "NPS"             then score
+      when "DEFECT_RATE"     then ((100 - score) / 20.0).round(1)
+      when "ONTIME_DELIVERY" then [ score + rng.rand(-3..3), 100 ].min
+      end
 
       evaluator = (rng.rand < 0.5 ? mgr_user : hr_user) || hr_user
       assignment.kpi_evaluations.create!(

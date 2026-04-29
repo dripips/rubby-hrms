@@ -250,8 +250,8 @@ puts "✓ Tech round scheduled for #{tech_round.scheduled_at.strftime('%d.%m.%Y 
 # ── 5. История переходов ─────────────────────────────────────────────────────
 ApplicationStageChange.where(job_applicant: applicant).delete_all
 [
-  ["applied",   "screening", 9.days.ago,  "Резюме сильное, переводим на скрининг"],
-  ["screening", "interview", 6.days.ago,  "HR-раунд прошёл с strong_yes — назначаем технический"]
+  [ "applied",   "screening", 9.days.ago,  "Резюме сильное, переводим на скрининг" ],
+  [ "screening", "interview", 6.days.ago,  "HR-раунд прошёл с strong_yes — назначаем технический" ]
 ].each do |from, to, at, comment|
   ApplicationStageChange.create!(
     job_applicant: applicant, user: hr, from_stage: from, to_stage: to,

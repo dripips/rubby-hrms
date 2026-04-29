@@ -16,7 +16,7 @@ class OnboardingProcessPolicy < ApplicationPolicy
       emp = user.employee
       return scope.none unless emp
 
-      ids = [emp.id] + emp.reports.pluck(:id)
+      ids = [ emp.id ] + emp.reports.pluck(:id)
       scope.kept.where("employee_id IN (?) OR mentor_id = ?", ids, emp.id)
     end
   end

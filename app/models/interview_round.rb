@@ -120,7 +120,7 @@ class InterviewRound < ApplicationRecord
   def scores_keys_match_template
     return if competency_scores.blank?
 
-    allowed = competencies + [""]
+    allowed = competencies + [ "" ]
     extras = competency_scores.keys.map(&:to_s) - allowed
     errors.add(:competency_scores, "unknown keys: #{extras.join(', ')}") if extras.any?
   end

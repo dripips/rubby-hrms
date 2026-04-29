@@ -54,11 +54,11 @@ class JobApplicant < ApplicationRecord
   end
 
   def full_name
-    [last_name, first_name].compact_blank.join(" ")
+    [ last_name, first_name ].compact_blank.join(" ")
   end
 
   def initials
-    [last_name, first_name].compact.map { |n| n.first&.upcase }.join
+    [ last_name, first_name ].compact.map { |n| n.first&.upcase }.join
   end
 
   # Возвращает URL фото: либо ActiveStorage attachment, либо external URL
@@ -78,14 +78,14 @@ class JobApplicant < ApplicationRecord
   # Перевод в новую стадию: AASM event + история перехода + обновление timestamp.
   def transition_to!(new_stage, user:, comment: nil)
     event = case new_stage.to_s
-            when "screening"  then :move_to_screening
-            when "interview"  then :schedule_interview
-            when "offered"    then :make_offer
-            when "hired"      then :hire
-            when "rejected"   then :reject
-            when "withdrawn"  then :withdraw
-            when "applied"    then :reopen
-            end
+    when "screening"  then :move_to_screening
+    when "interview"  then :schedule_interview
+    when "offered"    then :make_offer
+    when "hired"      then :hire
+    when "rejected"   then :reject
+    when "withdrawn"  then :withdraw
+    when "applied"    then :reopen
+    end
     return false unless event
 
     transaction do

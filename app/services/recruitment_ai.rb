@@ -90,7 +90,7 @@ class RecruitmentAi
     offer_letter:           { input: 2200, output: 2000 },
     compensation_review:    { input: 2800, output: 2400 },
     exit_risk_brief:        { input: 2500, output: 2200 },
-    knowledge_transfer_plan:{ input: 2500, output: 2800 },
+    knowledge_transfer_plan: { input: 2500, output: 2800 },
     exit_interview_brief:   { input: 2500, output: 2200 },
     replacement_brief:      { input: 2500, output: 2400 },
     ping:                 { input:   30, output:   30 }
@@ -547,7 +547,7 @@ class RecruitmentAi
         "tone_hint": "warm|neutral|formal"
       }
     SYS
-    "replacement_brief" => <<~SYS.freeze,
+    "replacement_brief" => <<~SYS.freeze
       You are a hiring manager. Based on the departing employee's role,
       responsibilities, KPI signals and team — write a brief for a replacement
       hire. The output should be ready to convert to a JobOpening draft.
@@ -883,7 +883,7 @@ class RecruitmentAi
                           .where(state: %w[hr_approved active])
                           .where("started_on >= ?", Date.current)
                           .order(:started_on).first
-      [emp, avg_kpi, trend, scores, upcoming_leave]
+      [ emp, avg_kpi, trend, scores, upcoming_leave ]
     end
 
     user_msg << "\n## People\n"
@@ -1430,7 +1430,7 @@ class RecruitmentAi
     # Юзер может в Settings → AI поднять лимит выше дефолта (за качество)
     # или опустить (за экономию). reasoning_effort тоже настраиваемый.
     user_max         = setting.data["max_tokens_per_task"].to_i
-    effective_tokens = user_max.positive? ? [user_max, max_tokens].max : max_tokens
+    effective_tokens = user_max.positive? ? [ user_max, max_tokens ].max : max_tokens
     effort           = setting.data["reasoning_effort"].presence || "minimal"
     chosen_model     = task ? model_for(task) : model_key
 
