@@ -86,123 +86,119 @@ class AiRun < ApplicationRecord
 
   private
 
+  # Wraps Turbo::StreamsChannel calls in a uniform rescue/log harness so each
+  # broadcast helper is just a description of what to send, not boilerplate.
+  def safe_broadcast(label)
+    yield
+  rescue StandardError => e
+    Rails.logger.warn("[AiRun##{label}] #{e.class}: #{e.message}")
+  end
+
   def deliver_notification
     return unless user.notify_for?("ai_run_completed", :in_app)
 
-    AiRunCompletedNotifier.with(ai_run_id: id).deliver(user)
+    safe_broadcast("deliver_notification") do
+      AiRunCompletedNotifier.with(ai_run_id: id).deliver(user)
 
-    # Make sure the topbar bell repaints live — the Noticed::Notification
-    # initializer-level callback can be lost on class reload in dev, so we
-    # broadcast here defensively. Idempotent: if the initializer fires too,
-    # the second replace is a no-op visually.
-    Turbo::StreamsChannel.broadcast_replace_to(
-      [ user, "notifications" ],
-      target:  "topbar-bell",
-      partial: "shared/notifications_bell",
-      locals:  { user: user }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#deliver_notification] #{e.class}: #{e.message}")
+      # Topbar bell repaint — defensive (Noticed::Notification class-reload
+      # in dev может терять initializer-level callback, поэтому шлём здесь).
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ user, "notifications" ],
+        target:  "topbar-bell",
+        partial: "shared/notifications_bell",
+        locals:  { user: user }
+      )
+    end
   end
 
   def broadcast_to_applicant
-    history = AiRun.for_applicant(job_applicant).recent.limit(20)
-    Turbo::StreamsChannel.broadcast_update_to(
-      [ job_applicant, "ai_panel" ],
-      target: "ai-loading-#{job_applicant_id}",
-      content: ""
-    )
-    Turbo::StreamsChannel.broadcast_update_to(
-      [ job_applicant, "ai_panel" ],
-      target: "ai-panel-#{job_applicant_id}",
-      partial: "ai/applicants/result",
-      locals:  { applicant: job_applicant, run: self, history: history }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#broadcast_to_applicant] #{e.class}: #{e.message}")
+    safe_broadcast("broadcast_to_applicant") do
+      history  = AiRun.for_applicant(job_applicant).recent.limit(20)
+      stream   = [ job_applicant, "ai_panel" ]
+      Turbo::StreamsChannel.broadcast_update_to(stream,
+        target: "ai-loading-#{job_applicant_id}", content: "")
+      Turbo::StreamsChannel.broadcast_update_to(stream,
+        target:  "ai-panel-#{job_applicant_id}",
+        partial: "ai/applicants/result",
+        locals:  { applicant: job_applicant, run: self, history: history })
+    end
   end
 
   def broadcast_to_round
-    target_id = (kind == "summarize_interview" ? "ai-summary-" : "ai-questions-") + interview_round_id.to_s
-    partial   = (kind == "summarize_interview" ? "ai/rounds/summary" : "ai/rounds/questions")
-
-    Turbo::StreamsChannel.broadcast_update_to(
-      [ interview_round, "ai_questions" ],
-      target:  target_id,
-      partial: partial,
-      locals:  { round: interview_round, run: self }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#broadcast_to_round] #{e.class}: #{e.message}")
+    safe_broadcast("broadcast_to_round") do
+      summary  = (kind == "summarize_interview")
+      target   = "#{summary ? 'ai-summary-' : 'ai-questions-'}#{interview_round_id}"
+      partial  = summary ? "ai/rounds/summary" : "ai/rounds/questions"
+      Turbo::StreamsChannel.broadcast_update_to(
+        [ interview_round, "ai_questions" ],
+        target: target, partial: partial,
+        locals: { round: interview_round, run: self }
+      )
+    end
   end
 
   def broadcast_to_employee
-    history = AiRun.for_employee(employee).where(kind: %w[burnout_brief suggest_leave_window]).recent.limit(10)
-    Turbo::StreamsChannel.broadcast_replace_to(
-      [ employee, "ai_leaves" ],
-      target:  "ai-leaves-panel-#{employee_id}",
-      partial: "ai/leaves/result",
-      locals:  { employee: employee, run: self, history: history }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#broadcast_to_employee] #{e.class}: #{e.message}")
+    safe_broadcast("broadcast_to_employee") do
+      history = AiRun.for_employee(employee).where(kind: %w[burnout_brief suggest_leave_window]).recent.limit(10)
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ employee, "ai_leaves" ],
+        target:  "ai-leaves-panel-#{employee_id}",
+        partial: "ai/leaves/result",
+        locals:  { employee: employee, run: self, history: history }
+      )
+    end
   end
 
   def broadcast_to_onboarding
-    Turbo::StreamsChannel.broadcast_replace_to(
-      [ onboarding_process, "ai_panel" ],
-      target:  "ai-onboarding-panel-#{onboarding_process_id}",
-      partial: "ai/onboarding/result",
-      locals:  { process: onboarding_process, run: self }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#broadcast_to_onboarding] #{e.class}: #{e.message}")
+    broadcast_process_panel("onboarding", onboarding_process, onboarding_process_id)
   end
 
   def broadcast_to_offboarding
-    Turbo::StreamsChannel.broadcast_replace_to(
-      [ offboarding_process, "ai_panel" ],
-      target:  "ai-offboarding-panel-#{offboarding_process_id}",
-      partial: "ai/offboarding/result",
-      locals:  { process: offboarding_process, run: self }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#broadcast_to_offboarding] #{e.class}: #{e.message}")
+    broadcast_process_panel("offboarding", offboarding_process, offboarding_process_id)
+  end
+
+  # Общий рендер для onboarding/offboarding панелей — структура идентична.
+  def broadcast_process_panel(kind_label, process, process_id)
+    safe_broadcast("broadcast_to_#{kind_label}") do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ process, "ai_panel" ],
+        target:  "ai-#{kind_label}-panel-#{process_id}",
+        partial: "ai/#{kind_label}/result",
+        locals:  { process: process, run: self }
+      )
+    end
   end
 
   def broadcast_kpi_team
-    company_id = user.employee&.company_id || Company.kept.first&.id
-    return unless company_id
-    history = AiRun.where(kind: "kpi_team_brief").recent.limit(5)
-    Turbo::StreamsChannel.broadcast_replace_to(
-      [ "company-#{company_id}", "kpi_team" ],
-      target:  "ai-kpi-team-panel",
-      partial: "ai/kpi/team_result",
-      locals:  { run: self, history: history }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#broadcast_kpi_team] #{e.class}: #{e.message}")
+    safe_broadcast("broadcast_kpi_team") do
+      company_id = user.employee&.company_id || Company.kept.first&.id
+      next unless company_id
+
+      history = AiRun.where(kind: "kpi_team_brief").recent.limit(5)
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ "company-#{company_id}", "kpi_team" ],
+        target:  "ai-kpi-team-panel",
+        partial: "ai/kpi/team_result",
+        locals:  { run: self, history: history }
+      )
+    end
   end
 
   def broadcast_to_opening
-    Turbo::StreamsChannel.broadcast_update_to(
-      [ job_opening, "ai_compare" ],
-      target:  "ai-compare-loading-#{job_opening_id}",
-      content: ""
-    )
-    Turbo::StreamsChannel.broadcast_update_to(
-      [ job_opening, "ai_compare" ],
-      target:  "ai-compare-result-#{job_opening_id}",
-      partial: "ai/openings/result",
-      locals:  { opening: job_opening, run: self }
-    )
-    Turbo::StreamsChannel.broadcast_update_to(
-      [ job_opening, "ai_compare" ],
-      target:  "ai-compare-history-#{job_opening_id}",
-      partial: "ai/openings/history",
-      locals:  { opening: job_opening }
-    )
-  rescue StandardError => e
-    Rails.logger.warn("[AiRun#broadcast_to_opening] #{e.class}: #{e.message}")
+    safe_broadcast("broadcast_to_opening") do
+      stream = [ job_opening, "ai_compare" ]
+      oid    = job_opening_id
+
+      Turbo::StreamsChannel.broadcast_update_to(stream,
+        target: "ai-compare-loading-#{oid}", content: "")
+      Turbo::StreamsChannel.broadcast_update_to(stream,
+        target:  "ai-compare-result-#{oid}",
+        partial: "ai/openings/result",
+        locals:  { opening: job_opening, run: self })
+      Turbo::StreamsChannel.broadcast_update_to(stream,
+        target:  "ai-compare-history-#{oid}",
+        partial: "ai/openings/history",
+        locals:  { opening: job_opening })
+    end
   end
 end
