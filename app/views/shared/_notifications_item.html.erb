@@ -1,0 +1,23 @@
+<%
+  unread = notif.read_at.nil?
+  href   = notif.url rescue "#"
+  msg    = notif.message rescue "—"
+  tone   = (notif.respond_to?(:tone) ? notif.tone : "info") rescue "info"
+%>
+<li class="notifications__item <%= 'is-unread' if unread %>">
+  <%= link_to href, class: "notifications__link", data: { turbo_method: :get } do %>
+    <span class="notifications__dot notifications__dot--<%= tone %>"></span>
+    <div class="notifications__body">
+      <div class="notifications__msg"><%= msg %></div>
+      <div class="notifications__meta">
+        <%= time_ago_in_words(notif.created_at) %> <%= t("common.ago") %>
+      </div>
+    </div>
+  <% end %>
+  <% if unread %>
+    <%= button_to "✓", read_notification_path(notif), method: :post,
+                  class: "notifications__mark",
+                  form: { class: "d-inline", data: { turbo_stream: true } },
+                  title: t("notifications.mark_read", default: "Прочитано") %>
+  <% end %>
+</li>

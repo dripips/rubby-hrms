@@ -1,0 +1,19 @@
+<% content_for :page_title, t("navigation.#{@section}") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("app.name") %></div>
+    <h1 class="page-header__title"><%= t("navigation.#{@section}") %></h1>
+    <p class="page-header__subtitle"><%= t("stub.subtitle", default: "Раздел в разработке. Скоро здесь появится полноценный интерфейс.") %></p>
+  </div>
+</header>
+
+<div class="card-apple">
+  <div class="empty-state">
+    <div class="empty-state__icon">
+      <%= render "shared/icons/grid" %>
+    </div>
+    <div class="empty-state__title"><%= t("stub.title", default: "Раздел в разработке") %></div>
+    <p class="footnote"><%= t("stub.body", default: "Этот раздел будет реализован на следующем этапе. Сейчас работает: авторизация, дашборд, локализация и переключение темы.") %></p>
+  </div>
+</div>

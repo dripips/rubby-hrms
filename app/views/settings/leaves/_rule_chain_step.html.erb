@@ -1,0 +1,19 @@
+<%
+  kind  = step["kind"] || step[:kind]
+  value = step["value"] || step[:value]
+  label = if kind == "role"
+            t("leaves.approval_steps.#{value}", default: value.to_s.humanize)
+          else
+            (users.find { |u| u.id == value.to_i }&.display_name || "User ##{value}")
+          end
+%>
+<div class="rule-chain__item" data-rule-chain-target="step" draggable="true"
+     data-action="dragstart->rule-chain#dragStart dragover->rule-chain#dragOver drop->rule-chain#drop">
+  <span class="rule-chain__handle">⋮⋮</span>
+  <span class="rule-chain__index"><%= index + 1 %></span>
+  <span class="pill pill--<%= kind == 'role' ? 'info' : 'purple' %>"><%= label %></span>
+  <input type="hidden" name="leave_approval_rule[chain_steps][]" value="<%= kind %>:<%= value %>">
+  <button type="button" class="btn-close ms-auto"
+          aria-label="remove"
+          data-action="click->rule-chain#remove"></button>
+</div>

@@ -1,0 +1,241 @@
+<% content_for :page_title, t("navigation.recruitment_analytics", default: "Аналитика найма") %>
+
+<%
+  source_color_map = {
+    "manual"        => "var(--ds-blue)",
+    "careers_page"  => "var(--ds-indigo)",
+    "hh"            => "var(--ds-orange)",
+    "linkedin"      => "var(--ds-purple)",
+    "referral"      => "var(--ds-green)",
+    "email"         => "var(--ds-pink, var(--ds-red))"
+  }
+  stage_color = ->(s) {
+    {
+      "applied"   => "var(--ds-blue)",
+      "screening" => "var(--ds-indigo)",
+      "interview" => "var(--ds-purple)",
+      "offered"   => "var(--ds-orange)",
+      "hired"     => "var(--ds-green)",
+      "rejected"  => "var(--ds-red)",
+      "withdrawn" => "var(--ds-secondary, #8E8E93)"
+    }[s] || "var(--ds-blue)"
+  }
+%>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.recruitment") %></div>
+    <h1 class="page-header__title"><%= t("navigation.recruitment_analytics", default: "Аналитика найма") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("recruitment_analytics.subtitle", default: "Воронка, time-to-hire, эффективность источников") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= form_with url: recruitment_analytics_path, method: :get, local: true, class: "d-inline-flex" do %>
+      <select name="period" class="form-select" onchange="this.form.requestSubmit()" style="min-width: 180px;">
+        <% RecruitmentAnalytics::PERIODS.keys.each do |key| %>
+          <option value="<%= key %>" <%= 'selected' if @period == key %>>
+            <%= t("recruitment_analytics.periods.#{key}", default: key == "all" ? "Всё время" : "#{key} дней") %>
+          </option>
+        <% end %>
+      </select>
+    <% end %>
+  </div>
+</header>
+
+<%= render "shared/recruitment_tabs" %>
+
+<%# ── KPI cards ───────────────────────────────────────────────────────────── %>
+<div class="kpi-grid mb-4">
+  <div class="kpi-card">
+    <div class="kpi-card__label"><%= t("recruitment_analytics.kpi.active") %></div>
+    <div class="kpi-card__value"><%= @kpi[:active] %></div>
+    <div class="kpi-card__hint"><%= t("recruitment_analytics.kpi.active_hint", default: "В активной воронке") %></div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-card__label"><%= t("recruitment_analytics.kpi.hired") %></div>
+    <div class="kpi-card__value kpi-card__value--success"><%= @kpi[:hired] %></div>
+    <div class="kpi-card__hint"><%= t("recruitment_analytics.kpi.hired_hint", default: "За период") %></div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-card__label"><%= t("recruitment_analytics.kpi.time_to_hire") %></div>
+    <div class="kpi-card__value">
+      <% if @kpi[:avg_time_to_hire] %><%= @kpi[:avg_time_to_hire] %><span class="kpi-card__unit"><%= t("recruitment_analytics.days_short", default: "дн") %></span><% else %>—<% end %>
+    </div>
+    <div class="kpi-card__hint"><%= t("recruitment_analytics.kpi.time_to_hire_hint", default: "Среднее от подачи до найма") %></div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-card__label"><%= t("recruitment_analytics.kpi.hire_rate") %></div>
+    <div class="kpi-card__value"><%= @kpi[:hire_rate] %><span class="kpi-card__unit">%</span></div>
+    <div class="kpi-card__hint"><%= t("recruitment_analytics.kpi.hire_rate_hint", default: "Конверсия из откликов") %></div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <%# ── Funnel chart ──────────────────────────────────────────────────────── %>
+  <div class="col-12 col-xl-7">
+    <div class="card-apple">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("recruitment_analytics.funnel.title", default: "Воронка найма") %></h3>
+          <p class="footnote text-secondary-apple m-0"><%= t("recruitment_analytics.funnel.subtitle", default: "От первого отклика до найма с conversion rate") %></p>
+        </div>
+      </div>
+
+      <% if @funnel.any? && @funnel.first[:count].positive? %>
+        <% max_count = @funnel.map { |f| f[:count] }.max.to_f %>
+        <div class="funnel">
+          <% @funnel.each_with_index do |row, i| %>
+            <div class="funnel__row">
+              <div class="funnel__label">
+                <span class="funnel__stage" style="--funnel-color: <%= stage_color.call(row[:stage]) %>"><%= row[:label] %></span>
+                <span class="funnel__count"><%= row[:count] %></span>
+              </div>
+              <div class="funnel__bar-track">
+                <div class="funnel__bar"
+                     style="width: <%= max_count.zero? ? 0 : (row[:count] / max_count * 100) %>%; background: <%= stage_color.call(row[:stage]) %>;"></div>
+              </div>
+              <div class="funnel__pct">
+                <div class="funnel__pct-main"><%= row[:of_total_pct] %>%</div>
+                <% if i.positive? %>
+                  <div class="funnel__pct-sub">
+                    <%= t("recruitment_analytics.funnel.from_prev", default: "от пред.") %>: <%= row[:from_prev_pct] %>%
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <%= render "recruitment_analytics/empty" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Stage distribution donut ─────────────────────────────────────────── %>
+  <div class="col-12 col-xl-5">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("recruitment_analytics.distribution.title", default: "Распределение по стадиям") %></h3>
+
+      <% if @distribution.any? %>
+        <% total = @distribution.sum { |s| s[:count] } %>
+        <div class="donut">
+          <%
+            circumference = 2 * Math::PI * 60
+            offset = 0
+          %>
+          <svg viewBox="0 0 160 160" class="donut__svg">
+            <circle cx="80" cy="80" r="60" fill="none" stroke="var(--ds-fill-3)" stroke-width="20"/>
+            <% @distribution.each do |row|
+                 fraction = total.zero? ? 0 : row[:count].to_f / total
+                 dash     = (circumference * fraction).round(2)
+                 gap      = (circumference - dash).round(2) %>
+              <circle cx="80" cy="80" r="60" fill="none"
+                      stroke="<%= stage_color.call(row[:stage]) %>"
+                      stroke-width="20"
+                      stroke-dasharray="<%= dash %> <%= gap %>"
+                      stroke-dashoffset="<%= -offset %>"
+                      transform="rotate(-90 80 80)"
+                      class="donut__seg"/>
+              <% offset += dash %>
+            <% end %>
+            <text x="80" y="76" text-anchor="middle" class="donut__total"><%= total %></text>
+            <text x="80" y="92" text-anchor="middle" class="donut__total-label"><%= t("recruitment_analytics.candidates", default: "Кандидатов") %></text>
+          </svg>
+          <ul class="donut__legend">
+            <% @distribution.each do |row| %>
+              <li>
+                <span class="donut__legend-dot" style="background: <%= stage_color.call(row[:stage]) %>"></span>
+                <span class="donut__legend-name"><%= row[:label] %></span>
+                <span class="donut__legend-value"><%= row[:count] %><span class="text-tertiary"> · <%= row[:pct] %>%</span></span>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% else %>
+        <%= render "recruitment_analytics/empty" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <%# ── Source effectiveness ─────────────────────────────────────────────── %>
+  <div class="col-12 col-xl-7">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("recruitment_analytics.sources.title", default: "Эффективность источников") %></h3>
+
+      <% if @sources.any? %>
+        <% max_total = @sources.map { |s| s[:total] }.max.to_f %>
+        <div class="source-bars">
+          <% @sources.each do |row| %>
+            <div class="source-bars__row">
+              <div class="source-bars__label">
+                <span class="source-bars__name"><%= row[:label] %></span>
+                <span class="source-bars__count"><%= row[:total] %></span>
+              </div>
+              <div class="source-bars__track">
+                <div class="source-bars__fill"
+                     style="width: <%= max_total.zero? ? 0 : (row[:total] / max_total * 100) %>%; background: <%= source_color_map[row[:source]] || "var(--ds-blue)" %>;"></div>
+              </div>
+              <div class="source-bars__rate">
+                <% if row[:rate].positive? %>
+                  <span class="pill pill--success"><%= row[:rate] %>% → <%= t("job_applicants.stages.hired") %></span>
+                <% elsif row[:hired].zero? && row[:total].positive? %>
+                  <span class="footnote text-tertiary"><%= row[:total] %> <%= t("recruitment_analytics.no_hires_yet", default: "без найма") %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <%= render "recruitment_analytics/empty" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Recruiter breakdown ──────────────────────────────────────────────── %>
+  <div class="col-12 col-xl-5">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("recruitment_analytics.recruiters.title", default: "Рекрутеры") %></h3>
+
+      <% if @recruiters.any? %>
+        <table class="table-apple m-0">
+          <thead>
+            <tr>
+              <th><%= t("recruitment_analytics.recruiters.name", default: "Email") %></th>
+              <th class="text-end"><%= t("recruitment_analytics.recruiters.candidates") %></th>
+              <th class="text-end"><%= t("recruitment_analytics.recruiters.interviews") %></th>
+              <th class="text-end"><%= t("recruitment_analytics.recruiters.hired") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @recruiters.each do |r| %>
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="avatar-apple"><%= r[:user].email.first(2).upcase %></span>
+                    <span><%= r[:user].display_name %></span>
+                  </div>
+                </td>
+                <td class="text-end"><strong><%= r[:total] %></strong></td>
+                <td class="text-end"><%= r[:interviews] %></td>
+                <td class="text-end">
+                  <%= r[:hired] %>
+                  <% if r[:rate].positive? %>
+                    <div class="footnote text-tertiary"><%= r[:rate] %>%</div>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <%= render "recruitment_analytics/empty" %>
+      <% end %>
+    </div>
+  </div>
+</div>

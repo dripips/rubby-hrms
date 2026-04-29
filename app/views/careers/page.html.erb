@@ -1,0 +1,14 @@
+<div class="careers-detail">
+  <%= link_to careers_path, class: "careers-detail__back" do %>
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 4L6 8l4 4"/></svg>
+    <%= @careers.t("back_all") %>
+  <% end %>
+
+  <header class="careers-detail__head">
+    <h1 class="careers-detail__title"><%= @page_data[:title] %></h1>
+  </header>
+
+  <article class="careers-page-body">
+    <%= simple_format(@page_data[:body]) %>
+  </article>
+</div>

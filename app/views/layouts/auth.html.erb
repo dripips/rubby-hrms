@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" data-theme="<%= current_theme %>" data-bs-theme="<%= current_theme == 'dark' ? 'dark' : 'light' %>">
+  <head>
+    <title><%= content_for(:title) || t("app.name") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-base">
+    <%= render "shared/flash" %>
+    <div class="auth-topright">
+      <%= render "shared/language_switcher", variant: :glass %>
+    </div>
+    <%= yield %>
+  </body>
+</html>

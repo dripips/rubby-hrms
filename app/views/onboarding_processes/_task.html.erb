@@ -1,0 +1,53 @@
+<%
+  state_tone = case task.state
+               when "done"        then "success"
+               when "in_progress" then "info"
+               when "skipped"     then "neutral"
+               else                    "info"
+               end
+  is_overdue = task.due_on.present? && task.due_on < Date.current && %w[pending in_progress].include?(task.state)
+%>
+<li id="onboarding-task-<%= task.id %>" class="task-row<%= ' is-done' if task.state == 'done' %><%= ' is-skipped' if task.state == 'skipped' %><%= ' is-overdue' if is_overdue %>">
+  <%= form_with(url: onboarding_task_path(task), method: :patch, local: false, class: "task-row__check-form") do |f| %>
+    <% if %w[done skipped].include?(task.state) %>
+      <%= button_tag type: "submit", name: "event", value: "reopen", class: "task-row__check is-checked", title: t("onboarding.actions.reopen", default: "Переоткрыть") do %>
+        <%= task.state == "done" ? "✓" : "↺" %>
+      <% end %>
+    <% else %>
+      <%= button_tag type: "submit", name: "event", value: "complete", class: "task-row__check", title: t("onboarding.actions.complete", default: "Завершить") do %>
+        ○
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="task-row__body">
+    <div class="task-row__title">
+      <span class="pill pill--<%= state_tone %> task-row__kind"><%= t("settings.process_templates.task_kinds.#{task.kind}", default: task.kind.humanize) %></span>
+      <strong><%= task.title %></strong>
+      <% if task.ai_generated %>
+        <span class="pill pill--purple" title="<%= t('onboarding.ai_generated', default: 'Сгенерировано AI') %>">✨ AI</span>
+      <% end %>
+    </div>
+    <% if task.description.present? %>
+      <p class="footnote text-secondary-apple m-0"><%= task.description %></p>
+    <% end %>
+    <div class="task-row__meta footnote text-tertiary">
+      <% if task.due_on %>
+        <span class="<%= 'text-danger' if is_overdue %>">📅 <%= l(task.due_on, format: :short) %></span>
+      <% end %>
+      <% if task.assignee %>
+        · 👤 <%= task.assignee.email.split("@").first %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="task-row__actions">
+    <% unless %w[done skipped].include?(task.state) %>
+      <%= button_to t("onboarding.actions.skip", default: "Пропустить"),
+                    onboarding_task_path(task, event: "skip"),
+                    method: :patch,
+                    class: "btn btn-ghost btn-sm",
+                    form: { class: "d-inline" } %>
+    <% end %>
+  </div>
+</li>

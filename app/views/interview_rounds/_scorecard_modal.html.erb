@@ -1,0 +1,71 @@
+<div class="modal fade" id="scorecardModal-<%= round.id %>" tabindex="-1" data-controller="modal-autoclose">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <%= form_with(model: round, url: complete_interview_round_path(round), method: :post) do |r| %>
+        <div class="modal-header">
+          <div>
+            <div class="footnote text-secondary-apple"><%= round.kind_label %></div>
+            <h5 class="modal-title title-3 m-0"><%= t("interview_rounds.scorecard") %></h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body d-flex flex-column gap-3">
+          <div class="scorecard scorecard--editable">
+            <% round.competencies.each do |c| %>
+              <% current = round.score_for(c) %>
+              <div class="scorecard__row">
+                <label class="scorecard__name">
+                  <%= t("interview_rounds.competencies.#{c}", default: c.humanize) %>
+                </label>
+                <div class="scorecard__radios" role="radiogroup">
+                  <% (1..5).each do |n| %>
+                    <label class="scorecard__radio">
+                      <input type="radio"
+                             name="interview_round[competency_scores][<%= c %>]"
+                             value="<%= n %>"
+                             <%= 'checked' if current == n %>>
+                      <span><%= n %></span>
+                    </label>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("interview_rounds.fields.recommendation", default: "Рекомендация") %></label>
+            <div class="d-flex gap-2 flex-wrap">
+              <% InterviewRound::RECOMMENDATIONS.each do |rec| %>
+                <label class="recommendation-chip recommendation-chip--<%= InterviewRound::RECOMMENDATION_TONES[rec] %>">
+                  <input type="radio"
+                         name="interview_round[recommendation]"
+                         value="<%= rec %>"
+                         <%= 'checked' if round.recommendation == rec %>>
+                  <span><%= t("interview_rounds.recommendations.#{rec}") %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("interview_rounds.fields.notes", default: "Заметки интервьюера") %></label>
+            <%= r.text_area :notes, rows: 4, class: "form-control",
+                            placeholder: t("interview_rounds.notes_placeholder", default: "Что обсуждали, сильные стороны, риски, follow-up") %>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("interview_rounds.fields.decision_comment", default: "Финальный комментарий") %></label>
+            <%= r.text_area :decision_comment, rows: 2, class: "form-control",
+                            placeholder: t("interview_rounds.decision_placeholder", default: "Резюме раунда — на 1-2 строки") %>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= r.submit t("interview_rounds.actions.complete", default: "Завершить интервью"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

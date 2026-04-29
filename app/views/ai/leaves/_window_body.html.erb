@@ -1,0 +1,54 @@
+<div class="ai-leaves-result">
+  <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+    <div class="d-flex align-items-center gap-2">
+      <span class="ai-spark">✨</span>
+      <strong><%= t("ai.leaves.suggest_window_title") %></strong>
+    </div>
+  </div>
+
+  <% options = Array(payload["options"]) %>
+  <% if options.any? %>
+    <div class="d-flex flex-column gap-2">
+      <% options.each do |opt| %>
+        <div class="ai-leaves-window-option">
+          <div class="d-flex justify-content-between align-items-baseline">
+            <strong><%= t("ai.leaves.option") %> #<%= opt["rank"] || "?" %></strong>
+            <span class="text-mono"><%= opt["from"] %> → <%= opt["to"] %></span>
+          </div>
+          <% if opt["rationale"].present? %>
+            <p class="footnote text-secondary-apple m-0 mt-1"><%= opt["rationale"] %></p>
+          <% end %>
+          <% if Array(opt["alignment"]).any? %>
+            <div class="d-flex flex-wrap gap-1 mt-2">
+              <% Array(opt["alignment"]).each do |a| %><span class="pill pill--success"><%= a.to_s.humanize %></span><% end %>
+            </div>
+          <% end %>
+          <% if Array(opt["risks"]).any? %>
+            <div class="footnote text-secondary-apple mt-1">⚠ <%= Array(opt["risks"]).join(" · ") %></div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if Array(payload["reasoning"]).any? %>
+    <div class="ai-leaves-result__section mt-3">
+      <div class="ai-leaves-result__section-title">🧠 <%= t("ai.leaves.reasoning") %></div>
+      <ol class="ai-leaves-result__list ai-leaves-result__list--ordered">
+        <% Array(payload["reasoning"]).each do |step| %><li><%= step %></li><% end %>
+      </ol>
+    </div>
+  <% end %>
+
+  <% warnings = Array(payload["warnings"]) %>
+  <% if warnings.any? %>
+    <div class="ai-leaves-result__warnings mt-3">
+      <strong>⚠ <%= t("ai.leaves.warnings") %>:</strong>
+      <ul class="m-0 mt-1">
+        <% warnings.each do |w| %><li class="footnote"><%= w %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="footnote text-tertiary mt-3"><%= run.cost_display %> · <%= run.total_tokens %> tok · <%= run.model %></div>
+</div>

@@ -1,0 +1,45 @@
+<div class="auth-shell">
+  <section class="auth-shell__form-side">
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "auth-shell__form" }) do |f| %>
+      <div class="sidebar-apple__brand" style="margin-bottom: var(--ds-space-4); padding: 0;">
+        <span class="sidebar-apple__brand-mark">H</span>
+        <span><%= t("app.name") %></span>
+      </div>
+
+      <h1 class="auth-shell__title"><%= t("auth.welcome_back") %></h1>
+      <p class="auth-shell__subtitle"><%= t("auth.welcome_back_subtitle") %></p>
+
+      <%= render "users/shared/error_messages", resource: resource %>
+
+      <div>
+        <%= f.label :email, t("auth.email"), class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg", placeholder: "you@company.com" %>
+      </div>
+
+      <div>
+        <%= f.label :password, t("auth.password"), class: "form-label" %>
+        <%= f.password_field :password, autocomplete: "current-password", class: "form-control form-control-lg", placeholder: "••••••••" %>
+      </div>
+
+      <% if devise_mapping.rememberable? %>
+        <div class="form-check">
+          <%= f.check_box :remember_me, class: "form-check-input" %>
+          <%= f.label :remember_me, t("auth.remember_me"), class: "form-check-label" %>
+        </div>
+      <% end %>
+
+      <%= f.submit t("auth.sign_in"), class: "btn btn-primary btn-lg w-100 mt-2" %>
+
+      <div class="d-flex justify-content-between mt-3">
+        <% if devise_mapping.recoverable? %>
+          <%= link_to t("auth.forgot_password"), new_password_path(resource_name), class: "footnote" %>
+        <% end %>
+        <% if devise_mapping.registerable? %>
+          <%= link_to t("auth.sign_up"), new_registration_path(resource_name), class: "footnote" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= render "shared/auth_hero" %>
+</div>

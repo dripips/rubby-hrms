@@ -1,0 +1,50 @@
+<div class="cookie-banner"
+     data-controller="cookie-banner"
+     data-cookie-banner-storage-key-value="careers_cookie_consent"
+     hidden>
+  <div class="cookie-banner__inner">
+    <div class="cookie-banner__main">
+      <h3 class="cookie-banner__title"><%= careers.t("cookie_banner_title") %></h3>
+      <p class="cookie-banner__text"><%= careers.t("cookie_banner_text") %></p>
+      <%= link_to careers.t("footer_link_cookies"), careers_page_path("cookies"), class: "cookie-banner__link" %>
+    </div>
+
+    <div class="cookie-banner__categories" data-cookie-banner-target="categories" hidden>
+      <% careers.cookie_categories.each do |cat| %>
+        <%
+          key = cat["key"]
+          required = cat["required"]
+          default_on = cat["default"]
+          label = cat["label_text"]
+          desc  = cat["description_text"]
+        %>
+        <label class="cookie-banner__cat <%= 'is-required' if required %>">
+          <input type="checkbox"
+                 value="<%= key %>"
+                 <%= "checked" if required || default_on %>
+                 <%= "disabled" if required %>
+                 data-cookie-banner-target="checkbox">
+          <div class="cookie-banner__cat-text">
+            <strong><%= label %><% if required %> · <%= careers.t("cookie_required_label", default: "обязательно") %><% end %></strong>
+            <% if desc.present? %><span><%= desc %></span><% end %>
+          </div>
+        </label>
+      <% end %>
+    </div>
+
+    <div class="cookie-banner__actions">
+      <button type="button" class="btn btn-ghost btn-sm" data-action="click->cookie-banner#showCategories" data-cookie-banner-target="customizeBtn">
+        <%= careers.t("cookie_customize") %>
+      </button>
+      <button type="button" class="btn btn-soft btn-sm" data-action="click->cookie-banner#essentialOnly">
+        <%= careers.t("cookie_only_essential") %>
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" data-action="click->cookie-banner#acceptAll" data-cookie-banner-target="acceptBtn">
+        <%= careers.t("cookie_accept_all") %>
+      </button>
+      <button type="button" class="btn btn-primary btn-sm" data-action="click->cookie-banner#saveSelection" data-cookie-banner-target="saveBtn" hidden>
+        <%= careers.t("cookie_save") %>
+      </button>
+    </div>
+  </div>
+</div>

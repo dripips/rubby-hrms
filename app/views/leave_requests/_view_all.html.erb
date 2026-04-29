@@ -1,0 +1,266 @@
+<%
+  stats = @analytics.stats
+  current_year = Date.current.year
+%>
+
+<%# ── KPI tiles ───────────────────────────────────────────────────────── %>
+<section class="row g-3 mb-4 stagger">
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="stat-card card-apple--hover">
+      <div class="icon-tile icon-tile--orange"><%= render "shared/icons/calendar" %></div>
+      <div class="stat-card__label"><%= t("leaves.analytics.tile_pending") %></div>
+      <div class="stat-card__value"><%= stats[:pending] %></div>
+      <span class="stat-card__delta"><%= t("leaves.analytics.tile_pending_hint") %></span>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="stat-card card-apple--hover">
+      <div class="icon-tile icon-tile--blue"><%= render "shared/icons/people" %></div>
+      <div class="stat-card__label"><%= t("leaves.analytics.tile_on_leave") %></div>
+      <div class="stat-card__value"><%= stats[:on_leave] %></div>
+      <span class="stat-card__delta"><%= t("leaves.analytics.tile_on_leave_hint") %></span>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="stat-card card-apple--hover">
+      <div class="icon-tile icon-tile--green"><%= render "shared/icons/trending" %></div>
+      <div class="stat-card__label"><%= t("leaves.analytics.tile_avg_days") %></div>
+      <div class="stat-card__value"><%= stats[:avg_days] %></div>
+      <span class="stat-card__delta"><%= t("leaves.analytics.tile_avg_days_hint", year: current_year) %></span>
+    </div>
+  </div>
+  <div class="col-12 col-md-6 col-xl-3">
+    <div class="stat-card card-apple--hover">
+      <div class="icon-tile icon-tile--purple"><%= render "shared/icons/warn" %></div>
+      <div class="stat-card__label"><%= t("leaves.analytics.tile_not_taken") %></div>
+      <div class="stat-card__value"><%= stats[:not_taken] %></div>
+      <span class="stat-card__delta"><%= t("leaves.analytics.tile_not_taken_hint") %></span>
+    </div>
+  </div>
+</section>
+
+<div class="row g-3">
+  <%# ── Not taken annual leave ────────────────────────────────────────── %>
+  <div class="col-12 col-xl-6">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("leaves.analytics.not_taken_title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.analytics.not_taken_subtitle", year: current_year) %></p>
+        </div>
+      </div>
+
+      <% not_taken = @analytics.not_taken_employees %>
+      <% if not_taken.any? %>
+        <div class="d-flex flex-column gap-2 mt-3">
+          <% not_taken.each do |emp| %>
+            <%= link_to employee_path(emp), class: "leave-row" do %>
+              <span class="avatar-apple"><%= emp.initials %></span>
+              <div class="leave-row__body">
+                <div class="leave-row__title"><%= emp.full_name %></div>
+                <div class="footnote text-secondary-apple">
+                  <%= emp.position&.name %>
+                  <% if emp.department %> · <%= emp.department.name %><% end %>
+                  <% if emp.hired_at %> · <%= t("employees.fields.hired_at") %>: <%= l(emp.hired_at, format: :short) %><% end %>
+                </div>
+              </div>
+              <span class="pill pill--warning"><%= t("leaves.analytics.zero_days") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-secondary-apple m-0 mt-3"><%= t("leaves.analytics.not_taken_empty") %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Top users + Type breakdown ────────────────────────────────────── %>
+  <div class="col-12 col-xl-6 d-flex flex-column gap-3">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("leaves.analytics.top_users_title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.analytics.top_users_subtitle", year: current_year) %></p>
+        </div>
+      </div>
+
+      <% top = @analytics.top_users(limit: 5) %>
+      <% if top.any? %>
+        <% max_days = top.first[:days].to_f.nonzero? || 1 %>
+        <div class="d-flex flex-column gap-2 mt-3">
+          <% top.each_with_index do |row, idx| %>
+            <% pct = (row[:days] / max_days * 100).round %>
+            <div class="kpi-progress">
+              <div class="kpi-progress__head">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="kpi-leaderboard__rank">#<%= idx + 1 %></span>
+                  <span class="avatar-apple"><%= row[:employee]&.initials %></span>
+                  <strong><%= row[:full_name] %></strong>
+                </div>
+                <div class="text-mono"><%= row[:days] %> <%= t("leaves.my_quota.days_short") %></div>
+              </div>
+              <div class="kpi-progress__track">
+                <div class="kpi-progress__fill kpi-progress__fill--info" style="width: <%= pct %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-secondary-apple m-0 mt-3"><%= t("leaves.analytics.top_users_empty") %></p>
+      <% end %>
+    </div>
+
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("leaves.analytics.type_breakdown_title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.analytics.type_breakdown_subtitle", year: current_year) %></p>
+        </div>
+      </div>
+
+      <% breakdown = @analytics.type_breakdown %>
+      <% max = (breakdown.first || {})[:days].to_f.nonzero? || 1 %>
+      <div class="d-flex flex-column gap-2 mt-3">
+        <% breakdown.each do |row| %>
+          <% pct = (row[:days] / max * 100).round %>
+          <div class="kpi-progress">
+            <div class="kpi-progress__head">
+              <div class="d-flex align-items-center gap-2">
+                <span class="leave-quota__dot" style="background: <%= row[:type].color || '#0A84FF' %>;"></span>
+                <strong><%= row[:type].name %></strong>
+              </div>
+              <div class="text-mono">
+                <%= row[:days] %> <%= t("leaves.my_quota.days_short") %>
+                <span class="text-tertiary footnote">· <%= row[:requests] %></span>
+              </div>
+            </div>
+            <div class="kpi-progress__track">
+              <div class="kpi-progress__fill" style="width: <%= pct %>%; background: <%= row[:type].color || '#0A84FF' %>;"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Monthly distribution ──────────────────────────────────────────── %>
+  <div class="col-12">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("leaves.analytics.monthly_title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.analytics.monthly_subtitle", year: current_year) %></p>
+        </div>
+      </div>
+
+      <% monthly = @analytics.monthly %>
+      <% max_m = monthly.map { |r| r[:days] }.max.to_f.nonzero? || 1 %>
+      <div class="kpi-trend mt-3" style="grid-template-columns: repeat(12, 1fr);">
+        <% monthly.each do |row| %>
+          <div class="kpi-trend__bar-wrap">
+            <div class="kpi-trend__bar"
+                 style="height: <%= (row[:days] / max_m * 100).round %>%; <%= row[:days].zero? ? 'background: var(--ds-fill-3);' : '' %>"
+                 title="<%= I18n.l(Date.new(current_year, row[:month], 1), format: '%B') %>: <%= row[:days] %>"></div>
+            <div class="kpi-trend__label"><%= I18n.l(Date.new(current_year, row[:month], 1), format: '%b') %></div>
+            <div class="kpi-trend__value text-mono"><%= row[:days] %></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Burnout risk ──────────────────────────────────────────────────── %>
+  <% burnout = @analytics.burnout_at_risk %>
+  <% if burnout.any? %>
+    <div class="col-12">
+      <%= turbo_stream_from [@company, "leaves_burnout"] %>
+      <%= form_with(url: ai_bulk_burnout_brief_leaves_path, method: :post, id: "bulk-burnout-form") %>
+
+      <div class="card-apple">
+        <div class="card-apple__header">
+          <div>
+            <h3 class="card-apple__title m-0"><%= t("leaves.analytics.burnout_title") %></h3>
+            <p class="card-apple__subtitle m-0"><%= t("leaves.analytics.burnout_subtitle") %></p>
+          </div>
+          <button type="submit" form="bulk-burnout-form" class="btn btn-primary btn-sm">
+            ✨ <%= t("ai.leaves.run_bulk") %>
+          </button>
+        </div>
+
+        <div class="d-flex flex-column gap-2 mt-3">
+          <% burnout.each do |row| %>
+            <%= render "leave_requests/burnout_row", row: row %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# ── Currently on leave + Upcoming ─────────────────────────────────── %>
+  <div class="col-12 col-xl-6">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("leaves.analytics.on_leave_now_title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.analytics.on_leave_now_subtitle") %></p>
+        </div>
+      </div>
+
+      <% on_leave = @analytics.on_leave_now %>
+      <% if on_leave.any? %>
+        <div class="d-flex flex-column gap-2 mt-3">
+          <% on_leave.each do |req| %>
+            <%= link_to leave_request_path(req), class: "leave-row" do %>
+              <span class="avatar-apple"><%= req.employee.initials %></span>
+              <div class="leave-row__body">
+                <div class="leave-row__title"><%= req.employee.full_name %></div>
+                <div class="footnote text-secondary-apple">
+                  <span class="leave-row__type-dot" style="background: <%= req.leave_type.color || '#0A84FF' %>;"></span>
+                  <%= req.leave_type.name %>
+                  · <%= l(req.started_on, format: :short) %> – <%= l(req.ended_on, format: :short) %>
+                </div>
+              </div>
+              <span class="pill pill--info"><%= t("leaves.states.#{req.state}") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-secondary-apple m-0 mt-3"><%= t("leaves.team.on_leave_empty") %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-6">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("leaves.analytics.upcoming_title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.analytics.upcoming_subtitle") %></p>
+        </div>
+      </div>
+
+      <% upcoming = @analytics.upcoming %>
+      <% if upcoming.any? %>
+        <div class="d-flex flex-column gap-2 mt-3">
+          <% upcoming.each do |req| %>
+            <%= link_to leave_request_path(req), class: "leave-row" do %>
+              <span class="avatar-apple"><%= req.employee.initials %></span>
+              <div class="leave-row__body">
+                <div class="leave-row__title"><%= req.employee.full_name %></div>
+                <div class="footnote text-secondary-apple">
+                  <span class="leave-row__type-dot" style="background: <%= req.leave_type.color || '#0A84FF' %>;"></span>
+                  <%= req.leave_type.name %>
+                  · <%= l(req.started_on, format: :short) %> – <%= l(req.ended_on, format: :short) %>
+                  · <%= t("leaves.days_count", count: req.days.to_i) %>
+                </div>
+              </div>
+              <span class="pill pill--success"><%= t("leaves.states.#{req.state}") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-secondary-apple m-0 mt-3"><%= t("leaves.analytics.upcoming_empty") %></p>
+      <% end %>
+    </div>
+  </div>
+</div>

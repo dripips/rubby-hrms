@@ -1,0 +1,28 @@
+<div class="auth-shell">
+  <section class="auth-shell__form-side">
+    <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "auth-shell__form" }) do |f| %>
+      <div class="sidebar-apple__brand" style="margin-bottom: var(--ds-space-4); padding: 0;">
+        <span class="sidebar-apple__brand-mark">H</span>
+        <span><%= t("app.name") %></span>
+      </div>
+
+      <h1 class="auth-shell__title"><%= t("password_reset.title") %></h1>
+      <p class="auth-shell__subtitle"><%= t("password_reset.subtitle") %></p>
+
+      <%= render "users/shared/error_messages", resource: resource %>
+
+      <div>
+        <%= f.label :email, t("auth.email"), class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg", placeholder: "you@company.com" %>
+      </div>
+
+      <%= f.submit t("password_reset.submit"), class: "btn btn-primary btn-lg w-100 mt-2" %>
+
+      <div class="d-flex justify-content-center mt-3">
+        <%= link_to t("password_reset.back_to_sign_in"), new_session_path(resource_name), class: "footnote" %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= render "shared/auth_hero" %>
+</div>

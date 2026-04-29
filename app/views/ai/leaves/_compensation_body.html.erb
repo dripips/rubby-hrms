@@ -1,0 +1,43 @@
+<%
+  verdict = payload["verdict"].to_s
+  tone = case verdict
+         when "raise"       then "success"
+         when "hold"        then "info"
+         when "review_band" then "warning"
+         when "too_high"    then "danger"
+         else                    "neutral"
+         end
+%>
+<div class="ai-leaves-result__head d-flex align-items-center gap-2 mb-2">
+  <span class="ai-spark">💰</span>
+  <strong><%= t("ai.leaves.compensation_review_title", default: "Обзор компенсации") %></strong>
+  <span class="ai-leaves-result__status footnote text-secondary-apple ms-auto"><%= run.cost_display %> · <%= run.total_tokens %> tok</span>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-2">
+  <span class="pill pill--<%= tone %>"><%= t("ai.leaves.verdicts.#{verdict}", default: verdict.humanize) %></span>
+  <% if payload["confidence"] %>
+    <span class="pill pill--neutral"><%= t("ai.leaves.confidence.#{payload['confidence']}", default: payload["confidence"]) %></span>
+  <% end %>
+</div>
+
+<% if payload["headline"].present? %>
+  <p class="title-3 m-0 mb-2"><%= payload["headline"] %></p>
+<% end %>
+
+<% if Array(payload["rationale"]).any? %>
+  <ul class="list-unstyled m-0 mb-2">
+    <% payload["rationale"].each do |r| %><li>• <%= r %></li><% end %>
+  </ul>
+<% end %>
+
+<% if payload["suggested_change_pct"].to_f.abs > 0 || payload["suggested_amount_rub"].to_i > 0 %>
+  <div class="callout">
+    <strong><%= t("ai.leaves.suggested_change", default: "Рекомендация") %>:</strong>
+    <% if payload["suggested_change_pct"].to_f.abs > 0 %><%= payload["suggested_change_pct"].to_f.round(1) %>%<% end %>
+    <% if payload["suggested_amount_rub"].to_i > 0 %> · <%= number_with_delimiter(payload["suggested_amount_rub"].to_i, delimiter: " ") %> ₽<% end %>
+    <% if payload["next_review_in_months"] %>
+      · <%= t("ai.leaves.next_review_in", default: "следующий пересмотр через") %> <%= payload["next_review_in_months"] %> <%= t("ai.leaves.months_short", default: "мес") %>
+    <% end %>
+  </div>
+<% end %>

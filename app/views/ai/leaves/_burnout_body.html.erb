@@ -1,0 +1,73 @@
+<%
+  severity   = (payload["severity"].presence   || "low").to_s
+  confidence = (payload["confidence"].presence || "medium").to_s
+  agreement  = payload["agreement_with_system_tag"].to_s
+%>
+<div class="ai-leaves-result">
+  <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+    <div class="d-flex align-items-center gap-2">
+      <span class="ai-spark">✨</span>
+      <strong><%= t("ai.leaves.burnout_brief_title") %></strong>
+    </div>
+    <div class="d-flex gap-2">
+      <% sev_tone = severity == "high" ? "danger" : (severity == "medium" ? "warning" : "info") %>
+      <span class="pill pill--<%= sev_tone %>"><%= t("ai.leaves.severity.#{severity}", default: severity.humanize) %></span>
+      <span class="pill pill--neutral"><%= t("ai.leaves.confidence.#{confidence}", default: confidence.humanize) %></span>
+    </div>
+  </div>
+
+  <% if payload["summary"].present? %>
+    <p class="m-0 mb-2"><%= payload["summary"] %></p>
+  <% end %>
+
+  <% if Array(payload["data_observed"]).any? %>
+    <div class="ai-leaves-result__section">
+      <div class="ai-leaves-result__section-title">📊 <%= t("ai.leaves.data_observed") %></div>
+      <ul class="ai-leaves-result__list">
+        <% Array(payload["data_observed"]).each do |item| %>
+          <li><%= item %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if Array(payload["reasoning"]).any? %>
+    <div class="ai-leaves-result__section">
+      <div class="ai-leaves-result__section-title">🧠 <%= t("ai.leaves.reasoning") %></div>
+      <ol class="ai-leaves-result__list ai-leaves-result__list--ordered">
+        <% Array(payload["reasoning"]).each do |step| %>
+          <li><%= step %></li>
+        <% end %>
+      </ol>
+    </div>
+  <% end %>
+
+  <% if payload["recommendation"].present? %>
+    <div class="ai-leaves-result__rec">
+      <strong><%= t("ai.leaves.recommendation") %>:</strong>
+      <%= payload["recommendation"] %>
+    </div>
+  <% end %>
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+    <% if payload["best_window_hint"].present? %>
+      <div class="footnote text-secondary-apple">🕒 <%= payload["best_window_hint"] %></div>
+    <% end %>
+    <% if agreement.present? && agreement != "no_tag" %>
+      <span class="pill pill--<%= agreement == 'agree' ? 'success' : (agreement == 'disagree' ? 'warning' : 'info') %>">
+        <%= t("ai.leaves.agreement.#{agreement}", default: agreement.humanize) %>
+      </span>
+    <% end %>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="footnote text-tertiary"><%= run.cost_display %> · <%= run.total_tokens %> tok · <%= run.model %></span>
+    <% if local_assigns.fetch(:show_refresh, true) %>
+      <%= button_to t("ai.leaves.refresh"),
+                    ai_burnout_brief_employee_path(employee),
+                    method: :post,
+                    class: "btn btn-soft btn-sm",
+                    form: { class: "d-inline" } %>
+    <% end %>
+  </div>
+</div>

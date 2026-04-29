@@ -1,0 +1,43 @@
+<div class="modal fade" id="newDepartmentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <%= form_with(model: department, url: departments_path, local: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= t("departments.new", default: "Новый отдел") %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+          <div>
+            <%= f.label :name, t("departments.fields.name", default: "Название"), class: "form-label" %>
+            <%= f.text_field :name, class: "form-control", required: true, placeholder: "Маркетинг" %>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <%= f.label :code, t("departments.fields.code", default: "Код"), class: "form-label" %>
+              <%= f.text_field :code, class: "form-control", placeholder: "MARKETING" %>
+            </div>
+            <div class="col-6">
+              <%= f.label :sort_order, t("departments.fields.sort_order", default: "Порядок"), class: "form-label" %>
+              <%= f.number_field :sort_order, class: "form-control", value: 0 %>
+            </div>
+          </div>
+
+          <div>
+            <%= f.label :parent_id, t("departments.fields.parent", default: "Родительский отдел"), class: "form-label" %>
+            <%= f.collection_select :parent_id, departments, :id, :name, { include_blank: t("departments.no_parent", default: "— Корневой отдел —") }, class: "form-select" %>
+          </div>
+
+          <div>
+            <%= f.label :head_employee_id, t("departments.fields.head", default: "Руководитель"), class: "form-label" %>
+            <%= f.collection_select :head_employee_id, employees, :id, :full_name, { include_blank: "—" }, class: "form-select" %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

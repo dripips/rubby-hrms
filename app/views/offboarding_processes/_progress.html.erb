@@ -1,0 +1,27 @@
+<%
+  pct        = process.progress_percent
+  total      = process.tasks.count
+  done_count = process.tasks.completed.count
+  overdue    = process.overdue_tasks.count
+  tone       = process.state == "completed" ? "success" : (overdue.positive? ? "warning" : "")
+%>
+<div id="offboarding-progress-<%= process.id %>" class="process-progress process-progress--<%= tone %>">
+  <div class="process-progress__head">
+    <span class="process-progress__pct"><%= pct %>%</span>
+    <span class="process-progress__count"><%= done_count %> / <%= total %> <%= t("offboarding.progress.tasks_done") %></span>
+    <% if overdue.positive? %>
+      <span class="pill pill--danger process-progress__overdue">
+        ⚠ <%= I18n.t("offboarding.progress.overdue", count: overdue) %>
+      </span>
+    <% end %>
+  </div>
+  <div class="process-progress__bar">
+    <div class="process-progress__fill" style="width: <%= pct %>%"></div>
+  </div>
+  <div class="process-progress__milestones" style="--milestones: 4;">
+    <span class="process-progress__milestone"><%= t("offboarding.stages.far") %></span>
+    <span class="process-progress__milestone"><%= t("offboarding.stages.next_week") %></span>
+    <span class="process-progress__milestone"><%= t("offboarding.stages.final_days") %></span>
+    <span class="process-progress__milestone process-progress__milestone--last"><%= t("offboarding.stages.after") %></span>
+  </div>
+</div>

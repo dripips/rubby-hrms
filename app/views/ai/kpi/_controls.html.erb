@@ -1,0 +1,23 @@
+<%
+  st        = local_assigns[:scope_type] || (current_user.role_manager? ? "manager_reports" : "company")
+  sid       = local_assigns[:scope_id]
+  scope_key = AiLock.for_kpi_team(scope_type: st, scope_id: sid)
+  busy      = AiLock.running?(scope_key)
+%>
+<div id="ai-controls-kpi-team" class="d-inline-block">
+  <% if busy %>
+    <button type="button" class="btn btn-primary btn-sm" disabled>
+      <span class="spinner-dot me-2"></span>✨ <%= t("ai.busy", default: "AI работает...") %>
+    </button>
+  <% else %>
+    <%= button_to "✨ #{t('ai.kpi.run_team_brief')}",
+                  ai_team_brief_kpi_path,
+                  method: :post,
+                  class: "btn btn-primary btn-sm",
+                  form: {
+                    class:  "d-inline",
+                    params: { scope_type: st, scope_id: sid },
+                    data:   { controller: "ai-submit", action: "submit->ai-submit#busy" }
+                  } %>
+  <% end %>
+</div>

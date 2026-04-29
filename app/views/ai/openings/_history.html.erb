@@ -1,0 +1,35 @@
+<%
+  history    = AiRun.for_opening(opening).where(kind: "compare_candidates").recent.limit(20)
+  latest_run = history.first
+  past       = history.reject { |r| r.id == latest_run&.id }
+%>
+<% if past.any? %>
+  <details class="ai-history mt-3" open>
+    <summary><%= t("ai.history") %> · <%= past.size %></summary>
+    <div class="ai-history__list">
+      <% past.each do |r| %>
+        <details class="ai-history__item <%= 'is-fail' unless r.success %>">
+          <summary class="ai-history__head">
+            <span class="pill pill--<%= r.success ? 'info' : 'danger' %>">
+              <%= t("ai.actions.compare_candidates") %>
+            </span>
+            <span class="footnote"><%= l(r.created_at, format: :long) %></span>
+            <span class="footnote text-tertiary"><%= r.model %> · <%= r.total_tokens %> tok · <%= r.cost_display %></span>
+            <% if r.success && r.payload["ranking"].is_a?(Array) %>
+              <span class="ai-history__preview">
+                <%= t("ai.compare.compared_count", count: r.payload["ranking"].size) %>
+                <% top = r.payload["ranking"].sort_by { |x| x["rank"].to_i }.first %>
+                <% if top %> · 🥇 <strong><%= top["name"] %></strong> (<%= top["score"] %>/100)<% end %>
+              </span>
+            <% else %>
+              <span class="ai-history__preview text-danger"><%= truncate(r.error.to_s, length: 100) %></span>
+            <% end %>
+          </summary>
+          <div class="ai-history__body">
+            <%= render "ai/openings/result", opening: opening, run: r %>
+          </div>
+        </details>
+      <% end %>
+    </div>
+  </details>
+<% end %>

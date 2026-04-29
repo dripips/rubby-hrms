@@ -1,0 +1,128 @@
+<% content_for(:page_title) { @process.employee.full_name } %>
+<%
+  emp = @process.employee
+  state = @process.state
+
+  # Группировка задач по этапу. Используем due_offset_days если есть,
+  # иначе — позицию в шаблоне (приблизительно).
+  base_date = @process.started_on || Date.current
+  stage_for = ->(task) {
+    return "day_zero" unless task.due_on
+    offset = (task.due_on - base_date).to_i
+    case offset
+    when ..0   then "day_zero"
+    when 1..7  then "first_week"
+    when 8..30 then "first_month"
+    when 31..90 then "probation"
+    else "later"
+    end
+  }
+  grouped = @process.tasks.order(:position, :due_on).group_by { |t| stage_for.call(t) }
+
+  stage_order = %w[day_zero first_week first_month probation later]
+%>
+
+<header class="process-hero process-hero--onboarding">
+  <% if emp.avatar_url.present? %>
+    <span class="avatar-apple avatar-apple--xl avatar-apple--photo process-hero__avatar" style="background-image: url(<%= emp.avatar_url %>);"></span>
+  <% else %>
+    <span class="avatar-apple avatar-apple--xl process-hero__avatar"><%= emp.initials %></span>
+  <% end %>
+
+  <div class="process-hero__body">
+    <div class="process-hero__title-row">
+      <span class="footnote text-tertiary">🌱 <%= t("onboarding.title") %></span>
+      <span class="status-pill status-pill--<%= state %>"><%= t("onboarding.states.#{state}") %></span>
+    </div>
+    <%= link_to emp.full_name, employee_path(emp), class: "process-hero__title link-plain" %>
+    <div class="process-hero__subtitle">
+      <% if emp.position %><span><%= emp.position.name %></span><% end %>
+      <% if emp.department %>· <span><%= emp.department.name %></span><% end %>
+      <% if @process.mentor %>· 🧑‍🏫 <%= link_to @process.mentor.short_name, employee_path(@process.mentor), class: "link-plain" %><% end %>
+    </div>
+  </div>
+
+  <div class="process-hero__actions">
+    <% if @process.may_activate? %>
+      <%= button_to t("onboarding.actions.activate"), activate_onboarding_process_path(@process),
+                    method: :post, class: "btn btn-primary", form: { class: "d-inline" } %>
+    <% end %>
+    <% if @process.may_complete? %>
+      <%= button_to t("onboarding.actions.complete_process"), complete_onboarding_process_path(@process),
+                    method: :post, class: "btn btn-soft", form: { class: "d-inline" },
+                    data: { turbo_confirm: t("onboarding.confirm_complete") } %>
+    <% end %>
+    <% if @process.may_cancel? %>
+      <%= button_to t("onboarding.actions.cancel_process"), cancel_onboarding_process_path(@process),
+                    method: :post, class: "btn btn-ghost", form: { class: "d-inline" },
+                    data: { turbo_confirm: t("onboarding.confirm_cancel") } %>
+    <% end %>
+  </div>
+</header>
+
+<section class="card-apple mb-3">
+  <%= render "progress", process: @process %>
+
+  <div class="process-facts mt-3">
+    <div class="process-facts__cell">
+      <span class="process-facts__label"><%= t("onboarding.fields.template") %></span>
+      <span class="process-facts__value"><%= @process.template&.name || "—" %></span>
+    </div>
+    <div class="process-facts__cell">
+      <span class="process-facts__label"><%= t("onboarding.fields.started") %></span>
+      <span class="process-facts__value"><%= @process.started_on ? l(@process.started_on, format: :long) : "—" %></span>
+    </div>
+    <div class="process-facts__cell">
+      <span class="process-facts__label"><%= t("onboarding.fields.target") %></span>
+      <span class="process-facts__value"><%= @process.target_complete_on ? l(@process.target_complete_on, format: :long) : "—" %></span>
+    </div>
+    <div class="process-facts__cell">
+      <span class="process-facts__label"><%= t("onboarding.fields.mentor") %></span>
+      <span class="process-facts__value"><%= @process.mentor&.short_name || "—" %></span>
+    </div>
+  </div>
+</section>
+
+<%# AI section %>
+<%= turbo_stream_from @process, "ai_panel" %>
+<%= render "ai/onboarding/controls", process: @process %>
+
+<%
+  ai_scope    = AiLock.for_onboarding(@process)
+  ai_busy     = AiLock.running?(ai_scope)
+  last_ai_run = @process.ai_runs.order(created_at: :desc).first
+%>
+<% if ai_busy %>
+  <%= render "ai/onboarding/skeleton", process: @process, kind: AiLock.kind_for(ai_scope) %>
+<% elsif last_ai_run %>
+  <%= render "ai/onboarding/result", process: @process, run: last_ai_run %>
+<% else %>
+  <div id="ai-onboarding-panel-<%= @process.id %>"></div>
+<% end %>
+
+<section class="card-apple mt-3">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="title-3 m-0"><%= t("onboarding.tasks_title") %></h2>
+    <span class="footnote text-tertiary"><%= @process.tasks.count %></span>
+  </div>
+
+  <% if @process.tasks.empty? %>
+    <p class="footnote text-tertiary"><%= t("onboarding.tasks_empty") %></p>
+  <% else %>
+    <% stage_order.each do |stage| %>
+      <% tasks = grouped[stage] %>
+      <% next unless tasks&.any? %>
+      <div class="task-stage">
+        <div class="task-stage__head">
+          <span class="task-stage__title"><%= t("onboarding.stages.#{stage}") %></span>
+          <span class="task-stage__count"><%= tasks.size %></span>
+        </div>
+        <ul class="task-list list-unstyled">
+          <% tasks.each do |task| %>
+            <%= render "task", task: task, process: @process %>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  <% end %>
+</section>

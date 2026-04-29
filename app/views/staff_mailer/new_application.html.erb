@@ -1,0 +1,63 @@
+<%
+  url_helpers = Rails.application.routes.url_helpers
+  applicant_url = (url_helpers.job_applicant_url(@applicant, host: ENV["HRMS_HOST"] || "localhost:3000") rescue url_helpers.job_applicant_path(@applicant))
+%>
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 16px; color: #1d1d1f;">
+  <div style="border: 1px solid #d2d2d7; border-radius: 16px; overflow: hidden; background: #ffffff;">
+    <div style="padding: 24px 28px; background: linear-gradient(135deg, #0066ff, #5856d6); color: #fff;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85;">
+        HRMS · Новый отклик
+      </div>
+      <h1 style="font-size: 22px; font-weight: 700; margin: 6px 0 0; letter-spacing: -0.011em;">
+        <%= @applicant.full_name %>
+      </h1>
+      <p style="font-size: 14px; margin: 6px 0 0; opacity: 0.92;">
+        откликнулся на <strong><%= @opening.title %></strong>
+      </p>
+    </div>
+
+    <div style="padding: 24px 28px;">
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+        <tr>
+          <td style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 0; width: 130px;">Email</td>
+          <td style="font-size: 14px; padding: 6px 0;"><a href="mailto:<%= @applicant.email %>" style="color: #0066ff;"><%= @applicant.email %></a></td>
+        </tr>
+        <% if @applicant.phone.present? %>
+          <tr>
+            <td style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 0;">Телефон</td>
+            <td style="font-size: 14px; padding: 6px 0;"><%= @applicant.phone %></td>
+          </tr>
+        <% end %>
+        <% if @applicant.current_position.present? || @applicant.current_company.present? %>
+          <tr>
+            <td style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 0;">Сейчас</td>
+            <td style="font-size: 14px; padding: 6px 0;"><%= @applicant.current_position %><% if @applicant.current_company.present? %> · <%= @applicant.current_company %><% end %></td>
+          </tr>
+        <% end %>
+        <% if @applicant.years_of_experience %>
+          <tr>
+            <td style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 0;">Опыт</td>
+            <td style="font-size: 14px; padding: 6px 0;"><%= @applicant.years_of_experience %> лет</td>
+          </tr>
+        <% end %>
+        <% if @applicant.expected_salary %>
+          <tr>
+            <td style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 0;">Ожидания</td>
+            <td style="font-size: 14px; padding: 6px 0;"><%= @applicant.expected_salary.to_i %> <%= @applicant.currency %></td>
+          </tr>
+        <% end %>
+      </table>
+
+      <% if @applicant.summary.present? %>
+        <div style="padding: 12px 14px; background: #f2f2f7; border-radius: 10px; margin-bottom: 16px;">
+          <div style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;">Мотивация</div>
+          <p style="font-size: 13px; line-height: 1.5; margin: 0; white-space: pre-wrap;"><%= @applicant.summary %></p>
+        </div>
+      <% end %>
+
+      <a href="<%= applicant_url %>" style="display: inline-block; padding: 12px 22px; background: #0066ff; color: #fff; font-weight: 600; border-radius: 12px; text-decoration: none; font-size: 14px;">
+        Открыть профиль кандидата
+      </a>
+    </div>
+  </div>
+</div>

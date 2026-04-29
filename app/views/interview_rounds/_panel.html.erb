@@ -1,0 +1,69 @@
+<div id="interviews-panel">
+  <%= render "interview_rounds/panel_body", applicant: applicant, interviews: interviews %>
+</div>
+
+<%# Модалка: запланировать новое интервью (вне interviews-panel чтобы Turbo Stream не пересоздавал её при обновлении). %>
+<% new_round = InterviewRound.new(job_applicant: applicant, scheduled_at: 1.day.from_now.beginning_of_hour, duration_minutes: 60) %>
+<%
+  needs_stage_change = %w[applied screening].include?(applicant.stage)
+  schedule_confirm   = if needs_stage_change
+    t("interview_rounds.confirm.stage_change",
+      from: t("job_applicants.stages.#{applicant.stage}"),
+      to:   t("job_applicants.stages.interview"),
+      default: "Кандидат сейчас на стадии «%{from}». После сохранения он будет переведён на «%{to}». Продолжить?")
+  end
+%>
+<div class="modal fade" id="newInterviewModal" tabindex="-1" data-controller="modal-autoclose">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <%= form_with(model: new_round, url: job_applicant_interview_rounds_path(applicant)) do |r| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= t("interview_rounds.new") %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+          <div>
+            <label class="form-label"><%= t("interview_rounds.fields.kind", default: "Тип") %></label>
+            <%= r.select :kind, InterviewRound::KINDS.map { |k| [t("interview_rounds.kinds.#{k}"), k] }, {}, class: "form-select" %>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-7">
+              <label class="form-label"><%= t("interview_rounds.fields.scheduled_at", default: "Когда") %></label>
+              <%= r.datetime_local_field :scheduled_at, class: "form-control", required: true %>
+            </div>
+            <div class="col-5">
+              <label class="form-label"><%= t("interview_rounds.fields.duration_minutes", default: "Длительность, мин") %></label>
+              <%= r.number_field :duration_minutes, class: "form-control", min: 15, step: 15 %>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("interview_rounds.fields.interviewer", default: "Интервьюер") %></label>
+            <%= r.select :interviewer_id,
+                         User.kept.where(role: %i[hr superadmin manager]).order(:email).map { |u| [u.display_name, u.id] },
+                         { include_blank: t("common.unassigned", default: "Не назначен") },
+                         class: "form-select" %>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label"><%= t("interview_rounds.fields.location", default: "Место") %></label>
+              <%= r.text_field :location, class: "form-control", placeholder: t("interview_rounds.location_placeholder", default: "Москва, Tower B, room 3.14") %>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label"><%= t("interview_rounds.fields.meeting_url", default: "Ссылка на встречу") %></label>
+              <%= r.url_field :meeting_url, class: "form-control", placeholder: "https://meet.google.com/..." %>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= r.submit t("interview_rounds.schedule", default: "Запланировать"),
+                       class: "btn btn-primary",
+                       data: schedule_confirm ? { turbo_confirm: schedule_confirm } : {} %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

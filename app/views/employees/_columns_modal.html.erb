@@ -1,0 +1,19 @@
+<div class="modal fade" id="columnsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title title-3 m-0"><%= t("employees.columns_button") %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="footnote text-secondary-apple mb-3">
+          <%= t("employees.columns_help", default: "Отметьте колонки, которые нужно показывать. Настройки сохраняются в БД и переезжают между устройствами.") %>
+        </p>
+        <ul id="columnsModalList" class="list-group list-group-flush"></ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"><%= t("common.save") %></button>
+      </div>
+    </div>
+  </div>
+</div>

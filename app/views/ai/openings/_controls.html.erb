@@ -1,0 +1,27 @@
+<%
+  ai_setting = AppSetting.fetch(company: Company.kept.first, category: "ai")
+  ai_enabled = RecruitmentAi.new(setting: ai_setting).enabled?
+  scope      = AiLock.for_opening(opening)
+  busy       = AiLock.running?(scope)
+%>
+<div id="ai-controls-opening-<%= opening.id %>" class="card-apple mb-3<%= " is-busy" if busy %>">
+  <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+    <div>
+      <h3 class="card-apple__title m-0"><%= t("ai.compare.title") %></h3>
+      <p class="footnote text-secondary-apple m-0"><%= t("ai.compare.subtitle") %></p>
+    </div>
+
+    <% if !ai_enabled %>
+      <span class="footnote text-tertiary"><%= t("ai.disabled") %></span>
+    <% elsif busy %>
+      <button type="button" class="btn btn-primary" disabled>
+        <span class="spinner-dot me-2"></span><%= t("ai.busy", default: "AI работает...") %>
+      </button>
+    <% else %>
+      <button type="button" class="btn btn-primary"
+              data-bs-toggle="modal" data-bs-target="#compareModal-<%= opening.id %>">
+        <%= t("ai.compare.cta") %>
+      </button>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,125 @@
+<% content_for :page_title, t("navigation.interview_rounds", default: "Все интервью") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.recruitment") %></div>
+    <h1 class="page-header__title"><%= t("navigation.interview_rounds", default: "Все интервью") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("interview_rounds.summary",
+            default: "Всего: %{total} · Предстоящие: %{upcoming} · Завершённые: %{completed}",
+            total: @counts[:total], upcoming: @counts[:upcoming], completed: @counts[:completed]) %>
+    </p>
+  </div>
+</header>
+
+<%= render "shared/recruitment_tabs" %>
+
+<%= form_with(url: interview_rounds_path, method: :get, class: "card-apple mb-3") do %>
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label"><%= t("interview_rounds.fields.kind") %></label>
+      <select name="kind" class="form-select" onchange="this.form.requestSubmit()">
+        <option value=""><%= t("common.all", default: "Все") %></option>
+        <% InterviewRound::KINDS.each do |k| %>
+          <option value="<%= k %>" <%= 'selected' if params[:kind] == k %>><%= t("interview_rounds.kinds.#{k}") %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label"><%= t("common.status", default: "Статус") %></label>
+      <select name="state" class="form-select" onchange="this.form.requestSubmit()">
+        <option value=""><%= t("common.all") %></option>
+        <% InterviewRound::STATES.each do |s| %>
+          <option value="<%= s %>" <%= 'selected' if params[:state] == s %>><%= t("interview_rounds.states.#{s}") %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label"><%= t("interview_rounds.fields.interviewer") %></label>
+      <select name="interviewer_id" class="form-select" onchange="this.form.requestSubmit()">
+        <option value=""><%= t("common.all") %></option>
+        <% @recruiters.each do |u| %>
+          <option value="<%= u.id %>" <%= 'selected' if params[:interviewer_id].to_s == u.id.to_s %>><%= u.display_name %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label"><%= t("interview_rounds.period", default: "Период") %></label>
+      <select name="period" class="form-select" onchange="this.form.requestSubmit()">
+        <% [["", "all"], %w[today today], %w[week week], %w[upcoming upcoming], %w[past past]].each do |val, label| %>
+          <option value="<%= val %>" <%= 'selected' if params[:period].to_s == val %>>
+            <%= t("interview_rounds.periods.#{label}", default: label.humanize) %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+  </div>
+<% end %>
+
+<% if @rounds.any? %>
+  <div class="card-apple p-0" style="overflow: hidden;">
+    <table class="table-apple m-0">
+      <thead>
+        <tr>
+          <th><%= t("interview_rounds.fields.scheduled_at") %></th>
+          <th><%= t("interview_rounds.fields.kind") %></th>
+          <th><%= t("job_applicants.fields.candidate", default: "Кандидат") %></th>
+          <th><%= t("job_openings.fields.title") %></th>
+          <th><%= t("interview_rounds.fields.interviewer") %></th>
+          <th><%= t("common.status") %></th>
+          <th class="text-end"><%= t("interview_rounds.fields.recommendation") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @rounds.each do |r| %>
+          <tr data-href="<%= job_applicant_path(r.job_applicant_id, anchor: "interviews") %>" class="table-apple__row--clickable">
+            <td>
+              <div><%= l(r.scheduled_at, format: :long) %></div>
+              <div class="footnote text-tertiary"><%= r.duration_minutes %> <%= t("interview_rounds.minutes_short") %></div>
+            </td>
+            <td><span class="pill pill--info"><%= r.kind_label %></span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <% if r.job_applicant.avatar_url %>
+                  <span class="avatar-apple avatar-apple--photo" style="background-image: url(<%= r.job_applicant.avatar_url %>);"></span>
+                <% else %>
+                  <span class="avatar-apple"><%= r.job_applicant.initials %></span>
+                <% end %>
+                <span><%= r.job_applicant.full_name %></span>
+              </div>
+            </td>
+            <td><%= r.job_applicant.job_opening&.title || "—" %></td>
+            <td><%= r.interviewer&.display_name || "—" %></td>
+            <td><span class="pill pill--<%= case r.state when 'completed' then 'success' when 'cancelled', 'no_show' then 'danger' when 'in_progress' then 'info' else 'neutral' end %>"><%= r.state_label %></span></td>
+            <td class="text-end">
+              <% if r.recommendation %>
+                <span class="pill pill--<%= r.recommendation_tone %>">
+                  <%= r.recommendation_label %><% if r.overall_score %> · <strong><%= r.overall_score %></strong><% end %>
+                </span>
+              <% else %>
+                —
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="empty-state card-apple">
+    <div class="empty-state__title"><%= t("interview_rounds.empty") %></div>
+    <p class="footnote"><%= t("interview_rounds.empty_hint") %></p>
+  </div>
+<% end %>
+
+<script>
+  (function () {
+    document.querySelectorAll(".table-apple__row--clickable").forEach((row) => {
+      row.style.cursor = "pointer"
+      row.addEventListener("click", () => { window.location.href = row.dataset.href })
+    })
+  })()
+</script>

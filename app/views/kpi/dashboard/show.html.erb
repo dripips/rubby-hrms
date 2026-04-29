@@ -1,0 +1,270 @@
+<% content_for :page_title, t("navigation.kpi") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.kpi") %></div>
+    <h1 class="page-header__title"><%= t("kpi.dashboard.title") %></h1>
+    <p class="page-header__subtitle"><%= t("kpi.dashboard.subtitle") %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= form_with(url: kpi_dashboard_path, method: :get, local: true, class: "d-flex align-items-center gap-2") do %>
+      <select name="period" class="form-select" onchange="this.form.submit()" style="min-width: 160px;">
+        <% %w[current_week current_month current_quarter all].each do |k| %>
+          <option value="<%= k %>" <%= 'selected' if @period == k %>><%= t("kpi.assignments.periods.#{k}") %></option>
+        <% end %>
+      </select>
+    <% end %>
+  </div>
+</header>
+
+<%= render "kpi/subnav" %>
+
+<% if current_user.role_superadmin? || current_user.role_hr? || current_user.role_manager? %>
+  <% company = Company.kept.first %>
+  <%= turbo_stream_from ["company-#{company.id}", "kpi_team"] %>
+  <%
+    last_team_run = AiRun.where(kind: "kpi_team_brief").recent.first
+    history       = AiRun.where(kind: "kpi_team_brief").recent.limit(5)
+    kpi_scope_type = current_user.role_manager? ? "manager_reports" : "company"
+    kpi_scope_key  = AiLock.for_kpi_team(scope_type: kpi_scope_type)
+    kpi_busy       = AiLock.running?(kpi_scope_key)
+  %>
+  <div class="card-apple mb-3" id="ai-kpi-team-card">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <div>
+        <h3 class="card-apple__title m-0"><span class="ai-spark">✨</span> <%= t("ai.kpi.section_title") %></h3>
+        <p class="card-apple__subtitle m-0"><%= t("ai.kpi.section_subtitle") %></p>
+      </div>
+      <%= render "ai/kpi/controls", scope_type: kpi_scope_type %>
+    </div>
+
+    <% if kpi_busy %>
+      <%= render "ai/kpi/skeleton", scope_type: kpi_scope_type %>
+    <% elsif last_team_run %>
+      <%= render "ai/kpi/team_result", run: last_team_run, history: history %>
+    <% else %>
+      <div id="ai-kpi-team-panel" class="footnote text-secondary-apple">
+        <%= t("ai.kpi.empty_hint") %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%# ── Top KPI tiles ──────────────────────────────────────────────────── %>
+<section class="row g-3 mb-4 stagger">
+  <div class="col-12 col-md-4">
+    <div class="stat-card card-apple--hover">
+      <div class="icon-tile icon-tile--blue"><%= render "shared/icons/user" %></div>
+      <div class="stat-card__label"><%= t("kpi.dashboard.tiles.my_avg") %></div>
+      <div class="stat-card__value"><%= @my_avg ? "#{@my_avg}%" : "—" %></div>
+      <span class="stat-card__delta">
+        <%= t("kpi.dashboard.tiles.my_assignments_count", count: @my_assignments.size) %>
+      </span>
+    </div>
+  </div>
+
+  <% if @team_avg %>
+    <div class="col-12 col-md-4">
+      <div class="stat-card card-apple--hover">
+        <div class="icon-tile icon-tile--purple"><%= render "shared/icons/people" %></div>
+        <div class="stat-card__label"><%= t("kpi.dashboard.tiles.team_avg") %></div>
+        <div class="stat-card__value"><%= @team_avg ? "#{@team_avg}%" : "—" %></div>
+        <span class="stat-card__delta">
+          <%= t("kpi.dashboard.tiles.team_size", count: (@team_top || []).size + (@team_bot || []).size) %>
+        </span>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @company_avg %>
+    <div class="col-12 col-md-4">
+      <div class="stat-card card-apple--hover">
+        <div class="icon-tile icon-tile--green"><%= render "shared/icons/trending" %></div>
+        <div class="stat-card__label"><%= t("kpi.dashboard.tiles.company_avg") %></div>
+        <div class="stat-card__value"><%= @company_avg ? "#{@company_avg}%" : "—" %></div>
+        <span class="stat-card__delta"><%= t("kpi.dashboard.tiles.across_all_metrics") %></span>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<div class="row g-3">
+  <%# ── My KPI ─────────────────────────────────────────────────────────── %>
+  <div class="col-12 col-xl-8">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title"><%= t("kpi.dashboard.my_section.title") %></h3>
+          <p class="card-apple__subtitle"><%= t("kpi.dashboard.my_section.subtitle") %></p>
+        </div>
+        <%= link_to t("common.view_all"), kpi_assignments_path, class: "btn btn-ghost btn-sm" %>
+      </div>
+
+      <% if @my_assignments.any? %>
+        <div class="d-flex flex-column gap-3">
+          <% @my_assignments.each do |a| %>
+            <% latest = a.latest_evaluation %>
+            <% pct = latest&.score&.to_i %>
+            <div class="kpi-progress">
+              <div class="kpi-progress__head">
+                <div>
+                  <strong><%= a.kpi_metric.name %></strong>
+                  <span class="footnote text-tertiary">· <%= a.period_label %></span>
+                </div>
+                <div class="text-mono">
+                  <%= pct ? "#{pct}%" : "—" %>
+                </div>
+              </div>
+              <div class="kpi-progress__track">
+                <div class="kpi-progress__fill kpi-progress__fill--<%= pct ? (pct >= 80 ? 'success' : pct >= 50 ? 'info' : 'warning') : 'neutral' %>"
+                     style="width: <%= pct || 0 %>%;"></div>
+              </div>
+              <% if a.target.present? || latest&.actual_value %>
+                <div class="footnote text-secondary-apple">
+                  <% if latest&.actual_value %><%= t("kpi.evaluations.actual_value") %>: <strong><%= latest.actual_value %><% if a.kpi_metric.unit.present? %> <%= a.kpi_metric.unit %><% end %></strong><% end %>
+                  <% if a.target.present? %>
+                    · <%= t("kpi.evaluations.target") %>: <%= a.target %><% if a.kpi_metric.unit.present? %> <%= a.kpi_metric.unit %><% end %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-state" style="padding: var(--ds-space-5);">
+          <div class="empty-state__title"><%= t("kpi.dashboard.my_section.empty") %></div>
+          <p class="footnote"><%= t("kpi.dashboard.my_section.empty_hint") %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ── Trend (HR+) ───────────────────────────────────────────────── %>
+    <% if @company_trend && @company_trend.any? { |p| p[:avg] } %>
+      <div class="card-apple mt-3">
+        <div class="card-apple__header">
+          <div>
+            <h3 class="card-apple__title"><%= t("kpi.dashboard.trend.title") %></h3>
+            <p class="card-apple__subtitle"><%= t("kpi.dashboard.trend.subtitle") %></p>
+          </div>
+        </div>
+        <% values = @company_trend.map { |p| p[:avg] || 0 } %>
+        <% max_v = [values.max, 100].compact.max %>
+        <div class="kpi-trend">
+          <% @company_trend.each_with_index do |p, idx| %>
+            <div class="kpi-trend__bar-wrap">
+              <div class="kpi-trend__bar"
+                   style="height: <%= p[:avg] ? (p[:avg] / max_v.to_f * 100).round : 0 %>%;"
+                   data-bs-toggle="tooltip"
+                   title="<%= p[:label] %> · <%= p[:avg] ? "#{p[:avg]}%" : t('kpi.evaluations.not_scored') %>"></div>
+              <div class="kpi-trend__label"><%= p[:label] %></div>
+              <div class="kpi-trend__value text-mono"><%= p[:avg] ? "#{p[:avg].to_i}%" : "—" %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%# ── Metric distribution (HR+) ────────────────────────────────── %>
+    <% if @metric_distribution && @metric_distribution.any? %>
+      <div class="card-apple mt-3">
+        <div class="card-apple__header">
+          <div>
+            <h3 class="card-apple__title"><%= t("kpi.dashboard.distribution.title") %></h3>
+            <p class="card-apple__subtitle"><%= t("kpi.dashboard.distribution.subtitle") %></p>
+          </div>
+        </div>
+        <div class="d-flex flex-column gap-2 mt-2">
+          <% @metric_distribution.each do |row| %>
+            <div class="kpi-progress">
+              <div class="kpi-progress__head">
+                <strong><%= row[:name] %></strong>
+                <div class="text-mono"><%= row[:avg] %>%</div>
+              </div>
+              <div class="kpi-progress__track">
+                <div class="kpi-progress__fill kpi-progress__fill--<%= row[:avg] >= 80 ? 'success' : row[:avg] >= 50 ? 'info' : 'warning' %>"
+                     style="width: <%= row[:avg].to_i %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── Side column: leaderboard + recent ────────────────────────────── %>
+  <div class="col-12 col-xl-4">
+    <% if @team_top %>
+      <div class="card-apple">
+        <div class="card-apple__header">
+          <div>
+            <h3 class="card-apple__title"><%= t("kpi.dashboard.leaderboard.title") %></h3>
+            <p class="card-apple__subtitle"><%= t("kpi.dashboard.leaderboard.subtitle") %></p>
+          </div>
+        </div>
+
+        <% if @team_top.any? %>
+          <div class="kpi-leaderboard__group">
+            <div class="kpi-leaderboard__heading"><%= t("kpi.dashboard.leaderboard.top") %></div>
+            <% @team_top.each_with_index do |(emp, avg), i| %>
+              <div class="kpi-leaderboard__row">
+                <div class="kpi-leaderboard__rank">#<%= i + 1 %></div>
+                <div class="avatar-apple"><%= emp.initials %></div>
+                <div class="kpi-leaderboard__name"><%= emp.full_name %></div>
+                <span class="pill pill--success"><%= avg.to_i %>%</span>
+              </div>
+            <% end %>
+          </div>
+
+          <% if @team_bot.any? && @team_bot != @team_top %>
+            <div class="kpi-leaderboard__group">
+              <div class="kpi-leaderboard__heading"><%= t("kpi.dashboard.leaderboard.bottom") %></div>
+              <% @team_bot.each_with_index do |(emp, avg), i| %>
+                <div class="kpi-leaderboard__row">
+                  <div class="kpi-leaderboard__rank">#<%= i + 1 %></div>
+                  <div class="avatar-apple"><%= emp.initials %></div>
+                  <div class="kpi-leaderboard__name"><%= emp.full_name %></div>
+                  <span class="pill pill--<%= avg >= 50 ? 'info' : 'warning' %>"><%= avg.to_i %>%</span>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="footnote text-secondary-apple"><%= t("kpi.dashboard.leaderboard.empty") %></p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @recent_evaluations.any? %>
+      <div class="card-apple mt-3">
+        <div class="card-apple__header">
+          <div>
+            <h3 class="card-apple__title"><%= t("kpi.dashboard.recent.title") %></h3>
+            <p class="card-apple__subtitle"><%= t("kpi.dashboard.recent.subtitle") %></p>
+          </div>
+        </div>
+
+        <ul class="kpi-recent">
+          <% @recent_evaluations.each do |e| %>
+            <% emp = e.kpi_assignment.employee %>
+            <li class="kpi-recent__item">
+              <div class="avatar-apple"><%= emp.initials %></div>
+              <div class="kpi-recent__body">
+                <div>
+                  <strong><%= emp.full_name %></strong>
+                  <span class="footnote text-tertiary">· <%= e.kpi_assignment.kpi_metric.name %></span>
+                </div>
+                <div class="footnote text-secondary-apple">
+                  <%= time_ago_in_words(e.evaluated_at) %> <%= t("common.ago") %>
+                  · <%= e.evaluator.display_name %>
+                </div>
+              </div>
+              <% if e.score %>
+                <span class="pill pill--<%= e.score >= 80 ? 'success' : e.score >= 50 ? 'info' : 'warning' %>"><%= e.score.to_i %>%</span>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</div>

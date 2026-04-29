@@ -1,0 +1,240 @@
+<div class="careers-detail">
+  <%= link_to careers_path, class: "careers-detail__back" do %>
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 4L6 8l4 4"/></svg>
+    <%= @careers.t("back_all") %>
+  <% end %>
+
+  <header class="careers-detail__head">
+    <% if @opening.code.present? %>
+      <div class="careers-detail__code"><%= @opening.code %></div>
+    <% end %>
+    <h1 class="careers-detail__title"><%= @opening.title %></h1>
+
+    <div class="careers-detail__meta">
+      <% if @careers.show_department? && @opening.department.present? %>
+        <span class="careers-card__chip"><%= @opening.department.name %></span>
+      <% end %>
+      <% if @opening.position.present? %>
+        <span class="careers-card__chip"><%= @opening.position.name %></span>
+      <% end %>
+      <% if @careers.show_employment_type? && @opening.employment_type.present? %>
+        <span class="careers-card__chip"><%= t("job_openings.employment_types.#{@opening.employment_type}", default: @opening.employment_type.humanize) %></span>
+      <% end %>
+      <% if @careers.show_salary? && (@opening.salary_from.present? || @opening.salary_to.present?) %>
+        <span class="careers-card__chip careers-card__chip--accent">
+          <% if @opening.salary_from && @opening.salary_to %>
+            <%= number_with_delimiter(@opening.salary_from.to_i, delimiter: " ") %> – <%= number_with_delimiter(@opening.salary_to.to_i, delimiter: " ") %> <%= @opening.currency %>
+          <% elsif @opening.salary_from %>
+            <%= @careers.t("card_salary_from") %> <%= number_with_delimiter(@opening.salary_from.to_i, delimiter: " ") %> <%= @opening.currency %>
+          <% elsif @opening.salary_to %>
+            <%= @careers.t("card_salary_to") %> <%= number_with_delimiter(@opening.salary_to.to_i, delimiter: " ") %> <%= @opening.currency %>
+          <% end %>
+        </span>
+      <% end %>
+    </div>
+  </header>
+
+  <div class="careers-detail__body">
+    <% if @opening.description.present? %>
+      <section class="careers-section">
+        <h3><%= @careers.t("section_description") %></h3>
+        <div class="careers-section__text"><%= simple_format(@opening.description) %></div>
+      </section>
+    <% end %>
+
+    <% if @opening.requirements.present? %>
+      <section class="careers-section">
+        <h3><%= @careers.t("section_requirements") %></h3>
+        <div class="careers-section__text"><%= simple_format(@opening.requirements) %></div>
+      </section>
+    <% end %>
+
+    <% if @opening.nice_to_have.present? %>
+      <section class="careers-section">
+        <h3><%= @careers.t("section_nice") %></h3>
+        <div class="careers-section__text"><%= simple_format(@opening.nice_to_have) %></div>
+      </section>
+    <% end %>
+  </div>
+
+  <%# Sticky CTA — плавающая кнопка "Откликнуться" внизу экрана.
+      Скрывается когда форма во view-port (через IntersectionObserver). %>
+  <a href="#careers-application-form" class="careers-sticky-cta" data-controller="sticky-cta" data-sticky-cta-target-id-value="careers-application-form">
+    <span><%= @careers.t("form_submit") %></span>
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8h9M9 4l4 4-4 4"/></svg>
+  </a>
+
+  <section class="careers-form" id="careers-application-form">
+    <h2 class="careers-form__title"><%= @careers.t("form_title") %></h2>
+    <p class="careers-form__hint"><%= @careers.t("form_hint") %></p>
+
+    <%
+      storage_key = "careers_app_#{@opening.id}"
+      err_for = ->(field) { @applicant.errors[field].first }
+    %>
+    <%= form_with(model: @applicant,
+                  url: apply_careers_opening_path(@opening.code.presence || @opening.id),
+                  local: true, multipart: true,
+                  data: { controller: "careers-form", "careers-form-storage-key-value": storage_key },
+                  class: "careers-form__form") do |f| %>
+
+      <% if @applicant.errors.any? %>
+        <div class="careers-form__errors">
+          <strong><%= @careers.t("form_errors_title") %></strong>
+          <p class="footnote m-0"><%= @careers.t("form_errors_hint", default: "Проверьте отмеченные поля ниже") %></p>
+        </div>
+      <% end %>
+
+      <%# Banner: восстановили черновик из localStorage %>
+      <div class="careers-form__draft-note" data-careers-form-target="restoreNote" hidden>
+        <span><%= @careers.t("form_draft_restored", default: "Восстановлен сохранённый черновик") %></span>
+        <button type="button" class="careers-form__draft-clear" data-action="click->careers-form#clearDraft">
+          <%= @careers.t("form_draft_clear", default: "Очистить") %>
+        </button>
+      </div>
+
+      <div class="careers-form__row">
+        <div class="careers-form__field <%= 'has-error' if err_for.(:last_name) %>">
+          <%= f.label :last_name, t("job_applicants.fields.last_name", default: "Фамилия"), class: "careers-form__label" %>
+          <%= f.text_field :last_name, class: "careers-form__input", required: true, autocomplete: "family-name" %>
+          <% if (e = err_for.(:last_name)) %><div class="careers-form__error"><%= e %></div><% end %>
+        </div>
+        <div class="careers-form__field <%= 'has-error' if err_for.(:first_name) %>">
+          <%= f.label :first_name, t("job_applicants.fields.first_name", default: "Имя"), class: "careers-form__label" %>
+          <%= f.text_field :first_name, class: "careers-form__input", required: true, autocomplete: "given-name" %>
+          <% if (e = err_for.(:first_name)) %><div class="careers-form__error"><%= e %></div><% end %>
+        </div>
+      </div>
+
+      <div class="careers-form__row">
+        <div class="careers-form__field <%= 'has-error' if err_for.(:email) %>">
+          <%= f.label :email, "Email", class: "careers-form__label" %>
+          <%= f.email_field :email, class: "careers-form__input", required: true, autocomplete: "email" %>
+          <% if (e = err_for.(:email)) %><div class="careers-form__error"><%= e %></div><% end %>
+        </div>
+        <div class="careers-form__field <%= 'has-error' if err_for.(:phone) %>">
+          <%= f.label :phone, t("job_applicants.fields.phone", default: "Телефон"), class: "careers-form__label" %>
+          <%= f.telephone_field :phone, class: "careers-form__input", autocomplete: "tel" %>
+          <% if (e = err_for.(:phone)) %><div class="careers-form__error"><%= e %></div><% end %>
+        </div>
+      </div>
+
+      <div class="careers-form__row">
+        <div class="careers-form__field">
+          <%= f.label :current_position, t("job_applicants.fields.current_position", default: "Текущая должность"), class: "careers-form__label" %>
+          <%= f.text_field :current_position, class: "careers-form__input", autocomplete: "organization-title" %>
+        </div>
+        <div class="careers-form__field">
+          <%= f.label :current_company, t("job_applicants.fields.current_company", default: "Текущая компания"), class: "careers-form__label" %>
+          <%= f.text_field :current_company, class: "careers-form__input", autocomplete: "organization" %>
+        </div>
+      </div>
+
+      <div class="careers-form__row">
+        <div class="careers-form__field careers-form__field--narrow">
+          <%= f.label :years_of_experience, t("job_applicants.fields.years_of_experience", default: "Опыт, лет"), class: "careers-form__label" %>
+          <%= f.number_field :years_of_experience, class: "careers-form__input", min: 0, max: 50 %>
+        </div>
+        <div class="careers-form__field careers-form__field--narrow">
+          <%= f.label :expected_salary, t("job_applicants.fields.expected_salary", default: "Ожидания, ₽"), class: "careers-form__label" %>
+          <%= f.number_field :expected_salary, class: "careers-form__input", step: 1000, min: 0 %>
+        </div>
+        <div class="careers-form__field">
+          <%= f.label :location, t("job_applicants.fields.location", default: "Локация"), class: "careers-form__label" %>
+          <%= f.text_field :location, class: "careers-form__input", placeholder: "Москва / Удалённо / …" %>
+        </div>
+      </div>
+
+      <div class="careers-form__row">
+        <div class="careers-form__field">
+          <%= f.label :portfolio_url, t("job_applicants.fields.portfolio_url", default: "Портфолио / сайт"), class: "careers-form__label" %>
+          <%= f.url_field :portfolio_url, class: "careers-form__input", placeholder: "https://…" %>
+        </div>
+        <div class="careers-form__field">
+          <%= f.label :linkedin_url, "LinkedIn", class: "careers-form__label" %>
+          <%= f.url_field :linkedin_url, class: "careers-form__input", placeholder: "https://linkedin.com/in/…" %>
+        </div>
+      </div>
+
+      <div class="careers-form__field">
+        <%= f.label :resume, @careers.t("form_resume_label"), class: "careers-form__label" %>
+        <label class="dropzone" data-controller="dropzone" data-dropzone-target="zone">
+          <%= f.file_field :resume, accept: ".pdf,.doc,.docx",
+                           data: { dropzone_target: "input", action: "change->dropzone#changed" } %>
+          <div class="dropzone__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <polyline points="9 15 12 12 15 15"/>
+            </svg>
+          </div>
+          <div class="dropzone__text">
+            <strong data-dropzone-target="title"><%= @careers.t("form_resume_dropzone_title", default: "Перетащите PDF / DOCX или нажмите") %></strong>
+            <span data-dropzone-target="hint"><%= @careers.t("form_resume_dropzone_hint", default: "PDF, DOC, DOCX · до 10 MB") %></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="careers-form__field">
+        <%= f.label :portfolio_files, @careers.t("form_portfolio_label"), class: "careers-form__label" %>
+        <label class="dropzone" data-controller="dropzone" data-dropzone-target="zone">
+          <%= f.file_field :portfolio_files, multiple: true,
+                           data: { dropzone_target: "input", action: "change->dropzone#changed" } %>
+          <div class="dropzone__icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="dropzone__text">
+            <strong data-dropzone-target="title"><%= @careers.t("form_portfolio_dropzone_title", default: "Перетащите файлы или нажмите") %></strong>
+            <span data-dropzone-target="hint"><%= @careers.t("form_portfolio_dropzone_hint", default: "Несколько файлов · до 20 MB суммарно") %></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="careers-form__field">
+        <%= f.label :summary, @careers.t("form_summary_label"), class: "careers-form__label" %>
+        <%= f.text_area :summary, class: "careers-form__input careers-form__textarea", rows: 5, placeholder: @careers.t("form_summary_placeholder") %>
+      </div>
+
+      <%# Динамические согласия (privacy / terms / marketing) — из настроек %>
+      <% @careers.consents.each do |consent| %>
+        <%
+          key   = consent["key"]
+          label = consent["label_text"]
+          link  = consent["link"]
+          link_url = if link.is_a?(Hash)
+            case link["kind"]
+            when "page" then careers_page_path(link["target"])
+            when "url"  then link["target"]
+            end
+          end
+        %>
+        <label class="careers-consent">
+          <input type="checkbox" name="consents[<%= key %>]" value="1" <%= "required" if consent["required"] %>>
+          <span class="careers-consent__text">
+            <%= label %>
+            <% if link_url.present? %>
+              · <%= link_to t("careers.show.read_more", default: "подробнее"), link_url, target: "_blank", rel: "noopener", class: "careers-consent__link" %>
+            <% end %>
+            <% if consent["required"] %><span class="careers-consent__req">*</span><% end %>
+          </span>
+        </label>
+      <% end %>
+
+      <%# Honeypot — невидимое поле для ботов %>
+      <div style="position: absolute; left: -9999px; opacity: 0; pointer-events: none;" aria-hidden="true">
+        <label>Website (do not fill)
+          <input type="text" name="website" tabindex="-1" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="careers-form__actions">
+        <%= f.submit @careers.t("form_submit"), class: "btn btn-primary careers-form__submit" %>
+      </div>
+    <% end %>
+  </section>
+</div>

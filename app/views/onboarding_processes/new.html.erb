@@ -1,0 +1,50 @@
+<% content_for(:page_title) { t("onboarding.new", default: "Новый онбординг") } %>
+
+<header class="page-header">
+  <h1 class="title-1 m-0">🌱 <%= t("onboarding.new", default: "Новый онбординг") %></h1>
+  <p class="footnote text-secondary-apple m-0"><%= t("onboarding.new_hint", default: "Выберите сотрудника и шаблон — задачи материализуются автоматически.") %></p>
+</header>
+
+<%= form_with(model: @process, url: onboarding_processes_path, local: true, class: "card-apple form-apple") do |f| %>
+  <% if @process.errors.any? %>
+    <div class="alert alert-danger"><%= @process.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <%= f.label :employee_id, t("onboarding.fields.employee", default: "Сотрудник"), class: "form-label" %>
+      <%= f.select :employee_id,
+                   Employee.kept.working.order(:last_name).map { |e| [e.full_name, e.id] },
+                   { include_blank: true, selected: @process.employee_id },
+                   class: "form-select", data: { controller: "apple-select" } %>
+    </div>
+
+    <div class="col-md-6">
+      <%= f.label :template_id, t("onboarding.fields.template", default: "Шаблон"), class: "form-label" %>
+      <%= f.select :template_id, @templates.map { |t| [t.name, t.id] }, { include_blank: t("common.no_template", default: "Без шаблона") }, class: "form-select", data: { controller: "apple-select" } %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :started_on, t("onboarding.fields.started", default: "Старт"), class: "form-label" %>
+      <%= f.date_field :started_on, class: "form-control" %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :target_complete_on, t("onboarding.fields.target", default: "План завершения"), class: "form-label" %>
+      <%= f.date_field :target_complete_on, class: "form-control" %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :mentor_id, t("onboarding.fields.mentor", default: "Наставник"), class: "form-label" %>
+      <%= f.select :mentor_id,
+                   Employee.kept.working.order(:last_name).map { |e| [e.full_name, e.id] },
+                   { include_blank: t("common.unassigned", default: "Не выбран") },
+                   class: "form-select", data: { controller: "apple-select" } %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 mt-3">
+    <%= f.submit t("onboarding.start", default: "Запустить онбординг"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel", default: "Отмена"), onboarding_processes_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

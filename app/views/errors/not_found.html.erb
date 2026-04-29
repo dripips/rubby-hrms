@@ -1,0 +1,8 @@
+<% content_for :page_title, t("errors.not_found.title") %>
+
+<div class="card-apple text-center" style="max-width: 520px; margin: 64px auto; padding: 56px 32px;">
+  <div style="font-size: 96px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; background: linear-gradient(135deg, var(--ds-blue), var(--ds-indigo)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: var(--ds-space-3);">404</div>
+  <h1 class="title-2 m-0 mb-2"><%= t("errors.not_found.headline") %></h1>
+  <p class="footnote text-secondary-apple mb-4"><%= t("errors.not_found.hint") %></p>
+  <%= link_to t("errors.not_found.back"), root_path, class: "btn btn-primary" %>
+</div>

@@ -1,0 +1,18 @@
+<nav class="section-tabs" aria-label="<%= t("navigation.kpi") %>">
+  <%= link_to kpi_dashboard_path, class: "section-tabs__item #{'is-active' if controller_name == 'dashboard'}" do %>
+    <%= render "shared/icons/grid" %>
+    <span><%= t("kpi.dashboard.title") %></span>
+  <% end %>
+  <%= link_to kpi_metrics_path, class: "section-tabs__item #{'is-active' if controller_name == 'metrics'}" do %>
+    <%= render "shared/icons/trending" %>
+    <span><%= t("kpi.metrics.title") %></span>
+  <% end %>
+  <%= link_to kpi_assignments_path, class: "section-tabs__item #{'is-active' if controller_name == 'assignments'}" do %>
+    <%= render "shared/icons/people" %>
+    <span><%= t("kpi.assignments.title") %></span>
+  <% end %>
+  <%= link_to kpi_evaluations_path, class: "section-tabs__item #{'is-active' if controller_name == 'evaluations'}" do %>
+    <%= render "shared/icons/check" %>
+    <span><%= t("kpi.evaluations.title") %></span>
+  <% end %>
+</nav>

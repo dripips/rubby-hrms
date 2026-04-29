@@ -1,0 +1,26 @@
+<header class="topbar-apple">
+  <button type="button"
+          class="topbar-apple__burger d-lg-none"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#appSidebar"
+          aria-label="<%= t('navigation.menu', default: 'Меню') %>">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" width="20" height="20" aria-hidden="true">
+      <path d="M2 4h12M2 8h12M2 12h12"/>
+    </svg>
+  </button>
+
+  <span class="topbar-apple__title"><%= content_for?(:page_title) ? yield(:page_title) : t("app.name") %></span>
+
+  <div class="topbar-apple__spacer"></div>
+
+  <div class="topbar-apple__search d-none d-md-block">
+    <input type="search" placeholder="<%= t('common.search') %>...">
+  </div>
+
+  <% if user_signed_in? %>
+    <%= turbo_stream_from current_user, "notifications" %>
+    <%= render "shared/notifications_bell", user: current_user %>
+  <% end %>
+
+  <%= render "shared/language_switcher", variant: :solid %>
+</header>

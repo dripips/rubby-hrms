@@ -1,0 +1,71 @@
+<% content_for :page_title, t("settings.genders.title") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.settings") %></div>
+    <h1 class="page-header__title"><%= t("settings.genders.title") %></h1>
+    <p class="page-header__subtitle"><%= t("settings.genders.subtitle") %></p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newGenderModal">
+      + <%= t("settings.genders.new") %>
+    </button>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" %>
+
+<div class="card-apple card-apple--flush">
+  <% if @genders.any? %>
+    <table class="table-apple">
+      <thead>
+        <tr>
+          <th style="width: 8%;"><%= t("settings.genders.fields.sort_order") %></th>
+          <th><%= t("settings.genders.fields.name") %></th>
+          <th><%= t("settings.genders.fields.code") %></th>
+          <th><%= t("settings.genders.fields.pronouns") %></th>
+          <th style="width: 10%;"><%= t("common.status") %></th>
+          <th style="width: 130px;" class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @genders.each do |g| %>
+          <tr>
+            <td><span class="text-mono"><%= g.sort_order %></span></td>
+            <td><strong><%= g.name %></strong></td>
+            <td><span class="text-mono footnote"><%= g.code %></span></td>
+            <td class="text-secondary-apple"><%= g.pronouns.presence || "—" %></td>
+            <td>
+              <% if g.active? %>
+                <span class="pill pill--success"><%= t("settings.genders.active") %></span>
+              <% else %>
+                <span class="pill pill--neutral"><%= t("settings.genders.inactive") %></span>
+              <% end %>
+            </td>
+            <td class="text-end">
+              <button type="button" class="btn btn-ghost btn-sm" data-bs-toggle="modal" data-bs-target="#editGenderModal<%= g.id %>">
+                <%= t("common.edit") %>
+              </button>
+              <%= button_to t("common.delete"),
+                            settings_gender_path(g),
+                            method: :delete,
+                            class: "btn btn-ghost btn-sm text-danger",
+                            form: { class: "d-inline" },
+                            data: { turbo_confirm: t("common.confirm.delete") } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state" style="padding: var(--ds-space-6);">
+      <div class="empty-state__title"><%= t("settings.genders.empty") %></div>
+      <p class="footnote"><%= t("settings.genders.empty_hint") %></p>
+    </div>
+  <% end %>
+</div>
+
+<%= render "form_modal", gender: @new_gender, modal_id: "newGenderModal", modal_title: t("settings.genders.new"), form_url: settings_genders_path, http_method: :post %>
+<% @genders.each do |g| %>
+  <%= render "form_modal", gender: g, modal_id: "editGenderModal#{g.id}", modal_title: t("settings.genders.edit"), form_url: settings_gender_path(g), http_method: :patch %>
+<% end %>

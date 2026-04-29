@@ -1,0 +1,43 @@
+<div class="auth-shell">
+  <section class="auth-shell__form-side">
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "auth-shell__form" }) do |f| %>
+      <div class="sidebar-apple__brand" style="margin-bottom: var(--ds-space-4); padding: 0;">
+        <span class="sidebar-apple__brand-mark">H</span>
+        <span><%= t("app.name") %></span>
+      </div>
+
+      <h1 class="auth-shell__title"><%= t("auth.create_account") %></h1>
+      <p class="auth-shell__subtitle"><%= t("auth.create_account_subtitle") %></p>
+
+      <%= render "users/shared/error_messages", resource: resource %>
+
+      <div>
+        <%= f.label :email, t("auth.email"), class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg", placeholder: "you@company.com" %>
+      </div>
+
+      <div>
+        <%= f.label :password, t("auth.password"), class: "form-label" %>
+        <%= f.password_field :password, autocomplete: "new-password", class: "form-control form-control-lg", placeholder: "••••••••" %>
+        <% if @minimum_password_length %>
+          <small class="footnote text-secondary-apple">
+            <%= t("devise.shared.minimum_password_length", count: @minimum_password_length, default: "Минимум %{count} символов") %>
+          </small>
+        <% end %>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, t("auth.password_confirmation"), class: "form-label" %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control form-control-lg", placeholder: "••••••••" %>
+      </div>
+
+      <%= f.submit t("auth.sign_up"), class: "btn btn-primary btn-lg w-100 mt-2" %>
+
+      <div class="d-flex justify-content-center mt-3">
+        <%= link_to t("auth.already_have_account"), new_session_path(resource_name), class: "footnote" %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= render "shared/auth_hero" %>
+</div>

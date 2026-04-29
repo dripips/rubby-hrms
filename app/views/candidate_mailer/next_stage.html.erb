@@ -1,0 +1,69 @@
+<% stage_label = I18n.t("job_applicants.stages.#{@new_stage}", default: @new_stage) %>
+<% accent_color = case @new_stage
+                  when "hired" then "#34c759"
+                  when "offered" then "#ff9500"
+                  else "#0066ff"
+                  end %>
+
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 32px 16px; color: #1d1d1f;">
+  <div style="border: 1px solid #d2d2d7; border-radius: 16px; overflow: hidden; background: #ffffff;">
+    <div style="padding: 24px 28px; background: <%= accent_color %>; color: #fff;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85;">
+        <%= @company&.name %>
+      </div>
+      <h1 style="font-size: 22px; font-weight: 700; margin: 6px 0 0; letter-spacing: -0.011em;">
+        <% if @new_stage == "hired" %>
+          Поздравляем — вы приняты!
+        <% elsif @new_stage == "offered" %>
+          Готовы предложить вам оффер
+        <% else %>
+          Приглашаем на следующий этап: <%= stage_label %>
+        <% end %>
+      </h1>
+    </div>
+
+    <div style="padding: 24px 28px;">
+      <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+        Здравствуйте, <strong><%= @applicant.first_name %></strong>!
+      </p>
+
+      <% if @new_stage == "hired" %>
+        <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+          Мы рады сообщить, что приняли решение о вашем найме. Скоро с вами свяжется
+          HR для оформления документов и первого рабочего дня.
+        </p>
+      <% elsif @new_stage == "offered" %>
+        <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+          По итогам интервью мы готовы сделать вам предложение. С вами скоро
+          свяжется рекрутер для обсуждения деталей.
+        </p>
+      <% elsif @new_stage == "interview" %>
+        <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+          Мы рассмотрели ваше резюме и хотели бы пригласить вас на интервью.
+          Скоро вам придёт отдельное письмо с деталями встречи.
+        </p>
+      <% elsif @new_stage == "screening" %>
+        <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+          Спасибо за отклик! Ваш профиль перешёл на этап скрининга — рекрутер
+          с вами свяжется для короткого разговора.
+        </p>
+      <% else %>
+        <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+          Ваш статус в нашей системе обновился: <strong><%= stage_label %></strong>.
+          Скоро с вами свяжется рекрутер.
+        </p>
+      <% end %>
+
+      <% if @comment.present? %>
+        <div style="background: #f5f5f7; border-left: 3px solid <%= accent_color %>; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
+          <div style="font-size: 12px; color: #8e8e93; margin-bottom: 4px;">Сообщение от рекрутера</div>
+          <div style="font-size: 14px; color: #1d1d1f; line-height: 1.5;"><%= simple_format(@comment) %></div>
+        </div>
+      <% end %>
+
+      <p style="font-size: 14px; line-height: 1.5; margin: 24px 0 0; color: #6e6e73;">
+        Команда <%= @company&.name %>
+      </p>
+    </div>
+  </div>
+</div>

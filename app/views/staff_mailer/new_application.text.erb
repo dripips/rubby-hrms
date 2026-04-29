@@ -1,0 +1,14 @@
+Новый отклик на <%= @opening.title %>
+
+Кандидат: <%= @applicant.full_name %>
+Email:    <%= @applicant.email %>
+<% if @applicant.phone.present? %>Телефон:  <%= @applicant.phone %>
+<% end %><% if @applicant.current_position.present? %>Сейчас:   <%= @applicant.current_position %><% if @applicant.current_company.present? %> · <%= @applicant.current_company %><% end %>
+<% end %><% if @applicant.years_of_experience %>Опыт:     <%= @applicant.years_of_experience %> лет
+<% end %><% if @applicant.expected_salary %>Ожидания: <%= @applicant.expected_salary.to_i %> <%= @applicant.currency %>
+<% end %>
+<% if @applicant.summary.present? %>Мотивация:
+<%= @applicant.summary %>
+<% end %>
+—
+HRMS · <%= @company&.name %>

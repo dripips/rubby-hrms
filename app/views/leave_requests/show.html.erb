@@ -1,0 +1,168 @@
+<% content_for :page_title, t("leaves.show_title", default: "Заявка на отпуск") %>
+
+<%
+  state_tone = case @leave_request.state
+               when "draft"            then "info"
+               when "submitted", "manager_approved" then "warning"
+               when "hr_approved", "active" then "success"
+               when "completed"        then ""
+               when "rejected"         then "danger"
+               when "cancelled"        then ""
+               else ""
+               end
+
+  emp = @leave_request.employee
+  is_hr        = current_user.role_superadmin? || current_user.role_hr?
+  is_manager   = current_user.role_manager? && emp.manager&.user_id == current_user.id
+  is_owner     = emp.user_id == current_user.id
+  can_force    = policy(@leave_request).force_approve? && %w[submitted manager_approved].include?(@leave_request.state)
+
+  engine = LeaveApprovalEngine.new(@leave_request)
+  engine_result = engine.call
+  approved_count = @leave_request.leave_approvals.where(decision: :approved).count
+  next_step = engine_result[:steps][approved_count]
+  can_approve_now = next_step && next_step.involves_user?(current_user) &&
+                    %w[submitted manager_approved].include?(@leave_request.state)
+
+  flow = [{ state: "draft", label: t("leaves.states.draft"), kind: :state }]
+  if engine_result[:auto_approve]
+    flow << { state: "submitted",   label: t("leaves.auto_approve_step"), kind: :state }
+  else
+    engine_result[:steps].each_with_index do |step, idx|
+      flow << { state: "step-#{idx}", label: step.label, kind: :step, idx: idx }
+    end
+  end
+  flow << { state: "hr_approved", label: t("leaves.states.hr_approved"), kind: :state }
+  flow << { state: "active",      label: t("leaves.states.active"),      kind: :state }
+  flow << { state: "completed",   label: t("leaves.states.completed"),   kind: :state }
+
+  # Determine where in the flow we are.
+  current_idx = case @leave_request.state
+                when "draft"          then 0
+                when "submitted", "manager_approved"
+                  1 + approved_count
+                when "hr_approved" then flow.index { |s| s[:state] == "hr_approved" }
+                when "active"      then flow.index { |s| s[:state] == "active" }
+                when "completed"   then flow.index { |s| s[:state] == "completed" }
+                else 0
+                end || 0
+%>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.leaves") %> · #<%= @leave_request.id %></div>
+    <h1 class="page-header__title">
+      <%= @leave_request.leave_type.name %>
+      <span class="pill pill--<%= state_tone %>"><%= t("leaves.states.#{@leave_request.state}") %></span>
+    </h1>
+    <p class="page-header__subtitle">
+      <%= l(@leave_request.started_on, format: :long) %> — <%= l(@leave_request.ended_on, format: :long) %>
+      · <%= t("leaves.days_count", count: @leave_request.days.to_i) %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), leave_requests_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<section class="row g-3">
+  <div class="col-12 col-xl-8">
+    <div class="card-apple mb-3">
+      <h3 class="card-apple__title mb-3"><%= t("leaves.workflow_progress", default: "Согласование") %></h3>
+      <ol class="leaves-flow">
+        <% flow.each_with_index do |step, i| %>
+          <% done = i < current_idx %>
+          <% current = i == current_idx %>
+          <li class="leaves-flow__step <%= 'is-done' if done %> <%= 'is-current' if current %>">
+            <span class="leaves-flow__dot"></span>
+            <span class="leaves-flow__label"><%= step[:label] %></span>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("leaves.actions_title", default: "Действия") %></h3>
+      <div class="d-flex flex-wrap gap-2">
+        <% if is_owner && @leave_request.state == "draft" %>
+          <%= button_to t("leaves.actions.submit"), submit_leave_request_path(@leave_request), method: :post, class: "btn btn-primary", form: { class: "d-inline" } %>
+        <% end %>
+        <% if can_approve_now %>
+          <%= button_to t("leaves.actions.approve_step_for", role: next_step.label),
+                        approve_leave_request_path(@leave_request),
+                        method: :post,
+                        class: "btn btn-primary",
+                        form: { class: "d-inline" } %>
+        <% end %>
+        <% if can_force %>
+          <%= button_to t("leaves.actions.force_approve"),
+                        force_approve_leave_request_path(@leave_request),
+                        method: :post,
+                        class: "btn btn-success",
+                        form: { class: "d-inline" },
+                        data: { turbo_confirm: t("leaves.confirm_force_approve") } %>
+        <% end %>
+        <% if is_hr && @leave_request.state == "hr_approved" %>
+          <%= button_to t("leaves.actions.start"), start_leave_request_path(@leave_request), method: :post, class: "btn btn-soft", form: { class: "d-inline" } %>
+        <% end %>
+        <% if is_hr && @leave_request.state == "active" %>
+          <%= button_to t("leaves.actions.complete"), complete_leave_request_path(@leave_request), method: :post, class: "btn btn-soft", form: { class: "d-inline" } %>
+        <% end %>
+        <% if (is_manager || is_hr) && %w[submitted manager_approved].include?(@leave_request.state) %>
+          <%= button_to t("leaves.actions.reject"), reject_leave_request_path(@leave_request), method: :post, class: "btn btn-danger", data: { turbo_confirm: t("leaves.confirm_reject", default: "Отклонить заявку?") }, form: { class: "d-inline" } %>
+        <% end %>
+        <% if is_owner && %w[draft submitted manager_approved].include?(@leave_request.state) %>
+          <%= button_to t("leaves.actions.cancel"), cancel_leave_request_path(@leave_request), method: :post, class: "btn btn-ghost", form: { class: "d-inline" } %>
+        <% end %>
+        <% if is_hr || is_owner %>
+          <%= button_to t("common.delete"), leave_request_path(@leave_request), method: :delete, class: "btn btn-ghost", data: { turbo_confirm: t("common.confirm_delete", default: "Удалить?") }, form: { class: "d-inline" } %>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @approvals.any? %>
+      <div class="card-apple mt-3">
+        <h3 class="card-apple__title mb-3"><%= t("leaves.history", default: "История согласований") %></h3>
+        <ul class="d-flex flex-column gap-2 m-0" style="list-style: none; padding: 0;">
+          <% @approvals.each do |ap| %>
+            <li class="d-flex align-items-center gap-3 surface-grouped p-3 radius-md">
+              <span class="avatar-apple"><%= ap.approver.email[0,2].upcase %></span>
+              <span style="flex:1;">
+                <div class="headline" style="margin:0;">
+                  <%= ap.approver.email %>
+                  <span class="footnote text-secondary-apple">·</span>
+                  <span class="footnote"><%= t("leaves.steps.#{ap.step}") %></span>
+                </div>
+                <div class="footnote">
+                  <%= t("leaves.decisions.#{ap.decision}") %>
+                  <% if ap.decided_at %> · <%= l(ap.decided_at, format: :long) %><% end %>
+                </div>
+                <% if ap.comment.present? %>
+                  <div class="callout text-secondary-apple mt-1"><%= ap.comment %></div>
+                <% end %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-12 col-xl-4">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("leaves.applicant", default: "Заявитель") %></h3>
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <span class="avatar-apple avatar-apple--lg"><%= emp.initials %></span>
+        <div>
+          <div class="headline" style="margin:0;"><%= emp.full_name %></div>
+          <div class="footnote"><%= emp.position&.name %> · <%= emp.department&.name %></div>
+        </div>
+      </div>
+
+      <% if @leave_request.reason.present? %>
+        <div class="form-label mb-1"><%= t("leaves.fields.reason") %></div>
+        <p class="callout"><%= @leave_request.reason %></p>
+      <% end %>
+    </div>
+  </div>
+</section>

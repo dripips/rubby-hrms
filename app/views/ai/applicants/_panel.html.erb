@@ -1,0 +1,22 @@
+<%
+  history    = AiRun.for_applicant(applicant).recent.limit(20)
+  latest_run = history.first
+%>
+
+<%# turbo_stream_from первым — чтобы заменить controls/skeleton/result в любом порядке %>
+<%= turbo_stream_from applicant, "ai_panel" %>
+
+<%= render "ai/applicants/controls", applicant: applicant %>
+
+<div class="mt-3">
+  <div id="ai-loading-<%= applicant.id %>"></div>
+
+  <div id="ai-panel-<%= applicant.id %>">
+    <% if latest_run %>
+      <%= render "ai/applicants/result",
+                 applicant: applicant, run: latest_run, history: history %>
+    <% end %>
+  </div>
+</div>
+
+<%= render "ai/applicants/assignment_brief_modal", applicant: applicant %>

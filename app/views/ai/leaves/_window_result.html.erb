@@ -1,0 +1,38 @@
+<%= turbo_frame_tag "ai-leaves-panel-#{employee.id}" do %>
+  <div class="ai-leaves-result">
+    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="ai-spark">✨</span>
+        <strong><%= t("ai.leaves.suggest_window_title") %></strong>
+      </div>
+      <span class="pill pill--info"><%= leave_type.name %> · <%= t("leaves.days_count", count: days) %></span>
+    </div>
+
+    <% options = Array(payload["options"]) %>
+    <% if options.any? %>
+      <div class="d-flex flex-column gap-2 mt-2">
+        <% options.each_with_index do |opt, idx| %>
+          <div class="ai-leaves-window-option">
+            <div class="d-flex justify-content-between align-items-baseline">
+              <strong><%= t("ai.leaves.option") %> #<%= idx + 1 %></strong>
+              <span class="text-mono"><%= opt["from"] %> → <%= opt["to"] %></span>
+            </div>
+            <% if opt["rationale"].present? %>
+              <p class="footnote text-secondary-apple m-0 mt-1"><%= opt["rationale"] %></p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% warnings = Array(payload["warnings"]) %>
+    <% if warnings.any? %>
+      <div class="ai-leaves-result__warnings mt-3">
+        <strong>⚠ <%= t("ai.leaves.warnings") %>:</strong>
+        <ul class="m-0 mt-1">
+          <% warnings.each do |w| %><li class="footnote"><%= w %></li><% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+<% end %>

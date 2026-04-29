@@ -1,0 +1,72 @@
+<% content_for :page_title, t("navigation.job_openings", default: "Вакансии") %>
+
+<%
+  department_values = @form_data[:departments].each_with_object({}) { |d, h| h[d.id.to_s] = d.name }
+  position_values   = @form_data[:positions].each_with_object({}) { |p, h| h[p.id.to_s] = p.name }
+  numeric_hint      = t("common.filter_numeric_hint", default: ">3, =5, <10")
+
+  cols = [
+    { title: t("job_openings.fields.code"),  field: "code",  width: 110, headerFilter: "input" },
+    { title: t("job_openings.fields.title"), field: "title", widthGrow: 2, headerFilter: "input" },
+    {
+      title: t("job_openings.fields.department"), field: "department", widthGrow: 1,
+      headerFilter: "list",
+      headerFilterParams: { values: department_values, clearable: true, autocomplete: true, listOnEmpty: true },
+      headerFilterFunc: "="
+    },
+    {
+      title: t("job_openings.fields.position"), field: "position", widthGrow: 1,
+      headerFilter: "list",
+      headerFilterParams: { values: position_values, clearable: true, autocomplete: true, listOnEmpty: true },
+      headerFilterFunc: "="
+    },
+    {
+      title: t("job_openings.fields.openings_count"), field: "openings_count", width: 110, hozAlign: "right",
+      headerFilter: "input", headerFilterPlaceholder: numeric_hint
+    },
+    {
+      title: t("job_openings.fields.applicants_count"), field: "applicants_count", width: 120, hozAlign: "right",
+      headerFilter: "input", headerFilterPlaceholder: numeric_hint
+    },
+    {
+      title: t("job_openings.fields.state"), field: "state_label", width: 130, headerSort: false,
+      headerFilter: "list",
+      headerFilterParams: { values: JobOpening.states.keys.index_with { |s| I18n.t("job_openings.states.#{s}") }, clearable: true },
+      headerFilterFunc: "="
+    },
+    { title: t("job_openings.fields.published_at"), field: "published_at", width: 130 }
+  ]
+%>
+
+<div data-controller="apple-grid"
+     data-apple-grid-url-value="<%= job_openings_path(format: :json) %>"
+     data-apple-grid-page-size-value="50"
+     data-apple-grid-storage-key-value="job-openings-grid-v1"
+     data-apple-grid-row-url-template-value="<%= job_opening_path(id: 'PLACEHOLDER').gsub('PLACEHOLDER', '{id}') %>"
+     data-apple-grid-locale-value="<%= I18n.locale %>"
+     data-apple-grid-columns-value="<%= cols.to_json %>">
+
+  <header class="page-header">
+    <div>
+      <div class="page-header__eyebrow"><%= t("navigation.recruitment") %></div>
+      <h1 class="page-header__title"><%= t("navigation.job_openings", default: "Вакансии") %></h1>
+      <p class="page-header__subtitle">
+        <%= t("job_openings.summary", default: "Открытых: %{open} · На паузе: %{hold} · Закрытых: %{closed}",
+              open: JobOpening.kept.where(state: :open).count,
+              hold: JobOpening.kept.where(state: :on_hold).count,
+              closed: JobOpening.kept.where(state: :closed).count) %>
+      </p>
+    </div>
+    <div class="page-header__actions">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newOpeningModal">
+        + <%= t("job_openings.new", default: "Новая вакансия") %>
+      </button>
+    </div>
+  </header>
+
+  <%= render "shared/recruitment_tabs" %>
+
+  <div data-apple-grid-target="grid" style="height: calc(100vh - 240px); min-height: 480px;"></div>
+</div>
+
+<%= render "form_modal", opening: @new_opening, form_data: @form_data %>

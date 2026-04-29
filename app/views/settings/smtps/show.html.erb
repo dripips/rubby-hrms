@@ -1,0 +1,128 @@
+<% content_for :page_title, t("settings.smtp.title", default: "SMTP-настройки") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.settings", default: "Настройки") %></div>
+    <h1 class="page-header__title"><%= t("settings.smtp.title", default: "SMTP-настройки") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("settings.smtp.subtitle", default: "Подключите свой SMTP-сервер для отправки писем (приглашения на интервью, статусы, уведомления)") %>
+    </p>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" %>
+
+<%
+  smtp_presets = [
+    { key: "gmail",    name: "Gmail",    host: "smtp.gmail.com",            port: 587, tls: true,  auth: "plain" },
+    { key: "yandex",   name: "Yandex",   host: "smtp.yandex.ru",            port: 465, tls: true,  auth: "plain" },
+    { key: "mailru",   name: "Mail.ru",  host: "smtp.mail.ru",              port: 465, tls: true,  auth: "plain" },
+    { key: "sendgrid", name: "SendGrid", host: "smtp.sendgrid.net",         port: 587, tls: true,  auth: "plain" },
+    { key: "mailtrap", name: "Mailtrap", host: "sandbox.smtp.mailtrap.io",  port: 2525,tls: true,  auth: "plain" },
+    { key: "aws_ses",  name: "AWS SES",  host: "email-smtp.us-east-1.amazonaws.com", port: 587, tls: true, auth: "plain" }
+  ]
+%>
+
+<div class="row g-4">
+  <div class="col-12 col-xl-7" data-controller="smtp-preset">
+    <div class="card-apple mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h3 class="card-apple__title m-0"><%= t("settings.smtp.quick_presets", default: "Быстрые пресеты") %></h3>
+        <span class="footnote text-tertiary"><%= t("settings.smtp.preset_hint_short", default: "клик — заполнит host/port/TLS") %></span>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <% smtp_presets.each do |p| %>
+          <button type="button"
+                  class="smtp-preset"
+                  data-preset='<%= { host: p[:host], port: p[:port], tls: p[:tls], auth: p[:auth] }.to_json %>'
+                  data-action="click->smtp-preset#apply"
+                  title="<%= p[:hint] %>">
+            <strong><%= p[:name] %></strong>
+            <span class="footnote text-tertiary"><%= p[:host] %>:<%= p[:port] %></span>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card-apple">
+      <%= form_with(model: @setting, url: settings_smtp_path, method: :patch, html: { class: "d-flex flex-column gap-3" }) do |f| %>
+        <%= f.fields_for :data do |d| %>
+          <div class="row g-3">
+            <div class="col-8">
+              <label class="form-label"><%= t("settings.smtp.fields.host", default: "Хост") %></label>
+              <%= d.text_field :host, value: @setting.data["host"], class: "form-control", placeholder: "smtp.gmail.com", autocomplete: "off" %>
+            </div>
+            <div class="col-4">
+              <label class="form-label"><%= t("settings.smtp.fields.port", default: "Порт") %></label>
+              <%= d.number_field :port, value: @setting.data["port"] || 587, class: "form-control", min: 1, max: 65535 %>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("settings.smtp.fields.username", default: "Пользователь") %></label>
+            <%= d.text_field :username, value: @setting.data["username"], class: "form-control", autocomplete: "off" %>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("settings.smtp.fields.password", default: "Пароль / App Password") %></label>
+            <%= f.password_field :secret, class: "form-control", autocomplete: "new-password",
+                                 placeholder: @setting.secret.present? ? t("settings.smtp.password_saved_placeholder", default: "•••••••• (сохранён, оставь пустым чтобы не менять)") : "" %>
+            <div class="footnote text-tertiary mt-1"><%= t("settings.smtp.password_hint", default: "Для Gmail — App Password (16 символов). Для других провайдеров — обычный пароль.") %></div>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("settings.smtp.fields.from_address", default: "Адрес-отправитель (From)") %></label>
+            <%= d.email_field :from_address, value: @setting.data["from_address"], class: "form-control", placeholder: "noreply@yourdomain.com" %>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label"><%= t("settings.smtp.fields.authentication", default: "Аутентификация") %></label>
+              <%= d.select :authentication,
+                           [["Plain", "plain"], ["Login", "login"], ["CRAM-MD5", "cram_md5"]],
+                           { selected: @setting.data["authentication"] || "plain" },
+                           class: "form-select" %>
+            </div>
+            <div class="col-6 d-flex align-items-end">
+              <div class="form-check">
+                <%= d.check_box :tls, { checked: @setting.data["tls"] != false, class: "form-check-input", id: "smtp_tls" } %>
+                <label class="form-check-label" for="smtp_tls">
+                  <%= t("settings.smtp.fields.tls", default: "Использовать TLS (STARTTLS)") %>
+                </label>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="d-flex gap-2 mt-2">
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <% if @setting.persisted? && @setting.data["host"].present? %>
+        <div class="mt-2">
+          <%= button_to t("settings.smtp.test", default: "Отправить тестовое письмо"),
+                        test_settings_smtp_path, method: :post, class: "btn btn-soft" %>
+        </div>
+        <div id="smtp-test-result" class="mt-3"></div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-5">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.smtp.tips_title", default: "Подсказки") %></h3>
+
+      <ul class="settings-presets">
+        <% smtp_presets.each do |p| %>
+          <li><strong><%= p[:name] %></strong> — <%= t("settings.smtp.provider_hints.#{p[:key]}", default: "") %></li>
+        <% end %>
+      </ul>
+
+      <hr class="divider">
+      <p class="footnote text-secondary-apple m-0">
+        <%= t("settings.smtp.security_hint", default: "Пароль хранится в базе в открытом виде на этом MVP. На продакшене обернём через Rails encrypted attributes.") %>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+<% content_for(:page_title) { t("offboarding.title") } %>
+
+<header class="page-header">
+  <div>
+    <h1 class="title-1 m-0">👋 <%= t("offboarding.title") %></h1>
+    <p class="footnote text-secondary-apple m-0"><%= t("offboarding.subtitle") %></p>
+  </div>
+</header>
+
+<section class="row g-3 mb-3 stagger">
+  <div class="col-md-4">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("offboarding.stats.active") %></div>
+      <div class="stat-card__value"><%= @active.size %></div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("offboarding.stats.drafts") %></div>
+      <div class="stat-card__value"><%= @drafts.size %></div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("offboarding.stats.completed") %></div>
+      <div class="stat-card__value"><%= @completed.size %></div>
+    </div>
+  </div>
+</section>
+
+<% if @active.any? %>
+  <section class="card-apple mb-3">
+    <h2 class="title-3 mb-3"><%= t("offboarding.section.active") %></h2>
+    <div class="process-grid">
+      <% @active.each { |p| %><%= render "row", process: p %><% } %>
+    </div>
+  </section>
+<% end %>
+
+<% if @drafts.any? %>
+  <section class="card-apple mb-3">
+    <h2 class="title-3 mb-3"><%= t("offboarding.section.drafts") %></h2>
+    <ul class="list-apple">
+      <% @drafts.each { |p| %><%= render "row", process: p, variant: :compact %><% } %>
+    </ul>
+  </section>
+<% end %>
+
+<% if @completed.any? %>
+  <section class="card-apple mb-3">
+    <h2 class="title-3 mb-3"><%= t("offboarding.section.completed") %></h2>
+    <ul class="list-apple">
+      <% @completed.each { |p| %><%= render "row", process: p, variant: :compact %><% } %>
+    </ul>
+  </section>
+<% end %>
+
+<% if @active.empty? && @drafts.empty? && @completed.empty? %>
+  <div class="empty-state card-apple">
+    <h2 class="title-3"><%= t("offboarding.empty.title") %></h2>
+    <p class="footnote text-secondary-apple"><%= t("offboarding.empty.hint") %></p>
+  </div>
+<% end %>

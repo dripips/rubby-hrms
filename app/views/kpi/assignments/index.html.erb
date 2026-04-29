@@ -1,0 +1,155 @@
+<% content_for :page_title, t("kpi.assignments.title") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.kpi") %></div>
+    <h1 class="page-header__title"><%= t("kpi.assignments.title") %></h1>
+    <p class="page-header__subtitle"><%= t("kpi.assignments.subtitle") %></p>
+  </div>
+  <% if policy(KpiAssignment).create? %>
+    <div class="page-header__actions">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newKpiAssignmentModal">
+        + <%= t("kpi.assignments.new") %>
+      </button>
+    </div>
+  <% end %>
+</header>
+
+<%= render "kpi/subnav" %>
+
+<%= form_with(url: kpi_assignments_path, method: :get, local: true, class: "card-apple mb-3") do %>
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label"><%= t("kpi.assignments.filters.period") %></label>
+      <select name="period" class="form-select" onchange="this.form.submit()">
+        <% %w[current_week current_month current_quarter all].each do |k| %>
+          <option value="<%= k %>" <%= 'selected' if @period == k %>><%= t("kpi.assignments.periods.#{k}") %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label"><%= t("kpi.assignments.filters.employee") %></label>
+      <select name="employee_id" class="form-select" onchange="this.form.submit()">
+        <option value=""><%= t("common.all") %></option>
+        <% @employees.each do |e| %>
+          <option value="<%= e.id %>" <%= 'selected' if params[:employee_id].to_i == e.id %>><%= e.full_name %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label"><%= t("kpi.assignments.filters.metric") %></label>
+      <select name="kpi_metric_id" class="form-select" onchange="this.form.submit()">
+        <option value=""><%= t("common.all") %></option>
+        <% @metrics.each do |m| %>
+          <option value="<%= m.id %>" <%= 'selected' if params[:kpi_metric_id].to_i == m.id %>><%= m.name %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <%= link_to t("kpi.assignments.filters.reset"), kpi_assignments_path, class: "btn btn-soft" %>
+    </div>
+  </div>
+<% end %>
+
+<div class="card-apple card-apple--flush">
+  <% if @assignments.any? %>
+    <table class="table-apple">
+      <thead>
+        <tr>
+          <th><%= t("kpi.assignments.fields.employee") %></th>
+          <th><%= t("kpi.assignments.fields.metric") %></th>
+          <th><%= t("kpi.assignments.fields.period") %></th>
+          <th class="text-end"><%= t("kpi.assignments.fields.target") %></th>
+          <th class="text-end"><%= t("kpi.assignments.fields.weight") %></th>
+          <th><%= t("kpi.assignments.fields.score") %></th>
+          <th class="text-end"><%= t("common.actions") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @assignments.each do |a| %>
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar-apple"><%= a.employee.initials %></div>
+                <div>
+                  <div><strong><%= a.employee.full_name %></strong></div>
+                  <% if a.employee.position %><div class="footnote text-tertiary"><%= a.employee.position.name %></div><% end %>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div><%= a.kpi_metric.name %></div>
+              <div class="footnote text-tertiary text-mono"><%= a.kpi_metric.code %></div>
+            </td>
+            <td><%= a.period_label %></td>
+            <td class="text-end text-mono">
+              <% if a.target.present? %>
+                <%= number_with_precision(a.target, precision: 2, strip_insignificant_zeros: true) %>
+                <span class="footnote text-tertiary"><%= a.kpi_metric.unit %></span>
+              <% else %>
+                <span class="text-tertiary">—</span>
+              <% end %>
+            </td>
+            <td class="text-end text-mono"><%= number_with_precision(a.weight || 1.0, precision: 2, strip_insignificant_zeros: true) %></td>
+            <td>
+              <% latest = a.latest_evaluation %>
+              <% if latest&.score %>
+                <span class="pill pill--<%= latest.score >= 80 ? 'success' : (latest.score >= 50 ? 'info' : 'warning') %>">
+                  <%= latest.score.to_i %>%
+                </span>
+              <% else %>
+                <span class="pill pill--neutral"><%= t("kpi.assignments.no_score") %></span>
+              <% end %>
+            </td>
+            <td class="text-end">
+              <% if policy(a).update? %>
+                <button type="button" class="btn btn-ghost btn-sm" data-bs-toggle="modal" data-bs-target="#editKpiAssignmentModal<%= a.id %>">
+                  <%= t("common.edit") %>
+                </button>
+              <% end %>
+              <% if policy(a).destroy? %>
+                <%= button_to t("common.delete"),
+                              kpi_assignment_path(a),
+                              method: :delete,
+                              class: "btn btn-ghost btn-sm text-danger",
+                              form: { class: "d-inline" },
+                              data: { turbo_confirm: t("common.confirm.delete") } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state" style="padding: var(--ds-space-6);">
+      <div class="empty-state__title"><%= t("kpi.assignments.empty") %></div>
+      <p class="footnote"><%= t("kpi.assignments.empty_hint") %></p>
+      <% if policy(KpiAssignment).create? %>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newKpiAssignmentModal">
+          + <%= t("kpi.assignments.new") %>
+        </button>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<%= render "form_modal",
+           assignment: @new_assignment,
+           modal_id:   "newKpiAssignmentModal",
+           submit_to:  kpi_assignments_path,
+           title:      t("kpi.assignments.new"),
+           employees:  @employees,
+           metrics:    @metrics %>
+
+<% @assignments.each do |a| %>
+  <% if policy(a).update? %>
+    <%= render "form_modal",
+               assignment: a,
+               modal_id:   "editKpiAssignmentModal#{a.id}",
+               submit_to:  kpi_assignment_path(a),
+               method:     :patch,
+               title:      t("kpi.assignments.edit"),
+               employees:  @employees,
+               metrics:    @metrics %>
+  <% end %>
+<% end %>

@@ -1,0 +1,15 @@
+<div class="card-apple ai-skeleton mt-3">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <span class="pill pill--info">AI · <%= t("ai.actions.compare_candidates") %></span>
+    <span class="footnote text-tertiary"><%= t("ai.processing") %></span>
+    <div class="ai-skeleton__spinner" aria-label="loading">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <% 5.times do %>
+    <div class="ai-skeleton__bar" style="width: <%= rand(60..95) %>%;"></div>
+  <% end %>
+  <p class="footnote text-secondary-apple mt-3 mb-0">
+    <%= t("ai.processing_hint") %>
+  </p>
+</div>

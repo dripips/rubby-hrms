@@ -1,0 +1,28 @@
+<div class="card-apple test-result <%= result[:ok] ? 'test-result--ok' : 'test-result--fail' %>">
+  <% if result[:ok] %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="test-result__icon test-result__icon--ok">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8.5l3.5 3.5L13 5"/>
+        </svg>
+      </span>
+      <strong><%= t("settings.ai.test_ok_title", default: "Связь с OpenAI установлена") %></strong>
+    </div>
+    <div class="footnote text-secondary-apple">
+      <%= t("settings.ai.test_ok_meta",
+            default: "Модель %{model} · токенов: %{tokens}",
+            model:  setting.data["model"],
+            tokens: result[:tokens]) %>
+    </div>
+  <% else %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="test-result__icon test-result__icon--fail">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4l8 8M12 4l-8 8"/>
+        </svg>
+      </span>
+      <strong><%= t("settings.ai.test_fail_title", default: "Не удалось подключиться") %></strong>
+    </div>
+    <div class="footnote text-secondary-apple"><%= result[:error] %></div>
+  <% end %>
+</div>

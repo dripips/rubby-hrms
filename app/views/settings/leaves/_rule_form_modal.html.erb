@@ -1,0 +1,113 @@
+<div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-hidden="true" data-controller="rule-chain">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+      <%= form_with(model: rule, url: form_url, method: http_method, local: true, class: "modal-form") do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= modal_title %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body d-flex flex-column gap-3">
+          <div class="row g-3">
+            <div class="col-md-9">
+              <%= f.label :name, t("settings.leaves.rule.name"), class: "form-label" %>
+              <%= f.text_field :name, class: "form-control", required: true,
+                              placeholder: t("settings.leaves.rule.name_placeholder") %>
+            </div>
+            <div class="col-md-3">
+              <%= f.label :priority, t("settings.leaves.rule.priority"), class: "form-label" %>
+              <%= f.number_field :priority, class: "form-control", min: 0, step: 10 %>
+            </div>
+          </div>
+
+          <div>
+            <%= f.label :description, t("settings.leaves.rule.description"), class: "form-label" %>
+            <%= f.text_area :description, class: "form-control", rows: 2 %>
+          </div>
+
+          <h4 class="form-label m-0"><%= t("settings.leaves.rule.section_conditions") %></h4>
+          <p class="footnote text-secondary-apple m-0"><%= t("settings.leaves.rule.section_conditions_hint") %></p>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :leave_type_id, t("settings.leaves.rule.leave_type"), class: "form-label" %>
+              <%= f.collection_select :leave_type_id, leave_types, :id, :name,
+                                      { include_blank: t("settings.leaves.rule.any") },
+                                      class: "form-select" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :department_id, t("settings.leaves.rule.department"), class: "form-label" %>
+              <%= f.collection_select :department_id, departments, :id, :name,
+                                      { include_blank: t("settings.leaves.rule.any") },
+                                      class: "form-select" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :min_days, t("settings.leaves.rule.min_days"), class: "form-label" %>
+              <%= f.number_field :min_days, class: "form-control", min: 0 %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :max_days, t("settings.leaves.rule.max_days"), class: "form-label" %>
+              <%= f.number_field :max_days, class: "form-control", min: 0 %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :min_grade_id, t("settings.leaves.rule.min_grade"), class: "form-label" %>
+              <%= f.collection_select :min_grade_id, grades, :id, :name,
+                                      { include_blank: t("settings.leaves.rule.any") },
+                                      class: "form-select" %>
+            </div>
+          </div>
+
+          <h4 class="form-label m-0"><%= t("settings.leaves.rule.section_chain") %></h4>
+          <p class="footnote text-secondary-apple m-0"><%= t("settings.leaves.rule.section_chain_hint") %></p>
+
+          <label class="form-check">
+            <%= f.check_box :auto_approve, class: "form-check-input",
+                            data: { action: "change->rule-chain#toggleAuto", rule_chain_target: "autoCheckbox" } %>
+            <span class="form-check-label"><%= t("settings.leaves.rule.auto_approve_label") %></span>
+          </label>
+
+          <%# Chain editor %>
+          <div data-rule-chain-target="chainBlock" style="<%= 'display:none;' if rule.auto_approve %>">
+            <div class="rule-chain" data-rule-chain-target="list">
+              <% rule.steps.each_with_index do |step, idx| %>
+                <%= render "rule_chain_step",
+                           step: step,
+                           index: idx,
+                           users: users %>
+              <% end %>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <% LeaveApprovalRule::STEP_ROLES.each do |role| %>
+                <button type="button" class="btn btn-soft btn-sm"
+                        data-action="click->rule-chain#addRole"
+                        data-rule-chain-role-param="<%= role %>"
+                        data-rule-chain-label-param="<%= t("leaves.approval_steps.#{role}") %>">
+                  + <%= t("leaves.approval_steps.#{role}") %>
+                </button>
+              <% end %>
+              <select class="form-select form-select-sm" style="max-width: 240px;"
+                      data-rule-chain-target="userPicker"
+                      data-action="change->rule-chain#addUser">
+                <option value=""><%= t("settings.leaves.rule.add_user") %></option>
+                <% users.each do |u| %>
+                  <option value="<%= u.id %>" data-label="<%= u.display_name %>"><%= u.display_name %> (<%= u.email %>)</option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+
+          <label class="form-check mt-2">
+            <%= f.check_box :active, class: "form-check-input" %>
+            <span class="form-check-label"><%= t("settings.leaves.rule.active") %></span>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

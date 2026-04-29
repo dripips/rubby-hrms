@@ -1,0 +1,481 @@
+<% content_for :page_title, @employee.full_name %>
+
+<%
+  can_manage = current_user.role_superadmin? || current_user.role_hr? ||
+               (current_user.role_manager? && current_user.employee&.reports&.exists?(id: @employee.id))
+  is_hr     = current_user.role_superadmin? || current_user.role_hr?
+  state_tone = case @employee.state when "active" then "success" when "probation" then "warning" when "on_leave" then "info" when "terminated" then "danger" else "neutral" end
+%>
+
+<header class="page-header">
+  <div class="d-flex align-items-center gap-3">
+    <div class="avatar-apple avatar-apple--xl" style="background-image: url('<%= @employee.avatar_url %>'); background-size: cover; background-position: center; color: transparent;">
+      <%= @employee.initials %>
+    </div>
+    <div>
+      <div class="page-header__eyebrow"><%= @employee.personnel_number %></div>
+      <h1 class="page-header__title m-0">
+        <%= @employee.full_name %>
+        <span class="pill pill--<%= state_tone %>"><%= t("employees.states.#{@employee.state}") %></span>
+      </h1>
+      <p class="page-header__subtitle">
+        <%= @employee.position&.name %>
+        <% if @employee.department %> · <%= @employee.department.name %><% end %>
+        <% if @employee.gender_label.present? %> · <%= @employee.gender_label %><% end %>
+      </p>
+    </div>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), employees_path, class: "btn btn-ghost" %>
+    <% if can_manage %>
+      <button type="button" class="btn btn-soft" data-bs-toggle="modal" data-bs-target="#editEmployeeModal">
+        <%= t("common.edit") %>
+      </button>
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#quickLeaveModal">
+        <%= t("employees.quick_leave_action") %>
+      </button>
+    <% end %>
+    <% if is_hr %>
+      <%
+        active_onboarding  = @employee.onboarding_processes.kept.where(state: %w[draft active]).first
+        active_offboarding = @employee.offboarding_processes.kept.where(state: %w[draft active]).first
+      %>
+      <% if active_onboarding %>
+        <%= link_to "🌱 #{t('onboarding.continue', default: 'Онбординг идёт')}", onboarding_process_path(active_onboarding), class: "btn btn-soft" %>
+      <% else %>
+        <%= link_to "🌱 #{t('onboarding.start_short', default: 'Онбординг')}", new_onboarding_process_path(employee_id: @employee.id), class: "btn btn-ghost" %>
+      <% end %>
+      <% if active_offboarding %>
+        <%= link_to "👋 #{t('offboarding.continue', default: 'Офбординг идёт')}", offboarding_process_path(active_offboarding), class: "btn btn-soft" %>
+      <% else %>
+        <%= link_to "👋 #{t('offboarding.start_short', default: 'Офбординг')}", new_offboarding_process_path(employee_id: @employee.id), class: "btn btn-ghost" %>
+      <% end %>
+      <%= button_to t("common.delete"), employee_path(@employee), method: :delete, class: "btn btn-danger", data: { turbo_confirm: t("common.confirm.delete") }, form: { class: "d-inline" } %>
+    <% end %>
+  </div>
+</header>
+
+<%= render "form_modal",
+           employee:    @employee,
+           modal_id:    "editEmployeeModal",
+           modal_title: t("employees.edit"),
+           form_url:    employee_path(@employee),
+           http_method: :patch,
+           departments: @departments,
+           positions:   @positions,
+           grades:      @grades,
+           managers:    @managers %>
+
+<%= render "quick_leave_modal",
+           employee:    @employee,
+           leave_types: @leave_types %>
+
+<section class="row g-3">
+  <div class="col-12 col-xl-8 d-flex flex-column gap-3">
+
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("employees.profile") %></h3>
+      <dl class="row g-3 mb-0">
+        <% [
+          [t("employees.fields.last_name"),       @employee.last_name],
+          [t("employees.fields.first_name"),      @employee.first_name],
+          [t("employees.fields.middle_name"),     @employee.middle_name],
+          [t("employees.fields.birth_date"),      (l(@employee.birth_date, format: :long) if @employee.birth_date)],
+          [t("employees.fields.phone"),           @employee.phone],
+          [t("employees.fields.personal_email"),  @employee.personal_email],
+          ["Email", @employee.user&.email]
+        ].each do |label, value| %>
+          <dt class="col-sm-4 form-label"><%= label %></dt>
+          <dd class="col-sm-8"><%= value.presence || "—" %></dd>
+        <% end %>
+      </dl>
+    </div>
+
+    <div class="card-apple" id="family">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("employees.family.title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("employees.family.subtitle") %></p>
+        </div>
+        <% if can_manage %>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-soft btn-sm" data-bs-toggle="modal" data-bs-target="#editFamilyModal">
+              <%= t("common.edit") %>
+            </button>
+            <button type="button" class="btn btn-soft btn-sm" data-bs-toggle="modal" data-bs-target="#newChildModal">
+              + <%= t("employees.family.add_child") %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <dl class="row g-2 mb-3">
+        <dt class="col-sm-4 form-label"><%= t("employees.fields.marital_status") %></dt>
+        <dd class="col-sm-8"><%= @employee.marital_status.present? ? t("employees.marital_statuses.#{@employee.marital_status}") : "—" %></dd>
+
+        <dt class="col-sm-4 form-label"><%= t("employees.fields.emergency_contact") %></dt>
+        <dd class="col-sm-8">
+          <% if @employee.emergency_contact_name.present? %>
+            <%= @employee.emergency_contact_name %>
+            <% if @employee.emergency_contact_relation.present? %><span class="text-tertiary footnote">(<%= @employee.emergency_contact_relation %>)</span><% end %>
+            <% if @employee.emergency_contact_phone.present? %><br><span class="text-mono footnote"><%= @employee.emergency_contact_phone %></span><% end %>
+          <% else %>—<% end %>
+        </dd>
+
+        <dt class="col-sm-4 form-label"><%= t("employees.fields.hobbies") %></dt>
+        <dd class="col-sm-8"><%= @employee.hobbies.presence || "—" %></dd>
+
+        <dt class="col-sm-4 form-label"><%= t("employees.fields.shirt_size") %></dt>
+        <dd class="col-sm-8"><%= @employee.shirt_size.presence || "—" %></dd>
+
+        <dt class="col-sm-4 form-label"><%= t("employees.fields.dietary_restrictions") %></dt>
+        <dd class="col-sm-8"><%= @employee.dietary_restrictions.presence || "—" %></dd>
+      </dl>
+
+      <% if @children.any? %>
+        <div class="form-label mb-2"><%= t("employees.family.children_count", count: @children.size) %></div>
+        <div class="d-flex flex-column gap-2">
+          <% @children.each do |child| %>
+            <div class="leave-row" style="cursor: default;">
+              <span class="avatar-apple"><%= child.first_name.first&.upcase %></span>
+              <div class="leave-row__body">
+                <div class="leave-row__title"><%= [child.first_name, child.last_name].compact_blank.join(" ") %></div>
+                <div class="footnote text-secondary-apple">
+                  <%= l(child.birth_date, format: :long) %>
+                  · <%= t("employees.family.age_years", count: child.age) %>
+                  <% if child.gender_record %> · <%= child.gender_record.name %><% end %>
+                </div>
+                <% if child.notes.present? %>
+                  <div class="footnote text-tertiary mt-1">📝 <%= child.notes %></div>
+                <% end %>
+              </div>
+              <% upcoming = child.upcoming_birthday %>
+              <% if upcoming && (upcoming - Date.current).to_i <= 30 %>
+                <span class="pill pill--info">🎂 <%= (upcoming - Date.current).to_i %>д</span>
+              <% end %>
+              <% if can_manage %>
+                <%= button_to "×",
+                              employee_child_path(@employee, child),
+                              method: :delete,
+                              class: "btn-close",
+                              form: { class: "d-inline" },
+                              data: { turbo_confirm: t("common.confirm.delete") } %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-secondary-apple m-0"><%= t("employees.family.no_children") %></p>
+      <% end %>
+    </div>
+
+    <%# ── All leaves ───────────────────────────────────────────────── %>
+    <div class="card-apple" id="leaves">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("employees.leaves.title") %></h3>
+          <p class="card-apple__subtitle m-0">
+            <% if @all_leaves.any? %>
+              <%= t("employees.leaves.subtitle", total: @all_leaves.size) %>
+            <% else %>
+              <%= t("employees.leaves.empty_subtitle") %>
+            <% end %>
+          </p>
+        </div>
+        <% if can_manage %>
+          <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#quickLeaveModal">
+            + <%= t("employees.quick_leave_action") %>
+          </button>
+        <% end %>
+      </div>
+
+      <% if @all_leaves.any? %>
+        <div class="d-flex flex-column gap-2">
+          <% @all_leaves.each do |req| %>
+            <%= link_to leave_request_path(req), class: "leave-row" do %>
+              <span class="leave-row__type-dot" style="background: <%= req.leave_type&.color || '#0A84FF' %>;"></span>
+              <div class="leave-row__body">
+                <div class="leave-row__title"><%= req.leave_type&.name %></div>
+                <div class="footnote text-secondary-apple">
+                  <%= l(req.started_on, format: :short) %> – <%= l(req.ended_on, format: :short) %>
+                  · <%= t("leaves.days_count", count: req.days.to_i) %>
+                  <% if req.applied_at %>
+                    · <%= t("leaves.fields.applied_at") %>: <%= l(req.applied_at, format: :short) %>
+                  <% end %>
+                </div>
+              </div>
+              <span class="pill pill--<%= leave_state_tone(req.state) %>"><%= t("leaves.states.#{req.state}") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if is_hr %>
+      <div class="card-apple">
+        <h3 class="card-apple__title mb-3"><%= t("employees.documents_card") %></h3>
+        <dl class="row g-2 mb-0">
+          <dt class="col-sm-4 form-label"><%= t("employees.fields.tax_id") %></dt>
+          <dd class="col-sm-8 text-mono"><%= @employee.tax_id.presence || "—" %></dd>
+
+          <dt class="col-sm-4 form-label"><%= t("employees.fields.insurance_id") %></dt>
+          <dd class="col-sm-8 text-mono"><%= @employee.insurance_id.presence || "—" %></dd>
+
+          <dt class="col-sm-4 form-label"><%= t("employees.fields.passport") %></dt>
+          <dd class="col-sm-8">
+            <% if @employee.passport_number.present? %>
+              <span class="text-mono"><%= @employee.passport_number %></span>
+              <% if @employee.passport_issued_at %><br><span class="footnote text-tertiary"><%= l(@employee.passport_issued_at, format: :long) %><% if @employee.passport_issued_by %> · <%= @employee.passport_issued_by %><% end %></span><% end %>
+            <% else %>—<% end %>
+          </dd>
+
+          <dt class="col-sm-4 form-label"><%= t("employees.fields.education") %></dt>
+          <dd class="col-sm-8">
+            <%= @employee.education_level.presence || "—" %>
+            <% if @employee.education_institution.present? %>
+              <div class="footnote text-tertiary"><%= @employee.education_institution %></div>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-4 form-label"><%= t("employees.fields.native_city") %></dt>
+          <dd class="col-sm-8"><%= @employee.native_city.presence || "—" %></dd>
+        </dl>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-12 col-xl-4 d-flex flex-column gap-3">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("employees.work") %></h3>
+      <dl class="row g-2 mb-0">
+        <dt class="col-5 form-label"><%= t("employees.fields.department") %></dt>
+        <dd class="col-7"><%= @employee.department&.name || "—" %></dd>
+
+        <dt class="col-5 form-label"><%= t("employees.fields.position") %></dt>
+        <dd class="col-7"><%= @employee.position&.name || "—" %></dd>
+
+        <dt class="col-5 form-label"><%= t("employees.fields.grade") %></dt>
+        <dd class="col-7"><%= @employee.grade&.name || "—" %></dd>
+
+        <dt class="col-5 form-label"><%= t("employees.fields.manager") %></dt>
+        <dd class="col-7"><%= @employee.manager&.full_name || "—" %></dd>
+
+        <dt class="col-5 form-label"><%= t("employees.fields.employment_type") %></dt>
+        <dd class="col-7"><%= t("employees.employment_types.#{@employee.employment_type}") %></dd>
+
+        <dt class="col-5 form-label"><%= t("employees.fields.hired_at") %></dt>
+        <dd class="col-7"><%= l(@employee.hired_at, format: :long) %></dd>
+      </dl>
+    </div>
+
+    <% if is_hr %>
+      <%= turbo_stream_from [@employee, "ai_leaves"] %>
+      <%
+        ai_kinds = %w[burnout_brief suggest_leave_window kpi_brief meeting_agenda]
+        last_run = AiRun.for_employee(@employee).where(kind: ai_kinds).recent.first
+        history  = AiRun.for_employee(@employee).where(kind: ai_kinds).recent.limit(10)
+        ai_scope = AiLock.for_employee(@employee)
+        ai_busy  = AiLock.running?(ai_scope)
+      %>
+      <div class="card-apple" id="ai">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <h3 class="card-apple__title m-0"><span class="ai-spark">✨</span> <%= t("ai.leaves.section_title") %></h3>
+            <p class="card-apple__subtitle m-0"><%= t("ai.leaves.section_subtitle") %></p>
+          </div>
+        </div>
+
+        <%= render "ai/leaves/controls", employee: @employee %>
+
+        <% if ai_busy %>
+          <%= render "ai/leaves/skeleton", employee: @employee, kind: AiLock.kind_for(ai_scope) %>
+        <% elsif last_run %>
+          <%= render "ai/leaves/result", employee: @employee, run: last_run, history: history %>
+        <% else %>
+          <div id="ai-leaves-panel-<%= @employee.id %>" class="footnote text-secondary-apple">
+            <%= t("ai.leaves.empty_hint") %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="card-apple" id="notes">
+      <h3 class="card-apple__title mb-3"><%= t("employee_notes.title") %></h3>
+
+      <%= form_with(url: employee_notes_path(@employee), method: :post, local: true, class: "d-flex flex-column gap-2 mb-3") do %>
+        <textarea name="employee_note[body]" class="form-control" rows="2"
+                  placeholder="<%= t('employee_notes.placeholder') %>" required></textarea>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex gap-3">
+            <% if is_hr %>
+              <label class="form-check footnote">
+                <input type="checkbox" name="employee_note[hr_only]" value="1" class="form-check-input">
+                <span class="form-check-label"><%= t("employee_notes.hr_only") %></span>
+              </label>
+            <% end %>
+            <label class="form-check footnote">
+              <input type="checkbox" name="employee_note[pinned]" value="1" class="form-check-input">
+              <span class="form-check-label"><%= t("employee_notes.pinned") %></span>
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm"><%= t("employee_notes.add") %></button>
+        </div>
+      <% end %>
+
+      <% if @notes.any? %>
+        <div class="d-flex flex-column gap-2">
+          <% @notes.each do |note| %>
+            <div class="employee-note <%= 'employee-note--pinned' if note.pinned? %>">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div class="footnote text-secondary-apple">
+                  <strong><%= note.author.display_name %></strong>
+                  · <%= time_ago_in_words(note.created_at) %> <%= t("common.ago") %>
+                  <% if note.pinned? %> · 📌<% end %>
+                  <% if note.hr_only? %> · <span class="pill pill--warning"><%= t("employee_notes.hr_only_label") %></span><% end %>
+                </div>
+                <% if can_manage %>
+                  <%= button_to "×",
+                                employee_note_path(@employee, note),
+                                method: :delete,
+                                class: "btn-close",
+                                form: { class: "d-inline" },
+                                data: { turbo_confirm: t("common.confirm.delete") } %>
+                <% end %>
+              </div>
+              <p class="m-0 mt-2" style="white-space: pre-wrap;"><%= note.body %></p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-secondary-apple m-0"><%= t("employee_notes.empty") %></p>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<% if can_manage %>
+  <div class="modal fade" id="newChildModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <%= form_with(url: employee_children_path(@employee), method: :post, local: true) do %>
+          <div class="modal-header">
+            <h5 class="modal-title title-3 m-0"><%= t("employees.family.add_child") %></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body d-flex flex-column gap-3">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label"><%= t("employees.fields.first_name") %></label>
+                <input type="text" name="employee_child[first_name]" required class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"><%= t("employees.fields.last_name") %></label>
+                <input type="text" name="employee_child[last_name]" class="form-control" placeholder="<%= @employee.last_name %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"><%= t("employees.fields.birth_date") %></label>
+                <input type="date" name="employee_child[birth_date]" required class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"><%= t("employees.fields.gender") %></label>
+                <select name="employee_child[gender_ref_id]" class="form-select">
+                  <option value=""><%= t("settings.leaves.rule.any") %></option>
+                  <% @genders.each do |g| %><option value="<%= g.id %>"><%= g.name %></option><% end %>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="form-label"><%= t("employees.family.child_notes") %></label>
+              <textarea name="employee_child[notes]" rows="2" class="form-control" placeholder="<%= t('employees.family.child_notes_placeholder') %>"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+            <button type="submit" class="btn btn-primary"><%= t("common.save") %></button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Edit family & personal modal ─────────────────────────────────── %>
+  <div class="modal fade" id="editFamilyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <%= form_with(model: @employee, url: employee_path(@employee), method: :patch, local: true) do |f| %>
+          <div class="modal-header">
+            <h5 class="modal-title title-3 m-0"><%= t("employees.family.edit_title") %></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('common.close') %>"></button>
+          </div>
+          <div class="modal-body d-flex flex-column gap-3">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <%= f.label :marital_status, t("employees.fields.marital_status"), class: "form-label" %>
+                <%= f.select :marital_status,
+                             Employee::MARITAL_STATUSES.map { |s| [t("employees.marital_statuses.#{s}"), s] },
+                             { include_blank: "—" },
+                             class: "form-select" %>
+              </div>
+              <div class="col-md-6">
+                <%= f.label :gender_ref_id, t("employees.fields.gender"), class: "form-label" %>
+                <%= f.collection_select :gender_ref_id, @genders, :id, :name,
+                                        { include_blank: "—" },
+                                        class: "form-select" %>
+              </div>
+            </div>
+
+            <h4 class="form-label m-0 mt-2"><%= t("employees.fields.emergency_contact") %></h4>
+            <div class="row g-3">
+              <div class="col-md-5">
+                <%= f.label :emergency_contact_name, t("employees.fields.first_name") + " / " + t("employees.fields.last_name"), class: "form-label" %>
+                <%= f.text_field :emergency_contact_name, class: "form-control", placeholder: "Иванова Мария" %>
+              </div>
+              <div class="col-md-4">
+                <%= f.label :emergency_contact_phone, t("employees.fields.phone"), class: "form-label" %>
+                <%= f.telephone_field :emergency_contact_phone, class: "form-control" %>
+              </div>
+              <div class="col-md-3">
+                <%= f.label :emergency_contact_relation, t("employees.family.relation"), class: "form-label" %>
+                <%= f.text_field :emergency_contact_relation, class: "form-control", placeholder: t("employees.family.relation_placeholder") %>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <%= f.label :hobbies, t("employees.fields.hobbies"), class: "form-label" %>
+                <%= f.text_field :hobbies, class: "form-control", placeholder: t("employees.family.hobbies_placeholder") %>
+              </div>
+              <div class="col-md-3">
+                <%= f.label :shirt_size, t("employees.fields.shirt_size"), class: "form-label" %>
+                <%= f.select :shirt_size, %w[XS S M L XL XXL XXXL].map { |s| [s, s] }, { include_blank: "—" }, class: "form-select" %>
+              </div>
+              <div class="col-md-3">
+                <%= f.label :preferred_language, t("settings.translations.locale"), class: "form-label" %>
+                <%= f.text_field :preferred_language, class: "form-control text-mono", placeholder: "ru" %>
+              </div>
+            </div>
+
+            <div>
+              <%= f.label :dietary_restrictions, t("employees.fields.dietary_restrictions"), class: "form-label" %>
+              <%= f.text_area :dietary_restrictions, class: "form-control", rows: 2, placeholder: t("employees.family.dietary_placeholder") %>
+            </div>
+
+            <div class="form-check mt-2">
+              <%= f.check_box :has_disability, class: "form-check-input" %>
+              <%= f.label :has_disability, t("employees.family.has_disability"), class: "form-check-label" %>
+            </div>
+
+            <div>
+              <%= f.label :special_needs, t("employees.family.special_needs"), class: "form-label" %>
+              <%= f.text_area :special_needs, class: "form-control", rows: 2, placeholder: t("employees.family.special_needs_placeholder") %>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+            <%= f.submit t("common.save"), class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

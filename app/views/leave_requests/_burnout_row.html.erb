@@ -1,0 +1,53 @@
+<%
+  emp        = row[:employee]
+  reason     = row[:reason]
+  tone       = reason == :both ? "danger" : (reason == :no_leave_long ? "warning" : "info")
+  pending    = local_assigns.fetch(:pending, false)
+  last_run   = local_assigns.fetch(:last_run, nil) || AiRun.for_employee(emp).where(kind: "burnout_brief").recent.first
+  in_progress = pending || (last_run && (Time.current - last_run.created_at) < 30.seconds && !last_run.success && last_run.error.blank?)
+  ai_severity = last_run&.success && last_run.payload.is_a?(Hash) ? last_run.payload["severity"] : nil
+%>
+<%= turbo_frame_tag "burnout-row-#{emp.id}", class: "leave-row leave-row--with-checkbox" do %>
+  <label class="leave-row__check">
+    <input type="checkbox"
+           name="employee_ids[]"
+           value="<%= emp.id %>"
+           class="form-check-input"
+           form="bulk-burnout-form"
+           <%= 'disabled' if in_progress %>
+           <%= 'checked' if !in_progress && (reason == :both || reason == :no_leave_long) %>>
+  </label>
+
+  <%= link_to employee_path(emp),
+              style: "display: contents; color: inherit; text-decoration: none;",
+              data:  { turbo_frame: "_top" } do %>
+    <span class="avatar-apple"><%= emp.initials %></span>
+    <div class="leave-row__body">
+      <div class="leave-row__title"><%= emp.full_name %></div>
+      <div class="footnote text-secondary-apple">
+        <%= emp.position&.name %><% if emp.department %> · <%= emp.department.name %><% end %>
+        <% if row[:days_since_leave] %>
+          · <%= t("leaves.analytics.burnout_no_leave_days", n: row[:days_since_leave]) %>
+        <% else %>
+          · <%= t("leaves.analytics.burnout_no_leave_ever") %>
+        <% end %>
+        <% if row[:avg_kpi] %> · KPI: <%= row[:avg_kpi] %>%<% end %>
+      </div>
+    </div>
+
+    <div class="d-flex flex-column gap-1 align-items-end">
+      <span class="pill pill--<%= tone %>"><%= t("leaves.analytics.burnout_reason.#{reason}") %></span>
+      <% if in_progress %>
+        <span class="pill pill--info ai-processing-pill">
+          <span class="ai-spark ai-spark--pulse">✨</span>
+          <%= t("ai.leaves.processing") %>
+        </span>
+      <% elsif ai_severity %>
+        <% ai_tone = ai_severity == "high" ? "danger" : (ai_severity == "medium" ? "warning" : "info") %>
+        <span class="pill pill--<%= ai_tone %>">
+          ✨ <%= t("ai.leaves.severity.#{ai_severity}", default: ai_severity.humanize) %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

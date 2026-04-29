@@ -1,0 +1,119 @@
+<%
+  ai_setting = AppSetting.fetch(company: Company.kept.first, category: "ai")
+  ai_enabled = RecruitmentAi.new(setting: ai_setting).enabled?
+  applicants = opening.job_applicants.kept.includes(:owner).order(:applied_at)
+  latest_run = AiRun.for_opening(opening).where(kind: "compare_candidates").recent.first
+%>
+
+<%= turbo_stream_from opening, "ai_compare" %>
+
+<%= render "ai/openings/controls", opening: opening %>
+
+<div id="ai-compare-loading-<%= opening.id %>"></div>
+<div id="ai-compare-result-<%= opening.id %>">
+  <% if latest_run %>
+    <%= render "ai/openings/result", opening: opening, run: latest_run %>
+  <% end %>
+</div>
+
+<div id="ai-compare-history-<%= opening.id %>">
+  <%= render "ai/openings/history", opening: opening %>
+</div>
+
+<%# Модалка выбора кандидатов %>
+<div class="modal fade" id="compareModal-<%= opening.id %>" tabindex="-1" data-controller="modal-autoclose">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <%= form_with(url: ai_compare_opening_path(opening), method: :post) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= t("ai.compare.modal_title") %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="footnote text-secondary-apple mb-3"><%= t("ai.compare.modal_hint") %></p>
+
+          <% if applicants.size < 2 %>
+            <div class="empty-state">
+              <div class="empty-state__title"><%= t("ai.compare.too_few_title") %></div>
+              <p class="footnote"><%= t("ai.compare.too_few_hint") %></p>
+            </div>
+          <% else %>
+            <div class="compare-picker">
+              <% applicants.each do |a| %>
+                <%
+                  completed_rounds = a.interview_rounds.kept.where(state: "completed").count
+                  stage_tone = case a.stage when "hired" then "success" when "rejected","withdrawn" then "danger" when "offered" then "warning" else "info" end
+                  last_round = a.interview_rounds.kept.where(state: "completed").order(:scheduled_at).last
+                  ai_skills  = AiRun.for_applicant(a).where(kind: "analyze_resume").successful.recent.first&.payload&.dig("skills")
+                  ai_skills  = Array(ai_skills).first(6)
+                %>
+                <label class="compare-picker__item">
+                  <input type="checkbox" name="applicant_ids[]" value="<%= a.id %>">
+
+                  <div class="compare-picker__head">
+                    <% if a.avatar_url %>
+                      <span class="avatar-apple avatar-apple--lg avatar-apple--photo" style="background-image: url(<%= a.avatar_url %>);"></span>
+                    <% else %>
+                      <span class="avatar-apple avatar-apple--lg"><%= a.initials %></span>
+                    <% end %>
+
+                    <div class="compare-picker__title">
+                      <div class="compare-picker__name-row">
+                        <strong class="compare-picker__name"><%= a.full_name %></strong>
+                        <span class="pill pill--<%= stage_tone %>"><%= t("job_applicants.stages.#{a.stage}") %></span>
+                      </div>
+                      <div class="compare-picker__role">
+                        <%= a.current_position %><% if a.current_company %> · <%= a.current_company %><% end %>
+                      </div>
+                    </div>
+
+                    <% if last_round&.recommendation %>
+                      <span class="pill pill--<%= last_round.recommendation_tone %> compare-picker__rec">
+                        <%= last_round.recommendation_label %>
+                        <% if last_round.overall_score %> · <%= last_round.overall_score %><% end %>
+                      </span>
+                    <% end %>
+                  </div>
+
+                  <div class="compare-picker__facts">
+                    <div class="compare-picker__fact">
+                      <span class="compare-picker__fact-label"><%= t("ai.compare.facts.experience") %></span>
+                      <span class="compare-picker__fact-value"><%= a.years_of_experience.to_i %> <%= t("ai.compare.years_short") %></span>
+                    </div>
+                    <div class="compare-picker__fact">
+                      <span class="compare-picker__fact-label"><%= t("ai.compare.facts.salary") %></span>
+                      <span class="compare-picker__fact-value"><%= number_with_delimiter(a.expected_salary.to_i, delimiter: " ") %> ₽</span>
+                    </div>
+                    <div class="compare-picker__fact">
+                      <span class="compare-picker__fact-label"><%= t("ai.compare.facts.location") %></span>
+                      <span class="compare-picker__fact-value"><%= a.location.presence || "—" %></span>
+                    </div>
+                    <div class="compare-picker__fact">
+                      <span class="compare-picker__fact-label"><%= t("ai.compare.facts.rounds") %></span>
+                      <span class="compare-picker__fact-value"><%= completed_rounds %> / <%= a.interview_rounds.kept.count %></span>
+                    </div>
+                  </div>
+
+                  <% if ai_skills.any? %>
+                    <div class="compare-picker__chips">
+                      <span class="compare-picker__chips-label"><%= t("ai.compare.facts.skills") %>:</span>
+                      <% ai_skills.each do |s| %>
+                        <span class="pill pill--neutral compare-picker__chip"><%= s %></span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </label>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <% if applicants.size >= 2 %>
+            <%= f.submit t("ai.compare.run"), class: "btn btn-primary" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

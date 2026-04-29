@@ -1,0 +1,10 @@
+<%= @company&.name %> · Спасибо за отклик
+
+<%= @applicant.first_name %>, мы получили ваш отклик на вакансию
+"<%= @opening.title %>"<% if @opening.code.present? %> (<%= @opening.code %>)<% end %>.
+
+Команда HR рассмотрит профиль в ближайшие дни и свяжется с вами по
+указанному email или телефону.
+
+—
+<%= @company&.name %>

@@ -1,0 +1,27 @@
+<div id="ai-leaves-panel-<%= employee.id %>" class="ai-leaves-result ai-leaves-result--loading">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <span class="ai-spark ai-spark--pulse">✨</span>
+    <%
+      title_key = case kind
+                  when "suggest_leave_window" then "ai.leaves.suggest_window_title"
+                  when "kpi_brief"            then "ai.leaves.kpi_brief_title"
+                  when "meeting_agenda"       then "ai.leaves.meeting_agenda_title"
+                  when "compensation_review"  then "ai.leaves.compensation_review_title"
+                  when "exit_risk_brief"      then "ai.leaves.exit_risk_brief_title"
+                  else                             "ai.leaves.burnout_brief_title"
+                  end
+    %>
+    <strong><%= t(title_key) %></strong>
+    <span class="ai-leaves-result__status footnote text-secondary-apple ms-auto"><%= t("ai.processing") %></span>
+  </div>
+
+  <div class="ai-leaves-skeleton">
+    <div class="ai-leaves-skeleton__line" style="width: 90%;"></div>
+    <div class="ai-leaves-skeleton__line" style="width: 75%;"></div>
+    <div class="ai-leaves-skeleton__line" style="width: 60%;"></div>
+    <div class="ai-leaves-skeleton__line" style="width: 95%;"></div>
+    <div class="ai-leaves-skeleton__line" style="width: 70%;"></div>
+  </div>
+
+  <p class="footnote text-tertiary mt-2 m-0"><%= t("ai.processing_hint") %></p>
+</div>

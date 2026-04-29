@@ -1,0 +1,23 @@
+<%
+  settings_tabs = [
+    { label: t("settings.tabs.languages",     default: "Языки"),         path: settings_languages_path,       icon: "monitor"  },
+    { label: t("settings.tabs.smtp",          default: "SMTP / Email"),  path: settings_smtp_path,            icon: "calendar" },
+    { label: t("settings.tabs.ai",            default: "AI ассистент"),  path: settings_ai_path,              icon: "trending" },
+    { label: t("settings.tabs.notifications", default: "Уведомления"),   path: settings_notifications_path,   icon: "calendar" },
+    { label: t("settings.tabs.communications",default: "Коммуникации"),  path: settings_communications_path,  icon: "calendar" },
+    { label: t("settings.tabs.leaves",        default: "Отпуска"),        path: settings_leaves_path,          icon: "calendar" },
+    { label: t("settings.tabs.genders",       default: "Гендеры"),        path: settings_genders_path,         icon: "people"   },
+    { label: t("settings.tabs.process_templates", default: "Шаблоны процессов"), path: settings_process_templates_path, icon: "calendar" },
+    { label: t("settings.tabs.careers",       default: "Страница найма"), path: settings_careers_path,         icon: "trending" }
+  ]
+%>
+
+<nav class="section-tabs" aria-label="<%= t("navigation.settings", default: "Настройки") %>">
+  <% settings_tabs.each do |tab| %>
+    <% active = current_page?(tab[:path]) %>
+    <%= link_to tab[:path], class: "section-tabs__item #{'is-active' if active}" do %>
+      <%= render "shared/icons/#{tab[:icon]}" %>
+      <span><%= tab[:label] %></span>
+    <% end %>
+  <% end %>
+</nav>

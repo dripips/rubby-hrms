@@ -1,0 +1,76 @@
+<div class="modal fade" id="quickLeaveModal" tabindex="-1" aria-hidden="true" data-controller="modal-autoclose leave-form">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <%= form_with(url: quick_create_leave_requests_path, method: :post, local: true) do |f| %>
+        <input type="hidden" name="leave_request[employee_id]" value="<%= employee.id %>">
+
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= t("employees.quick_leave_title") %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('common.close') %>"></button>
+        </div>
+
+        <div class="modal-body d-flex flex-column gap-3">
+          <p class="footnote text-secondary-apple m-0">
+            <%= t("employees.quick_leave_hint", name: employee.full_name) %>
+          </p>
+
+          <div>
+            <label class="form-label"><%= t("leaves.fields.type") %></label>
+            <div class="leave-type-chips">
+              <% leave_types.each_with_index do |type, idx| %>
+                <label class="leave-type-chip" style="--chip-color: <%= type.color || '#0A84FF' %>;">
+                  <input type="radio" name="leave_request[leave_type_id]" value="<%= type.id %>" <%= 'checked' if idx == 0 %> class="leave-type-chip__input">
+                  <span class="leave-type-chip__dot"></span>
+                  <span class="leave-type-chip__name"><%= type.name %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+              <label class="form-label"><%= t("leaves.fields.started_on") %></label>
+              <input type="date" name="leave_request[started_on]" required class="form-control"
+                     value="<%= Date.current %>"
+                     data-leave-form-target="from"
+                     data-action="change->leave-form#recalc">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label"><%= t("leaves.fields.ended_on") %></label>
+              <input type="date" name="leave_request[ended_on]" required class="form-control"
+                     value="<%= Date.current + 6.days %>"
+                     data-leave-form-target="to"
+                     data-action="change->leave-form#recalc">
+            </div>
+          </div>
+
+          <div class="leave-day-counter leave-day-counter--inline is-active" data-leave-form-target="counter">
+            <span class="leave-day-counter__label"><%= t("leaves.day_counter.label") %></span>
+            <span class="leave-day-counter__value text-mono" data-leave-form-target="counterValue">7</span>
+            <span class="leave-day-counter__unit"><%= t("leaves.day_counter.unit") %></span>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <% [3, 7, 14, 28].each do |days| %>
+              <button type="button" class="btn btn-soft btn-sm"
+                      data-action="click->leave-form#applyPreset"
+                      data-leave-form-days-param="<%= days %>">
+                <%= t("leaves.presets.days_label", count: days) %>
+              </button>
+            <% end %>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("leaves.fields.reason") %></label>
+            <textarea name="leave_request[reason]" class="form-control" rows="2" placeholder="<%= t('leaves.reason_placeholder') %>"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <button type="submit" class="btn btn-success"><%= t("employees.quick_leave_submit") %></button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

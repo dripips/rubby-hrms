@@ -1,0 +1,97 @@
+<% content_for :page_title, @opening.title %>
+
+<%
+  state_tone = case @opening.state when "open" then "success" when "draft" then "info" when "on_hold" then "warning" when "closed" then "danger" else "" end
+%>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow text-mono"><%= @opening.code %></div>
+    <h1 class="page-header__title m-0">
+      <%= @opening.title %>
+      <span class="pill pill--<%= state_tone %>"><%= t("job_openings.states.#{@opening.state}") %></span>
+    </h1>
+    <p class="page-header__subtitle">
+      <%= [@opening.department&.name, @opening.position&.name, @opening.grade&.name].compact_blank.join(" · ") %>
+      <% if @opening.salary_range %> · <%= @opening.salary_range %><% end %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), job_openings_path, class: "btn btn-ghost" %>
+    <% if @opening.state_open? %>
+      <%= button_to t("job_openings.actions.hold", default: "На паузу"), hold_job_opening_path(@opening), method: :post, class: "btn btn-soft", form: { class: "d-inline" } %>
+      <%= button_to t("job_openings.actions.close", default: "Закрыть"), close_job_opening_path(@opening), method: :post, class: "btn btn-secondary", form: { class: "d-inline" } %>
+    <% elsif @opening.state_draft? || @opening.state_on_hold? %>
+      <%= button_to t("job_openings.actions.open", default: "Опубликовать"), open_job_opening_path(@opening), method: :post, class: "btn btn-primary", form: { class: "d-inline" } %>
+    <% end %>
+  </div>
+</header>
+
+<section class="row g-3">
+  <div class="col-12 col-xl-8">
+    <% [["description", t("job_openings.fields.description")],
+        ["requirements", t("job_openings.fields.requirements")],
+        ["nice_to_have", t("job_openings.fields.nice_to_have")]].each do |attr, label| %>
+      <% next if @opening.send(attr).blank? %>
+      <div class="card-apple mb-3">
+        <h3 class="card-apple__title mb-2"><%= label %></h3>
+        <div style="white-space: pre-wrap; line-height: 1.55;"><%= @opening.send(attr) %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-12 col-xl-4">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("job_openings.funnel", default: "Воронка кандидатов") %></h3>
+      <% funnel = @opening.funnel %>
+      <ul class="list-unstyled m-0 d-flex flex-column gap-2">
+        <% JobApplicant::STAGES.each do |stage| %>
+          <li class="d-flex align-items-center gap-3">
+            <span class="kanban__col-dot is-<%= stage %>"></span>
+            <span style="flex:1;"><%= t("job_applicants.stages.#{stage}", default: stage.humanize) %></span>
+            <strong><%= funnel[stage] %></strong>
+          </li>
+        <% end %>
+      </ul>
+
+      <hr class="divider">
+
+      <div class="footnote text-secondary-apple">
+        <% if @opening.owner %>
+          <%= t("job_openings.fields.owner") %>: <strong><%= @opening.owner.email %></strong><br>
+        <% end %>
+        <% if @opening.published_at %>
+          <%= t("job_openings.fields.published_at") %>: <%= l(@opening.published_at, format: :long) %><br>
+        <% end %>
+        <% if @opening.closes_at %>
+          <%= t("job_openings.fields.closes_at") %>: <%= l(@opening.closes_at, format: :long) %><br>
+        <% end %>
+        <%= t("job_openings.fields.openings_count") %>: <strong><%= @opening.openings_count %></strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<% if @applicants.any? %>
+  <%= render "ai/openings/compare_panel", opening: @opening %>
+
+  <h3 class="title-3 mt-5 mb-3"><%= t("job_openings.applicants_title", default: "Кандидаты на эту вакансию") %> · <span class="text-secondary-apple"><%= @applicants.size %></span></h3>
+  <div class="row g-3">
+    <% @applicants.each do |a| %>
+      <div class="col-12 col-md-6 col-xl-4">
+        <%= link_to job_applicant_path(a), class: "card-apple card-apple--hover d-block" do %>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="avatar-apple"><%= a.initials %></span>
+            <strong style="flex:1;"><%= a.full_name %></strong>
+            <span class="kanban__col-dot is-<%= a.stage %>"></span>
+          </div>
+          <div class="footnote"><%= a.current_position %><% if a.current_company %> · <%= a.current_company %><% end %></div>
+          <div class="footnote text-tertiary mt-1">
+            <%= t("job_applicants.stages.#{a.stage}") %>
+            · <%= time_ago_in_words(a.applied_at) %> <%= t("common.ago") %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

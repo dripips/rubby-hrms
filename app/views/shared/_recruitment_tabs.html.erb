@@ -1,0 +1,20 @@
+<%
+  recruitment_tabs = [
+    { key: :kanban,                 label: t("navigation.recruitment_kanban"),     path: recruitment_kanban_path,    icon: "kanban"      },
+    { key: :job_openings,           label: t("navigation.job_openings"),           path: job_openings_path,          icon: "briefcase"   },
+    { key: :job_applicants,         label: t("navigation.job_applicants"),         path: job_applicants_path,        icon: "user_search" },
+    { key: :interview_rounds,       label: t("navigation.interview_rounds"),       path: interview_rounds_path,      icon: "calendar"    },
+    { key: :recruitment_calendar,   label: t("navigation.recruitment_calendar"),   path: recruitment_calendar_path,  icon: "calendar"    },
+    { key: :recruitment_analytics,  label: t("navigation.recruitment_analytics"),  path: recruitment_analytics_path, icon: "trending"    }
+  ]
+%>
+
+<nav class="section-tabs" aria-label="<%= t("navigation.recruitment") %>">
+  <% recruitment_tabs.each do |tab| %>
+    <% active = current_page?(tab[:path]) %>
+    <%= link_to tab[:path], class: "section-tabs__item #{'is-active' if active}" do %>
+      <%= render "shared/icons/#{tab[:icon]}" %>
+      <span><%= tab[:label] %></span>
+    <% end %>
+  <% end %>
+</nav>

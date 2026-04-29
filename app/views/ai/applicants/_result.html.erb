@@ -1,0 +1,59 @@
+<%# ── Latest run — большая карточка сверху ────────────────────────────────── %>
+<div class="card-apple ai-result mt-3">
+  <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="pill pill--info">AI · <%= t("ai.actions.#{run.kind}", default: run.kind.humanize) %></span>
+      <span class="footnote text-tertiary"><%= run.model %></span>
+      <span class="footnote text-tertiary"><%= time_ago_in_words(run.created_at) %> <%= t("common.ago") %></span>
+    </div>
+    <span class="footnote text-tertiary"><%= run.total_tokens %> tokens · <%= run.cost_display %></span>
+  </div>
+
+  <%= render "ai/applicants/run_body", run: run %>
+</div>
+
+<%# ── История прошлых запусков с раскрытием в полное содержимое ─────────── %>
+<% past = history.reject { |r| r.id == run.id } %>
+<% if past.any? %>
+  <details class="ai-history mt-3" open>
+    <summary><%= t("ai.history", default: "История запусков") %> · <%= past.size %></summary>
+    <div class="ai-history__list">
+      <% past.each do |r| %>
+        <details class="ai-history__item <%= 'is-fail' unless r.success %>">
+          <summary class="ai-history__head">
+            <span class="pill pill--<%= r.success ? 'info' : 'danger' %>">
+              <%= t("ai.actions.#{r.kind}", default: r.kind.humanize) %>
+            </span>
+            <span class="footnote"><%= l(r.created_at, format: :long) %></span>
+            <span class="footnote text-tertiary"><%= r.model %> · <%= r.total_tokens %> tok · <%= r.cost_display %></span>
+
+            <% if r.success %>
+              <% case r.kind %>
+              <% when "recommend" %>
+                <% if r.payload["recommendation"].present? %>
+                  <span class="ai-history__preview">
+                    <strong><%= t("interview_rounds.recommendations.#{r.payload["recommendation"]}", default: r.payload["recommendation"]) %></strong><% if r.payload["score"] %> · <%= r.payload["score"] %>/100<% end %>
+                  </span>
+                <% end %>
+              <% when "analyze_resume" %>
+                <% if r.payload["summary"].present? %>
+                  <span class="ai-history__preview"><%= truncate(r.payload["summary"], length: 90) %></span>
+                <% end %>
+              <% when "questions_for" %>
+                <% if r.payload["questions"].is_a?(Array) %>
+                  <span class="ai-history__preview"><%= r.payload["questions"].size %> <%= t("ai.questions_count", default: "вопросов") %></span>
+                <% end %>
+              <% end %>
+            <% else %>
+              <span class="ai-history__preview text-danger"><%= truncate(r.error.to_s, length: 100) %></span>
+            <% end %>
+          </summary>
+
+          <div class="ai-history__body">
+            <%= render "ai/applicants/run_body", run: r %>
+          </div>
+        </details>
+      <% end %>
+    </div>
+  </details>
+<% end %>

@@ -1,0 +1,110 @@
+<div class="card-apple ai-result mt-3">
+  <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="pill pill--info">AI · <%= t("ai.actions.compare_candidates") %></span>
+      <span class="footnote text-tertiary"><%= run.model %></span>
+      <span class="footnote text-tertiary"><%= time_ago_in_words(run.created_at) %> <%= t("common.ago") %></span>
+    </div>
+    <span class="footnote text-tertiary"><%= run.total_tokens %> tokens · <%= run.cost_display %></span>
+  </div>
+
+  <% if run.success && run.payload.is_a?(Hash) %>
+    <% data = run.payload %>
+    <% if data["verdict"].present? %>
+      <p class="callout"><%= data["verdict"] %></p>
+    <% end %>
+
+    <% ranking = Array(data["ranking"]).sort_by { |r| r["rank"].to_i } %>
+    <% if ranking.any? %>
+      <div class="compare-ranking">
+        <% ranking.each do |row| %>
+          <%
+            applicant  = JobApplicant.kept.find_by(id: row["applicant_id"])
+            last_round = applicant&.interview_rounds&.kept&.where(state: "completed")&.order(:scheduled_at)&.last
+            ai_skills  = Array(applicant && AiRun.for_applicant(applicant).where(kind: "analyze_resume").successful.recent.first&.payload&.dig("skills")).first(6)
+            score_int  = row["score"].to_i
+            score_tone = score_int >= 75 ? "success" : (score_int >= 50 ? "info" : "warning")
+          %>
+          <div class="compare-ranking__row">
+            <div class="compare-ranking__rank">#<%= row["rank"] %></div>
+
+            <div class="compare-ranking__avatar">
+              <% if applicant&.avatar_url %>
+                <span class="avatar-apple avatar-apple--lg avatar-apple--photo" style="background-image: url(<%= applicant.avatar_url %>);"></span>
+              <% else %>
+                <span class="avatar-apple avatar-apple--lg"><%= (applicant&.initials || "??") %></span>
+              <% end %>
+            </div>
+
+            <div class="compare-ranking__body">
+              <div class="compare-ranking__head">
+                <% if applicant %>
+                  <%= link_to applicant.full_name, job_applicant_path(applicant), class: "compare-ranking__name" %>
+                <% else %>
+                  <span class="compare-ranking__name"><%= row["name"] %></span>
+                <% end %>
+                <% if row["score"] %>
+                  <span class="pill pill--<%= score_tone %>"><%= row["score"] %>/100</span>
+                <% end %>
+                <% if last_round&.recommendation %>
+                  <span class="pill pill--<%= last_round.recommendation_tone %>">
+                    <%= last_round.recommendation_label %>
+                    <% if last_round.overall_score %> · <%= last_round.overall_score %><% end %>
+                  </span>
+                <% end %>
+              </div>
+
+              <% if applicant&.current_position.present? %>
+                <div class="compare-ranking__role">
+                  <%= applicant.current_position %><% if applicant.current_company.present? %> · <%= applicant.current_company %><% end %>
+                </div>
+              <% end %>
+
+              <div class="compare-ranking__data">
+                <% if applicant %>
+                  <div class="compare-ranking__facts">
+                    <span class="compare-ranking__fact">
+                      <span class="compare-ranking__fact-label"><%= t("ai.compare.facts.experience") %></span>
+                      <span class="compare-ranking__fact-value"><%= applicant.years_of_experience.to_i %> <%= t("ai.compare.years_short") %></span>
+                    </span>
+                    <% if applicant.expected_salary.to_i.positive? %>
+                      <span class="compare-ranking__fact">
+                        <span class="compare-ranking__fact-label"><%= t("ai.compare.facts.salary") %></span>
+                        <span class="compare-ranking__fact-value"><%= number_with_delimiter(applicant.expected_salary.to_i, delimiter: " ") %> ₽</span>
+                      </span>
+                    <% end %>
+                    <% if applicant.location.present? %>
+                      <span class="compare-ranking__fact">
+                        <span class="compare-ranking__fact-label"><%= t("ai.compare.facts.location") %></span>
+                        <span class="compare-ranking__fact-value"><%= applicant.location %></span>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
+
+                <% if ai_skills.any? %>
+                  <div class="compare-ranking__chips">
+                    <% ai_skills.each do |s| %>
+                      <span class="pill pill--neutral compare-ranking__chip"><%= s %></span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+
+              <div class="compare-ranking__verdict">
+                <p class="compare-ranking__summary"><%= row["summary"] %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <pre style="white-space: pre-wrap; font-size: 12px;"><%= JSON.pretty_generate(data) %></pre>
+    <% end %>
+  <% else %>
+    <div class="empty-state__title text-danger mb-1"><%= t("ai.error") %></div>
+    <% if run.error.present? %>
+      <p class="footnote text-secondary-apple"><%= run.error %></p>
+    <% end %>
+  <% end %>
+</div>

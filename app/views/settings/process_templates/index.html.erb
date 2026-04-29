@@ -1,0 +1,62 @@
+<% content_for(:page_title) { t("settings.process_templates.title", default: "Шаблоны процессов") } %>
+
+<header class="page-header">
+  <div>
+    <h1 class="title-1 m-0"><%= t("settings.process_templates.title", default: "Шаблоны процессов") %></h1>
+    <p class="footnote text-secondary-apple m-0"><%= t("settings.process_templates.subtitle", default: "Чек-листы для онбординга и офбординга — материализуются в задачи при запуске.") %></p>
+  </div>
+</header>
+
+<%= render "settings/subnav" if lookup_context.exists?("settings/subnav", [], true) %>
+
+<% %w[onboarding offboarding].each do |kind| %>
+  <section class="card-apple mb-3" id="<%= kind %>">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h2 class="title-3 m-0">
+        <%= kind == "onboarding" ? "🌱" : "👋" %>
+        <%= t("settings.process_templates.kinds.#{kind}", default: kind.humanize) %>
+      </h2>
+      <%= link_to t("settings.process_templates.new", default: "+ Новый шаблон"),
+                  new_settings_process_template_path(kind: kind),
+                  class: "btn btn-primary btn-sm" %>
+    </div>
+
+    <% list = @grouped[kind] || [] %>
+    <% if list.empty? %>
+      <p class="footnote text-tertiary"><%= t("settings.process_templates.empty", default: "Шаблонов пока нет.") %></p>
+    <% else %>
+      <ul class="list-apple">
+        <% list.each do |t| %>
+          <li class="list-apple__item">
+            <div class="d-flex flex-column gap-1">
+              <div class="d-flex align-items-center gap-2">
+                <strong><%= t.name %></strong>
+                <% if t.default_template %>
+                  <span class="pill pill--info"><%= I18n.t("common.default", default: "default") %></span>
+                <% end %>
+                <% unless t.active %>
+                  <span class="pill pill--neutral"><%= I18n.t("common.inactive", default: "выключен") %></span>
+                <% end %>
+              </div>
+              <div class="footnote text-secondary-apple">
+                <%= t.description.presence || I18n.t("settings.process_templates.no_description", default: "Без описания") %>
+                · <%= I18n.t("settings.process_templates.tasks_count", count: t.items_array.size, default: "%{count} задач") %>
+              </div>
+            </div>
+            <div class="ms-auto d-flex gap-2">
+              <%= link_to I18n.t("common.edit", default: "Редактировать"),
+                          edit_settings_process_template_path(t),
+                          class: "btn btn-ghost btn-sm" %>
+              <%= button_to I18n.t("common.delete", default: "Удалить"),
+                            settings_process_template_path(t),
+                            method: :delete,
+                            class: "btn btn-ghost btn-sm",
+                            data: { turbo_confirm: I18n.t("common.confirm_delete", default: "Удалить?") },
+                            form: { class: "d-inline" } %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </section>
+<% end %>

@@ -1,0 +1,104 @@
+<% content_for :page_title, t("navigation.employees") %>
+
+<%
+  active_count = Employee.kept.state_active.count
+
+  department_values = @departments.each_with_object({}) { |d, h| h[d.id.to_s] = d.name }
+  position_values   = @positions.each_with_object({})   { |p, h| h[p.id.to_s] = p.name }
+  grade_values      = @grades.each_with_object({})      { |g, h| h[g.id.to_s] = g.name }
+
+  cols = [
+    { title: t("employees.fields.personnel_number"), field: "personnel_number", width: 110, headerFilter: "input" },
+    { title: t("employees.fields.full_name"),        field: "full_name",        minWidth: 220, widthGrow: 2, headerFilter: "input" },
+    { title: "Email",                                field: "email",            minWidth: 200, widthGrow: 2, headerFilter: "input" },
+    {
+      title: t("employees.fields.department"), field: "department", minWidth: 160, widthGrow: 1,
+      headerFilter: "list",
+      headerFilterParams: { values: department_values, clearable: true, autocomplete: true, listOnEmpty: true },
+      headerFilterFunc: "="
+    },
+    {
+      title: t("employees.fields.position"), field: "position", minWidth: 200, widthGrow: 2,
+      headerFilter: "list",
+      headerFilterParams: { values: position_values, clearable: true, autocomplete: true, listOnEmpty: true },
+      headerFilterFunc: "="
+    },
+    {
+      title: t("employees.fields.grade"), field: "grade", width: 130,
+      headerFilter: "list",
+      headerFilterParams: { values: grade_values, clearable: true, autocomplete: true, listOnEmpty: true },
+      headerFilterFunc: "="
+    },
+    { title: t("employees.fields.hired_at"), field: "hired_at", width: 130 },
+    {
+      title: t("employees.fields.employment_type"), field: "employment_type_label", width: 140,
+      headerFilter: "list",
+      headerFilterParams: { values: Employee.employment_types.keys.index_with { |k| t("employees.employment_types.#{k}") }, clearable: true }
+    },
+    {
+      title: t("employees.fields.state"), field: "state_label", width: 150, headerSort: false,
+      headerFilter: "list",
+      headerFilterParams: { values: Employee.states.keys.index_with { |k| t("employees.states.#{k}") }, clearable: true },
+      headerFilterFunc: "="
+    }
+  ]
+%>
+
+<div data-controller="apple-grid"
+     data-apple-grid-url-value="<%= employees_path(format: :json) %>"
+     data-apple-grid-page-size-value="50"
+     data-apple-grid-storage-key-value="employees-grid-v1"
+     data-apple-grid-row-url-template-value="<%= employee_path(id: 'PLACEHOLDER').gsub('PLACEHOLDER', '{id}') %>"
+     data-apple-grid-locale-value="<%= I18n.locale %>"
+     data-apple-grid-columns-value="<%= cols.to_json %>">
+
+  <header class="page-header">
+    <div>
+      <div class="page-header__eyebrow"><%= t("app.name") %></div>
+      <h1 class="page-header__title"><%= t("navigation.employees") %></h1>
+      <p class="page-header__subtitle"><%= t("employees.active_count", count: active_count) %></p>
+    </div>
+    <div class="page-header__actions">
+      <button type="button" class="btn btn-soft" data-action="click->apple-grid#exportCsv">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4 7l4 4 4-4M2.5 14h11"/></svg>
+        <%= t("common.export") %> CSV
+      </button>
+
+      <div class="dropdown">
+        <button type="button" class="btn btn-secondary dropdown-toggle"
+                data-bs-toggle="dropdown" data-bs-auto-close="outside" data-bs-display="static" aria-expanded="false">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="4" height="12" rx="1"/><rect x="7.5" y="2" width="3" height="12" rx="1"/><rect x="12" y="2" width="2" height="12" rx="1"/></svg>
+          <%= t("employees.columns_button") %>
+        </button>
+        <div class="dropdown-menu dropdown-menu-apple dropdown-menu-end columns-dropdown"
+             data-action="click->apple-grid#stopPropagation">
+          <div class="columns-dropdown__head">
+            <span class="columns-dropdown__title"><%= t("employees.columns_visible", default: "Видимые колонки") %></span>
+          </div>
+          <div class="dropdown-menu-apple__group"><%= t("employees.columns_group_main", default: "Основные") %></div>
+          <ul id="columnsDropdownList" class="columns-dropdown__list"></ul>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-secondary" data-action="click->apple-grid#toggleDensity" data-apple-grid-target="densityToggle" aria-pressed="false">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+        <span data-apple-grid-target="densityLabel"><%= t("employees.density_full", default: "Стандартный") %></span>
+      </button>
+
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newEmployeeModal">
+        + <%= t("employees.new") %>
+      </button>
+    </div>
+  </header>
+
+  <div data-apple-grid-target="grid" style="height: calc(100vh - 240px); min-height: 480px;"></div>
+</div>
+
+<%= render "form_modal",
+           new_employee: @new_employee,
+           departments:  @departments,
+           positions:    @positions,
+           grades:       @grades,
+           managers:     @managers %>
+
+<%= render "columns_modal" %>

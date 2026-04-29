@@ -1,0 +1,93 @@
+<%
+  ai_setting = AppSetting.fetch(company: Company.kept.first, category: "ai")
+  ai_service = RecruitmentAi.new(setting: ai_setting)
+  ai_enabled = ai_service.enabled?
+  scope      = AiLock.for_applicant(applicant)
+  busy       = AiLock.running?(scope)
+  busy_kind  = busy ? AiLock.kind_for(scope) : nil
+%>
+<div id="ai-controls-applicant-<%= applicant.id %>" class="row g-3">
+  <div class="col-12 col-md-6">
+    <div class="card-apple h-100<%= " is-busy" if busy %>">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="card-apple__title m-0"><%= t("ai.cards.analyze_resume", default: "Разбор резюме") %></h3>
+        <span class="footnote text-tertiary">~$<%= "%.4f" % ai_service.estimate_cost(:analyze_resume) %></span>
+      </div>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("ai.cards.analyze_resume_hint", default: "AI достанет навыки, опыт, сильные стороны и красные флаги") %>
+      </p>
+
+      <% if !ai_enabled %>
+        <div class="footnote text-tertiary"><%= t("ai.disabled", default: "AI отключён или не настроен") %> · <%= link_to t("settings.ai.title"), settings_ai_path %></div>
+      <% elsif busy %>
+        <button type="button" class="btn btn-primary btn-sm" disabled>
+          <span class="spinner-dot me-2"></span><%= t("ai.busy", default: "AI работает...") %>
+        </button>
+      <% else %>
+        <%= button_to t("ai.run", default: "Запустить"),
+                      ai_analyze_resume_applicant_path(applicant),
+                      method: :post, class: "btn btn-primary btn-sm",
+                      form: { class: "d-inline", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="card-apple h-100<%= " is-busy" if busy %>">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="card-apple__title m-0"><%= t("ai.cards.recommend", default: "Рекомендация по найму") %></h3>
+        <span class="footnote text-tertiary">~$<%= "%.4f" % ai_service.estimate_cost(:recommend) %></span>
+      </div>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("ai.cards.recommend_hint", default: "AI оценит профиль + scorecards и предложит strong_yes / yes / maybe / no / strong_no") %>
+      </p>
+
+      <% if !ai_enabled %>
+        <div class="footnote text-tertiary"><%= t("ai.disabled") %></div>
+      <% elsif busy %>
+        <button type="button" class="btn btn-primary btn-sm" disabled>
+          <span class="spinner-dot me-2"></span><%= t("ai.busy", default: "AI работает...") %>
+        </button>
+      <% else %>
+        <%= button_to t("ai.run", default: "Запустить"),
+                      ai_recommend_applicant_path(applicant),
+                      method: :post, class: "btn btn-primary btn-sm",
+                      form: { class: "d-inline", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-6">
+    <div class="card-apple h-100<%= " is-busy" if busy %>">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 class="card-apple__title m-0"><%= t("ai.cards.generate_assignment", default: "Тестовое задание") %></h3>
+        <span class="footnote text-tertiary">~$<%= "%.4f" % ai_service.estimate_cost(:generate_assignment) %></span>
+      </div>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("ai.cards.generate_assignment_hint", default: "AI сгенерирует точное задание под уровень и стек кандидата с учётом риски/сильных сторон") %>
+      </p>
+
+      <% if !ai_enabled %>
+        <div class="footnote text-tertiary"><%= t("ai.disabled") %></div>
+      <% elsif busy %>
+        <button type="button" class="btn btn-primary btn-sm" disabled>
+          <span class="spinner-dot me-2"></span><%= t("ai.busy", default: "AI работает...") %>
+        </button>
+      <% else %>
+        <button type="button" class="btn btn-primary btn-sm"
+                data-bs-toggle="modal" data-bs-target="#assignmentBriefModal-<%= applicant.id %>">
+          <%= t("ai.run", default: "Запустить") %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <% if busy && busy_kind %>
+    <div class="col-12">
+      <p class="footnote text-secondary-apple mb-0">
+        <span class="pill pill--info">AI · <%= t("ai.actions.#{busy_kind}", default: busy_kind.humanize) %></span>
+        <%= t("ai.busy_hint", default: "Задача уже выполняется. Дождитесь результата — он появится автоматически.") %>
+      </p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,35 @@
+<div class="card-apple mb-3">
+  <div class="d-flex align-items-center gap-2 flex-wrap">
+    <span class="form-label m-0 me-2"><%= t("job_applicants.stage", default: "Стадия") %></span>
+
+    <span class="pill pill--<%= case applicant.stage
+                                 when "hired" then "success"
+                                 when "rejected", "withdrawn" then "danger"
+                                 when "offered" then "warning"
+                                 else "info"
+                                 end %>">
+      <%= t("job_applicants.stages.#{applicant.stage}") %>
+    </span>
+
+    <span class="footnote text-tertiary">·</span>
+
+    <% JobApplicant::STAGES.each do |stage| %>
+      <% next if stage == applicant.stage %>
+      <% next if stage == "applied" && JobApplicant::ACTIVE_STAGES.include?(applicant.stage) %>
+      <%
+        target_label  = t("job_applicants.stages.#{stage}")
+        current_label = t("job_applicants.stages.#{applicant.stage}")
+        confirm_text  = t("job_applicants.confirm_stage_change",
+                          default: "Кандидат сейчас на стадии «%{from}». После сохранения он будет переведён на «%{to}». Продолжить?",
+                          from: current_label, to: target_label)
+      %>
+      <%= button_to target_label,
+                    move_stage_job_applicant_path(applicant),
+                    method: :post,
+                    params: { stage: stage },
+                    class: "btn btn-soft btn-sm",
+                    form: { class: "d-inline" },
+                    data:  { turbo_confirm: confirm_text } %>
+    <% end %>
+  </div>
+</div>

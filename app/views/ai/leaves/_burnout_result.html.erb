@@ -1,0 +1,42 @@
+<%= turbo_frame_tag "ai-leaves-panel-#{employee.id}" do %>
+  <%
+    severity = (payload["severity"].presence || "low").to_s
+    tone = case severity
+           when "high"   then "danger"
+           when "medium" then "warning"
+           else               "info"
+           end
+  %>
+  <div class="ai-leaves-result">
+    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="ai-spark">✨</span>
+        <strong><%= t("ai.leaves.burnout_brief_title") %></strong>
+      </div>
+      <span class="pill pill--<%= tone %>"><%= t("ai.leaves.severity.#{severity}", default: severity.humanize) %></span>
+    </div>
+
+    <% if payload["summary"].present? %>
+      <p class="m-0 mb-2"><%= payload["summary"] %></p>
+    <% end %>
+
+    <% if payload["recommendation"].present? %>
+      <div class="ai-leaves-result__rec">
+        <strong><%= t("ai.leaves.recommendation") %>:</strong>
+        <%= payload["recommendation"] %>
+      </div>
+    <% end %>
+
+    <% if payload["best_window_hint"].present? %>
+      <div class="footnote text-secondary-apple mt-2">
+        🕒 <%= payload["best_window_hint"] %>
+      </div>
+    <% end %>
+
+    <%= button_to t("ai.leaves.refresh"),
+                  ai_burnout_brief_employee_path(employee),
+                  method: :post,
+                  class: "btn btn-soft btn-sm mt-3",
+                  form: { class: "d-inline", data: { turbo_frame: "ai-leaves-panel-#{employee.id}" } } %>
+  </div>
+<% end %>

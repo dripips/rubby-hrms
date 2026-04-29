@@ -1,0 +1,43 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 16px; color: #1d1d1f;">
+  <div style="border: 1px solid #d2d2d7; border-radius: 16px; overflow: hidden; background: #ffffff;">
+    <div style="padding: 24px 28px; background: linear-gradient(135deg, #34c759, #30b452); color: #fff;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85;">
+        <%= @company&.name %> · Recruitment
+      </div>
+      <h1 style="font-size: 22px; font-weight: 700; margin: 6px 0 0; letter-spacing: -0.011em;">
+        Спасибо за отклик 🙌
+      </h1>
+    </div>
+
+    <div style="padding: 24px 28px;">
+      <p style="font-size: 15px; line-height: 1.5; margin: 0 0 16px; color: #424245;">
+        <%= @applicant.first_name %>, мы получили ваш отклик на вакансию
+        <strong><%= @opening.title %></strong>.
+      </p>
+
+      <p style="font-size: 14px; line-height: 1.5; margin: 0 0 20px; color: #6e6e73;">
+        Команда HR рассмотрит профиль в ближайшие дни и свяжется с вами по
+        указанному email или телефону. Если потребуется уточнить детали — мы напишем.
+      </p>
+
+      <div style="padding: 14px 16px; border-radius: 10px; background: #f2f2f7;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 0;">Вакансия</td>
+            <td style="font-size: 14px; padding: 4px 0;"><strong><%= @opening.title %></strong></td>
+          </tr>
+          <% if @opening.code.present? %>
+            <tr>
+              <td style="font-size: 11px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; padding: 4px 0;">Код</td>
+              <td style="font-size: 14px; padding: 4px 0; font-family: ui-monospace, monospace;"><%= @opening.code %></td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size: 11px; color: #8e8e93; text-align: center; margin: 16px 0 0;">
+    Это письмо отправлено автоматически из HRMS системы <%= @company&.name %>.
+  </p>
+</div>

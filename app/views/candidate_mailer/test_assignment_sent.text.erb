@@ -1,0 +1,22 @@
+<%= @company&.name %> — Тестовое задание
+
+Здравствуйте, <%= @applicant.first_name %>!
+
+Спасибо что прошли первые этапы. По итогам мы готовы предложить вам тестовое задание.
+
+== <%= @assignment.title %> ==
+
+<%= @assignment.description %>
+
+<% if @assignment.requirements.present? %>
+Требования:
+<%= @assignment.requirements %>
+<% end %>
+
+<% if @assignment.deadline %>Дедлайн: <%= l(@assignment.deadline, format: :long) %>
+<% end %>
+
+После выполнения отправьте решение в ответ на это письмо.
+
+Удачи!
+Команда <%= @company&.name %>

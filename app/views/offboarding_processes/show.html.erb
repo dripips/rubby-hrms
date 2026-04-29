@@ -1,0 +1,138 @@
+<% content_for(:page_title) { @process.employee.full_name } %>
+<%
+  emp = @process.employee
+  state = @process.state
+  risk = @process.exit_risk_score
+  risk_tone = risk && risk >= 70 ? "danger" : (risk && risk >= 40 ? "warning" : "info")
+
+  # Группировка задач по близости к last_day. Положительный days = до ухода.
+  last_day = @process.last_day || (Date.current + 14.days)
+  stage_for = ->(task) {
+    return "after" unless task.due_on
+    days_to_last = (last_day - task.due_on).to_i
+    case days_to_last
+    when ..-1   then "after"      # после last_day
+    when 0..3   then "final_days"
+    when 4..10  then "next_week"
+    else             "far"
+    end
+  }
+  grouped = @process.tasks.order(:position, :due_on).group_by { |t| stage_for.call(t) }
+  stage_order = %w[far next_week final_days after]
+%>
+
+<header class="process-hero process-hero--offboarding">
+  <% if emp.avatar_url.present? %>
+    <span class="avatar-apple avatar-apple--xl avatar-apple--photo process-hero__avatar" style="background-image: url(<%= emp.avatar_url %>);"></span>
+  <% else %>
+    <span class="avatar-apple avatar-apple--xl process-hero__avatar"><%= emp.initials %></span>
+  <% end %>
+
+  <div class="process-hero__body">
+    <div class="process-hero__title-row">
+      <span class="footnote text-tertiary">👋 <%= t("offboarding.title") %></span>
+      <span class="status-pill status-pill--<%= state %>"><%= t("offboarding.states.#{state}") %></span>
+      <% if risk %>
+        <span class="pill pill--<%= risk_tone %>"><%= t("offboarding.exit_risk") %>: <%= risk %>/100</span>
+      <% end %>
+    </div>
+    <%= link_to emp.full_name, employee_path(emp), class: "process-hero__title link-plain" %>
+    <div class="process-hero__subtitle">
+      <% if emp.position %><span><%= emp.position.name %></span><% end %>
+      <% if emp.department %>· <span><%= emp.department.name %></span><% end %>
+      · <span><%= t("offboarding.reasons.#{@process.reason}") %></span>
+      <% if @process.last_day %>
+        · <span><%= t("offboarding.last_day") %>: <strong><%= l(@process.last_day, format: :long) %></strong></span>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="process-hero__actions">
+    <% if @process.may_activate? %>
+      <%= button_to t("offboarding.actions.activate"), activate_offboarding_process_path(@process),
+                    method: :post, class: "btn btn-primary", form: { class: "d-inline" } %>
+    <% end %>
+    <% if @process.may_complete? %>
+      <%= button_to t("offboarding.actions.complete_process"), complete_offboarding_process_path(@process),
+                    method: :post, class: "btn btn-soft", form: { class: "d-inline" },
+                    data: { turbo_confirm: t("offboarding.confirm_complete") } %>
+    <% end %>
+    <% if @process.may_cancel? %>
+      <%= button_to t("offboarding.actions.cancel_process"), cancel_offboarding_process_path(@process),
+                    method: :post, class: "btn btn-ghost", form: { class: "d-inline" },
+                    data: { turbo_confirm: t("offboarding.confirm_cancel") } %>
+    <% end %>
+  </div>
+</header>
+
+<section class="card-apple mb-3">
+  <%= render "progress", process: @process %>
+
+  <div class="process-facts mt-3">
+    <div class="process-facts__cell">
+      <span class="process-facts__label"><%= t("offboarding.fields.template") %></span>
+      <span class="process-facts__value"><%= @process.template&.name || "—" %></span>
+    </div>
+    <div class="process-facts__cell">
+      <span class="process-facts__label"><%= t("offboarding.fields.last_day") %></span>
+      <span class="process-facts__value"><%= @process.last_day ? l(@process.last_day, format: :long) : "—" %></span>
+    </div>
+    <div class="process-facts__cell">
+      <span class="process-facts__label"><%= t("offboarding.fields.reason") %></span>
+      <span class="process-facts__value"><%= t("offboarding.reasons.#{@process.reason}") %></span>
+    </div>
+    <% if risk %>
+      <div class="process-facts__cell">
+        <span class="process-facts__label"><%= t("offboarding.exit_risk") %></span>
+        <span class="process-facts__value"><%= risk %>/100</span>
+      </div>
+    <% end %>
+  </div>
+
+  <% if risk %>
+    <p class="footnote text-secondary-apple mt-2 m-0"><%= t("offboarding.exit_risk_hint") %></p>
+  <% end %>
+</section>
+
+<%= turbo_stream_from @process, "ai_panel" %>
+<%= render "ai/offboarding/controls", process: @process %>
+
+<%
+  ai_scope    = AiLock.for_offboarding(@process)
+  ai_busy     = AiLock.running?(ai_scope)
+  last_ai_run = @process.ai_runs.order(created_at: :desc).first
+%>
+<% if ai_busy %>
+  <%= render "ai/offboarding/skeleton", process: @process, kind: AiLock.kind_for(ai_scope) %>
+<% elsif last_ai_run %>
+  <%= render "ai/offboarding/result", process: @process, run: last_ai_run %>
+<% else %>
+  <div id="ai-offboarding-panel-<%= @process.id %>"></div>
+<% end %>
+
+<section class="card-apple mt-3">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="title-3 m-0"><%= t("offboarding.tasks_title") %></h2>
+    <span class="footnote text-tertiary"><%= @process.tasks.count %></span>
+  </div>
+
+  <% if @process.tasks.empty? %>
+    <p class="footnote text-tertiary"><%= t("offboarding.tasks_empty") %></p>
+  <% else %>
+    <% stage_order.each do |stage| %>
+      <% tasks = grouped[stage] %>
+      <% next unless tasks&.any? %>
+      <div class="task-stage">
+        <div class="task-stage__head">
+          <span class="task-stage__title"><%= t("offboarding.stages.#{stage}") %></span>
+          <span class="task-stage__count"><%= tasks.size %></span>
+        </div>
+        <ul class="task-list list-unstyled">
+          <% tasks.each do |task| %>
+            <%= render "task", task: task, process: @process %>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  <% end %>
+</section>

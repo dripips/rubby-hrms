@@ -1,0 +1,93 @@
+<% content_for :page_title, @department.name %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= @department.full_path %></div>
+    <h1 class="page-header__title m-0"><%= @department.name %></h1>
+    <p class="page-header__subtitle">
+      <% if @department.head %>
+        <%= t("departments.fields.head", default: "Руководитель") %>:
+        <strong><%= @department.head.full_name %></strong>
+      <% else %>
+        <%= t("departments.no_head", default: "Руководитель не назначен") %>
+      <% end %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), departments_path, class: "btn btn-ghost" %>
+    <%= button_to t("common.delete"), department_path(@department), method: :delete, class: "btn btn-danger", data: { turbo_confirm: t("common.confirm_delete", default: "Удалить отдел?") }, form: { class: "d-inline" } %>
+  </div>
+</header>
+
+<section class="row g-3">
+  <div class="col-12 col-xl-7">
+    <div class="card-apple card-apple--flush">
+      <div class="card-apple__header" style="padding: var(--ds-space-4) var(--ds-space-5) 0;">
+        <h3 class="card-apple__title m-0">
+          <%= t("departments.employees_in", default: "Сотрудники отдела") %>
+          <span class="footnote text-secondary-apple">(<%= @employees.size %>)</span>
+        </h3>
+      </div>
+      <% if @employees.any? %>
+        <table class="table-apple" style="margin-top: var(--ds-space-3);">
+          <thead>
+            <tr>
+              <th><%= t("employees.fields.personnel_number") %></th>
+              <th><%= t("employees.fields.full_name") %></th>
+              <th><%= t("employees.fields.position") %></th>
+              <th><%= t("employees.fields.state") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @employees.each do |e| %>
+              <tr>
+                <td><span class="text-mono footnote"><%= e.personnel_number %></span></td>
+                <td>
+                  <%= link_to employee_path(e), class: "d-flex align-items-center gap-2" do %>
+                    <div class="avatar-apple"><%= e.initials %></div>
+                    <span><%= e.full_name %></span>
+                  <% end %>
+                </td>
+                <td><%= e.position&.name || "—" %></td>
+                <td>
+                  <% tone = case e.state when "active" then "success" when "probation" then "warning" when "on_leave" then "info" when "terminated" then "danger" else "" end %>
+                  <span class="pill pill--<%= tone %>"><%= t("employees.states.#{e.state}") %></span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="empty-state">
+          <div class="empty-state__title"><%= t("departments.no_employees", default: "В отделе нет сотрудников") %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-5">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("departments.subdepartments", default: "Подотделы") %></h3>
+      <% if @children.any? %>
+        <div class="d-flex flex-column gap-2">
+          <% @children.each do |child| %>
+            <%= link_to department_path(child), class: "d-flex align-items-center gap-2 surface-grouped p-3 radius-md" do %>
+              <span class="icon-tile icon-tile--blue">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.4"/></svg>
+              </span>
+              <span style="flex:1;">
+                <div class="headline" style="margin:0;"><%= child.name %></div>
+                <div class="footnote"><%= t("departments.employees_count", count: child.employees.kept.size) %></div>
+              </span>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-tertiary"><path d="M6 4l4 4-4 4"/></svg>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-tertiary text-center m-0">
+          <%= t("departments.no_subdepartments", default: "Нет подотделов") %>
+        </p>
+      <% end %>
+    </div>
+  </div>
+</section>

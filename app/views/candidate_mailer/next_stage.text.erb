@@ -1,0 +1,22 @@
+<% stage_label = I18n.t("job_applicants.stages.#{@new_stage}", default: @new_stage) %>
+<%= @company&.name %>
+
+Здравствуйте, <%= @applicant.first_name %>!
+
+<% if @new_stage == "hired" %>
+Мы рады сообщить, что приняли решение о вашем найме. Скоро с вами свяжется HR.
+<% elsif @new_stage == "offered" %>
+По итогам интервью мы готовы сделать вам предложение.
+<% elsif @new_stage == "interview" %>
+Приглашаем вас на интервью. Скоро придёт отдельное письмо с деталями встречи.
+<% elsif @new_stage == "screening" %>
+Ваш профиль перешёл на скрининг. Рекрутер с вами свяжется.
+<% else %>
+Ваш статус обновился: <%= stage_label %>.
+<% end %>
+
+<% if @comment.present? %>
+Сообщение: <%= @comment %>
+<% end %>
+
+Команда <%= @company&.name %>

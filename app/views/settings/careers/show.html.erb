@@ -1,0 +1,432 @@
+<% content_for :page_title, t("settings.careers.title", default: "Страница найма (Careers)") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.settings") %></div>
+    <h1 class="page-header__title"><%= t("settings.careers.title", default: "Страница найма") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("settings.careers.subtitle", default: "Полностью настраиваемая публичная careers-страница: тексты, дизайн, layout, юридические страницы, согласия, аналитика и API.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to careers_path, target: "_blank", class: "btn btn-soft" do %>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 3h7v7M13 3L7 9M13 9v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3"/></svg>
+      <%= t("settings.careers.preview", default: "Открыть публичную страницу") %>
+    <% end %>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" %>
+
+<% data = @setting.data %>
+
+<%= form_with(model: @setting, url: settings_careers_path, method: :patch, multipart: true, html: { class: "careers-settings-form", data: { controller: "settings-tabs" } }) do |f| %>
+
+  <%# Subnav — горизонтальные tabs внутри страницы careers %>
+  <nav class="careers-subnav">
+    <% [
+      ["general",   t("settings.careers.tab_general",   default: "Основные")],
+      ["branding",  t("settings.careers.tab_branding",  default: "Брендинг")],
+      ["layout",    t("settings.careers.tab_layout",    default: "Layout")],
+      ["texts",     t("settings.careers.tab_texts",     default: "Тексты")],
+      ["pages",     t("settings.careers.tab_pages",     default: "Юр. страницы")],
+      ["cookies",   t("settings.careers.tab_cookies",   default: "Cookies")],
+      ["consents",  t("settings.careers.tab_consents",  default: "Согласия")],
+      ["analytics", t("settings.careers.tab_analytics", default: "Аналитика")],
+      ["api",       t("settings.careers.tab_api",       default: "API & Embed")]
+    ].each do |slug, label| %>
+      <button type="button"
+              class="careers-subnav__tab"
+              data-settings-tabs-target="tab"
+              data-tab-name="<%= slug %>"
+              data-action="click->settings-tabs#switch">
+        <%= label %>
+      </button>
+    <% end %>
+  </nav>
+
+  <%# ── General ──────────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="general">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_general", default: "Основные") %></h3>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label"><%= t("settings.careers.fields.enabled", default: "Включена") %></label>
+          <div class="form-check form-switch">
+            <input type="hidden" name="app_setting[data][enabled]" value="0">
+            <input type="checkbox" name="app_setting[data][enabled]" value="1" class="form-check-input" <%= "checked" if data["enabled"] != false %>>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label"><%= t("settings.careers.fields.show_admin_link", default: "Показывать «В кабинет»") %></label>
+          <div class="form-check form-switch">
+            <input type="hidden" name="app_setting[data][show_admin_link]" value="0">
+            <input type="checkbox" name="app_setting[data][show_admin_link]" value="1" class="form-check-input" <%= "checked" if data["show_admin_link"] %>>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label"><%= t("settings.careers.fields.contact_email", default: "Контактный email") %></label>
+          <input type="email" name="app_setting[data][contact_email]" value="<%= data["contact_email"] %>" class="form-control" placeholder="careers@company.com">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Branding ─────────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="branding">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_branding", default: "Брендинг") %></h3>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label"><%= t("settings.careers.fields.logo", default: "Логотип") %></label>
+          <div data-controller="dropzone">
+            <% if @setting.logo.attached? %>
+              <div class="dropzone__preview">
+                <img src="<%= rails_blob_path(@setting.logo) %>" alt="logo" style="max-height: 56px;">
+                <label class="form-check-label" style="margin-left: 12px;">
+                  <input type="checkbox" name="app_setting[remove_logo]" value="1" class="form-check-input">
+                  <%= t("settings.careers.fields.remove_logo", default: "удалить") %>
+                </label>
+              </div>
+            <% end %>
+            <label class="dropzone" data-dropzone-target="zone">
+              <input type="file" name="app_setting[logo]" accept="image/*"
+                     data-dropzone-target="input" data-action="change->dropzone#changed">
+              <div class="dropzone__icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+              </div>
+              <div class="dropzone__text">
+                <strong data-dropzone-target="title"><%= t("settings.careers.dropzone.upload", default: "Перетащите файл или нажмите") %></strong>
+                <span data-dropzone-target="hint">PNG, SVG, JPG · до 2 MB</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="col-md-8">
+          <label class="form-label"><%= t("settings.careers.fields.hero_image", default: "Фоновое изображение для hero") %></label>
+          <div data-controller="dropzone">
+            <% if @setting.hero_image.attached? %>
+              <div class="dropzone__preview">
+                <img src="<%= rails_blob_path(@setting.hero_image) %>" alt="hero" style="max-height: 80px; border-radius: 8px;">
+                <label class="form-check-label" style="margin-left: 12px;">
+                  <input type="checkbox" name="app_setting[remove_hero_image]" value="1" class="form-check-input">
+                  <%= t("settings.careers.fields.remove_hero_image", default: "удалить") %>
+                </label>
+              </div>
+            <% end %>
+            <label class="dropzone" data-dropzone-target="zone">
+              <input type="file" name="app_setting[hero_image]" accept="image/*"
+                     data-dropzone-target="input" data-action="change->dropzone#changed">
+              <div class="dropzone__icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+              </div>
+              <div class="dropzone__text">
+                <strong data-dropzone-target="title"><%= t("settings.careers.dropzone.upload") %></strong>
+                <span data-dropzone-target="hint">PNG, JPG, WebP · до 5 MB</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Layout ────────────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="layout">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_layout", default: "Layout и дизайн") %></h3>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label"><%= t("settings.careers.fields.layout", default: "Раскладка") %></label>
+          <select name="app_setting[data][layout]" class="form-select">
+            <option value="list"   <%= "selected" if data["layout"] == "list" %>><%= t("settings.careers.layouts.list",   default: "Колонкой") %></option>
+            <option value="grid_2" <%= "selected" if data["layout"] == "grid_2" %>><%= t("settings.careers.layouts.grid_2", default: "2 колонки") %></option>
+            <option value="grid_3" <%= "selected" if data["layout"] == "grid_3" %>><%= t("settings.careers.layouts.grid_3", default: "3 колонки") %></option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><%= t("settings.careers.fields.per_page", default: "На странице") %></label>
+          <input type="number" min="3" max="50" name="app_setting[data][per_page]" value="<%= data["per_page"] %>" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><%= t("settings.careers.fields.color_primary", default: "Основной цвет") %></label>
+          <input type="color" name="app_setting[data][color_primary]" value="<%= data["color_primary"] || "#0A84FF" %>" class="form-control form-control-color">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label"><%= t("settings.careers.fields.color_hero_bg", default: "Фон hero") %></label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="hidden" name="app_setting[data][use_custom_hero_bg]" value="0">
+            <input type="checkbox" name="app_setting[data][use_custom_hero_bg]" value="1" class="form-check-input" <%= "checked" if data["color_hero_bg"].present? %>>
+            <input type="color" name="app_setting[data][color_hero_bg]" value="<%= data["color_hero_bg"].presence || "#0A84FF" %>" class="form-control form-control-color">
+          </div>
+          <small class="footnote text-tertiary mt-1 d-block"><%= t("settings.careers.fields.color_hero_bg_hint", default: "Включи чтобы переопределить градиент. Иначе — auto") %></small>
+        </div>
+
+        <div class="col-md-4">
+          <div class="form-check form-switch">
+            <input type="hidden" name="app_setting[data][show_salary]" value="0">
+            <input type="checkbox" id="cs_salary" name="app_setting[data][show_salary]" value="1" class="form-check-input" <%= "checked" if data["show_salary"] != false %>>
+            <label class="form-check-label" for="cs_salary"><%= t("settings.careers.fields.show_salary") %></label>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-check form-switch">
+            <input type="hidden" name="app_setting[data][show_department]" value="0">
+            <input type="checkbox" id="cs_dep" name="app_setting[data][show_department]" value="1" class="form-check-input" <%= "checked" if data["show_department"] != false %>>
+            <label class="form-check-label" for="cs_dep"><%= t("settings.careers.fields.show_department") %></label>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-check form-switch">
+            <input type="hidden" name="app_setting[data][show_employment_type]" value="0">
+            <input type="checkbox" id="cs_emp" name="app_setting[data][show_employment_type]" value="1" class="form-check-input" <%= "checked" if data["show_employment_type"] != false %>>
+            <label class="form-check-label" for="cs_emp"><%= t("settings.careers.fields.show_employment_type") %></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Texts (i18n proxy) ────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="texts">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_texts", default: "Тексты") %></h3>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("settings.careers.section_texts_hint", default: "Все тексты careers-страницы хранятся в локалях (i18n). Меняй переводы и добавляй новые языки в Настройки → Переводы. Все ключи начинаются с careers.public.*") %>
+      </p>
+      <div class="d-flex gap-2 flex-wrap">
+        <%= link_to settings_translations_path(q: "careers.public"), class: "btn btn-soft" do %>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+          <%= t("settings.careers.open_translations", default: "Открыть Переводы") %>
+        <% end %>
+        <%= link_to t("settings.careers.manage_languages", default: "Управление языками"), settings_languages_path, class: "btn btn-ghost" %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Pages ────────────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="pages">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_pages", default: "Юридические страницы") %></h3>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("settings.careers.section_pages_hint", default: "Содержание показывается на /careers/legal/{slug}. Поддерживается простой текст с переносами строк.") %>
+      </p>
+      <% %w[privacy terms cookies].each do |slug| %>
+        <% page = data.dig("pages", slug) || {} %>
+        <h4 class="title-3 mt-3"><%= t("settings.careers.pages.#{slug}", default: slug.humanize) %></h4>
+        <% CareersSettings.locales.each do |loc| %>
+          <div class="mb-3">
+            <label class="form-label"><%= loc.upcase %> · <%= t("settings.careers.fields.page_body", default: "Текст") %></label>
+            <textarea rows="6"
+                      name="app_setting[data][pages][<%= slug %>][body][<%= loc %>]"
+                      class="form-control"><%= (page["body"] || {})[loc] %></textarea>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Cookies ──────────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="cookies">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_cookies", default: "Cookie banner") %></h3>
+      <div class="form-check form-switch mb-3">
+        <input type="hidden" name="app_setting[data][cookie_banner_enabled]" value="0">
+        <input type="checkbox" id="cb_enabled" name="app_setting[data][cookie_banner_enabled]" value="1" class="form-check-input" <%= "checked" if data["cookie_banner_enabled"] != false %>>
+        <label class="form-check-label" for="cb_enabled"><%= t("settings.careers.fields.cookie_banner_enabled") %></label>
+      </div>
+
+      <h4 class="title-3"><%= t("settings.careers.section_cookie_categories", default: "Категории") %></h4>
+      <p class="footnote text-secondary-apple mb-3"><%= t("settings.careers.section_cookie_categories_hint", default: "Лейблы — в Переводах под careers.public.cookie_category.{key}.{label,description}") %></p>
+
+      <% (data["cookie_categories"] || []).each_with_index do |cat, idx| %>
+        <% key = cat["key"] %>
+        <div class="card-apple--inset p-3 mb-2" style="background: var(--ds-fill-4); border-radius: 12px;">
+          <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label">key</label>
+              <input type="text" name="app_setting[data][cookie_categories][<%= idx %>][key]" value="<%= key %>" class="form-control">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label"><%= t("settings.careers.fields.cat_preview", default: "Превью лейбла (ru/en)") %></label>
+              <div class="footnote">
+                <strong><%= I18n.t("careers.public.cookie_category.#{key}.label", default: key.to_s.humanize, locale: :ru) rescue key %></strong>
+                <span class="text-tertiary"> · </span>
+                <em><%= I18n.t("careers.public.cookie_category.#{key}.label", default: key.to_s.humanize, locale: :en) rescue key %></em>
+              </div>
+            </div>
+            <div class="col-md-2 d-flex align-items-end gap-2">
+              <div class="form-check form-switch">
+                <input type="hidden" name="app_setting[data][cookie_categories][<%= idx %>][required]" value="0">
+                <input type="checkbox" name="app_setting[data][cookie_categories][<%= idx %>][required]" value="1" class="form-check-input" <%= "checked" if cat["required"] %>>
+                <label class="form-check-label">обяз.</label>
+              </div>
+              <div class="form-check form-switch">
+                <input type="hidden" name="app_setting[data][cookie_categories][<%= idx %>][default]" value="0">
+                <input type="checkbox" name="app_setting[data][cookie_categories][<%= idx %>][default]" value="1" class="form-check-input" <%= "checked" if cat["default"] %>>
+                <label class="form-check-label">on</label>
+              </div>
+            </div>
+            <div class="col-md-2 text-end">
+              <%= link_to t("settings.careers.edit_text", default: "редактировать"),
+                          settings_translations_path(q: "careers.public.cookie_category.#{key}"),
+                          class: "footnote" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Consents ─────────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="consents">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_consents", default: "Согласия в форме подачи") %></h3>
+      <p class="footnote text-secondary-apple mb-3"><%= t("settings.careers.section_consents_hint", default: "Структура: key, обязательность, ссылка. Лейбл — в Переводах под careers.public.consent.{key}.label") %></p>
+
+      <% (data["consents"] || []).each_with_index do |consent, idx| %>
+        <% key = consent["key"] %>
+        <div class="card-apple--inset p-3 mb-2" style="background: var(--ds-fill-4); border-radius: 12px;">
+          <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label">key</label>
+              <input type="text" name="app_setting[data][consents][<%= idx %>][key]" value="<%= key %>" class="form-control">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label"><%= t("settings.careers.fields.consent_preview", default: "Превью текста (ru/en)") %></label>
+              <div class="footnote">
+                <strong><%= I18n.t("careers.public.consent.#{key}.label", default: key.to_s.humanize, locale: :ru) rescue key %></strong>
+                <div class="text-tertiary"><em><%= I18n.t("careers.public.consent.#{key}.label", default: key.to_s.humanize, locale: :en) rescue key %></em></div>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label"><%= t("settings.careers.fields.link_kind", default: "Ссылка") %></label>
+              <select name="app_setting[data][consents][<%= idx %>][link][kind]" class="form-select">
+                <option value=""    <%= "selected" if consent["link"].blank? %>>—</option>
+                <option value="page" <%= "selected" if consent.dig("link", "kind") == "page" %>>page</option>
+                <option value="url"  <%= "selected" if consent.dig("link", "kind") == "url"  %>>url</option>
+              </select>
+            </div>
+            <div class="col-md-1 text-center">
+              <div class="form-check form-switch">
+                <input type="hidden" name="app_setting[data][consents][<%= idx %>][required]" value="0">
+                <input type="checkbox" name="app_setting[data][consents][<%= idx %>][required]" value="1" class="form-check-input" <%= "checked" if consent["required"] %>>
+                <label class="form-check-label">*</label>
+              </div>
+            </div>
+            <div class="col-md-1 text-end">
+              <%= link_to t("settings.careers.edit_text", default: "ред."),
+                          settings_translations_path(q: "careers.public.consent.#{key}"),
+                          class: "footnote" %>
+            </div>
+            <div class="col-12">
+              <input type="text" name="app_setting[data][consents][<%= idx %>][link][target]" value="<%= consent.dig("link", "target") %>" class="form-control form-control-sm mt-1" placeholder="<%= t("settings.careers.fields.link_target", default: "page slug или URL") %>">
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Analytics ────────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="analytics">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_analytics", default: "Метрики и аналитика") %></h3>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("settings.careers.section_analytics_hint", default: "Подключите трекеры — скрипты автоматически вставятся в head на /careers и legal-страницах.") %>
+      </p>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Google Analytics 4 (Measurement ID)</label>
+          <input type="text" name="app_setting[data][ga_id]" value="<%= data["ga_id"] %>" class="form-control" placeholder="G-XXXXXXXXXX">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Яндекс.Метрика (counter ID)</label>
+          <input type="text" name="app_setting[data][yandex_metrika_id]" value="<%= data["yandex_metrika_id"] %>" class="form-control" placeholder="89099101">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Facebook Pixel ID</label>
+          <input type="text" name="app_setting[data][fb_pixel_id]" value="<%= data["fb_pixel_id"] %>" class="form-control" placeholder="1234567890">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">VK Pixel (Top.Mail.Ru) ID</label>
+          <input type="text" name="app_setting[data][vk_pixel_id]" value="<%= data["vk_pixel_id"] %>" class="form-control" placeholder="3000000">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── API & Embed ──────────────────────────────────────────────────── %>
+  <div class="careers-tab-panel" data-settings-tabs-target="panel" data-tab="api">
+    <div class="card-apple mb-3">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_api", default: "Public API & Embed") %></h3>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("settings.careers.section_api_hint", default: "Используйте API чтобы встроить вакансии и форму подачи на свой сайт. GET-эндпоинты публичные. POST-приём заявок — опционально с ключом.") %>
+      </p>
+
+      <div class="row g-3">
+        <div class="col-md-9">
+          <label class="form-label"><%= t("settings.careers.fields.api_key", default: "API ключ") %></label>
+          <input type="text" readonly value="<%= data["api_key"] %>"
+                 class="form-control api-key-input"
+                 onclick="this.select(); document.execCommand('copy');"
+                 title="<%= t("settings.careers.api_key_copy", default: "Кликни чтобы скопировать") %>">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <label class="btn btn-soft w-100">
+            <input type="checkbox" name="app_setting[data][regenerate_api_key]" value="1" style="display: none;">
+            <%= t("settings.careers.regenerate_api_key", default: "Регенерировать") %>
+          </label>
+        </div>
+      </div>
+      <small class="footnote text-tertiary mt-1 d-block">
+        <%= t("settings.careers.api_key_hint", default: "Кликни чтобы скопировать. Регенерация — отметь чекбокс «Регенерировать» и сохрани (старый ключ перестанет работать).") %>
+      </small>
+
+      <div class="form-check form-switch mt-3">
+        <input type="hidden" name="app_setting[data][api_require_key_apply]" value="0">
+        <input type="checkbox" id="api_req"
+               name="app_setting[data][api_require_key_apply]" value="1"
+               class="form-check-input" <%= "checked" if data["api_require_key_apply"] %>>
+        <label class="form-check-label" for="api_req">
+          <%= t("settings.careers.fields.api_require_key_apply",
+                default: "Требовать API ключ для POST /apply") %>
+        </label>
+      </div>
+    </div>
+
+    <%# CORS + IP whitelist %>
+    <div class="card-apple mb-3">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.section_security", default: "Защита: CORS + IP whitelist") %></h3>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label"><%= t("settings.careers.fields.cors_origins", default: "Разрешённые домены (Origin)") %></label>
+          <textarea rows="4" name="app_setting[data][cors_origins]"
+                    class="form-control" placeholder="https://mycompany.com&#10;https://careers.mycompany.com&#10;*"><%= Array(data["cors_origins"]).join("\n") %></textarea>
+          <small class="footnote text-tertiary mt-1 d-block">
+            <%= t("settings.careers.fields.cors_origins_hint", default: "Один домен на строку. Если пусто — открыто для всех (Access-Control-Allow-Origin: *). Если заполнено — другим доменам 403.") %>
+          </small>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label"><%= t("settings.careers.fields.allowed_ips", default: "Разрешённые IP / CIDR") %></label>
+          <textarea rows="4" name="app_setting[data][allowed_ips]"
+                    class="form-control" placeholder="192.168.1.10&#10;10.0.0.0/24&#10;2001:db8::/32"><%= Array(data["allowed_ips"]).join("\n") %></textarea>
+          <small class="footnote text-tertiary mt-1 d-block">
+            <%= t("settings.careers.fields.allowed_ips_hint", default: "Один IP/CIDR на строку. Пусто = разрешено всем. Запросы с других IP → 403.") %>
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <%# Документация %>
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("settings.careers.api_docs", default: "Документация") %></h3>
+      <%= render "settings/careers/api_docs", api_key: data["api_key"], host: request.base_url %>
+    </div>
+  </div>
+
+  <div class="careers-settings-form__actions">
+    <button type="submit" class="btn btn-primary"><%= t("common.save") %></button>
+  </div>
+<% end %>

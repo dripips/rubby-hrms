@@ -1,0 +1,11 @@
+<%= turbo_frame_tag "ai-leaves-panel-#{employee.id}" do %>
+  <div class="ai-leaves-result ai-leaves-result--error">
+    <strong><%= t("ai.leaves.error_title") %></strong>
+    <p class="footnote m-0 mt-1"><%= error %></p>
+    <%= button_to t("ai.leaves.retry"),
+                  ai_burnout_brief_employee_path(employee),
+                  method: :post,
+                  class: "btn btn-soft btn-sm mt-2",
+                  form: { class: "d-inline", data: { turbo_frame: "ai-leaves-panel-#{employee.id}" } } %>
+  </div>
+<% end %>

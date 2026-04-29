@@ -1,0 +1,106 @@
+<%
+  latest = assignment.latest_evaluation
+  just_saved ||= false
+  error      ||= nil
+%>
+<%= turbo_frame_tag "kpi-eval-row-#{assignment.id}", class: "kpi-eval-row-frame" do %>
+  <div class="kpi-eval-row <%= 'kpi-eval-row--saved' if just_saved %>">
+    <div class="kpi-eval-row__head">
+      <div>
+        <div class="kpi-eval-row__metric"><%= assignment.kpi_metric.name %></div>
+        <div class="footnote text-tertiary">
+          <span class="text-mono"><%= assignment.kpi_metric.code %></span>
+          · <%= assignment.period_label %>
+          <% if assignment.target.present? %>
+            · <%= t("kpi.evaluations.target") %>: <strong><%= number_with_precision(assignment.target, precision: 2, strip_insignificant_zeros: true) %> <%= assignment.kpi_metric.unit %></strong>
+          <% end %>
+          · <%= t("kpi.assignments.fields.weight") %>: <%= number_with_precision(assignment.weight || 1.0, precision: 2, strip_insignificant_zeros: true) %>
+        </div>
+      </div>
+      <div class="kpi-eval-row__latest">
+        <% if latest&.score %>
+          <span class="pill pill--<%= latest.score >= 80 ? 'success' : (latest.score >= 50 ? 'info' : 'warning') %>">
+            <%= latest.score.to_i %>%
+          </span>
+          <div class="footnote text-tertiary mt-1">
+            <%= t("kpi.evaluations.last_evaluated") %>: <%= time_ago_in_words(latest.evaluated_at) %> <%= t("common.ago") %>
+          </div>
+        <% else %>
+          <span class="pill pill--neutral"><%= t("kpi.evaluations.not_scored") %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <%= form_with(url: kpi_evaluations_path,
+                  method: :post,
+                  data: { controller: "score-slider", turbo_frame: "kpi-eval-row-#{assignment.id}" },
+                  class: "kpi-eval-row__form mt-3") do |f| %>
+      <%= f.hidden_field :kpi_assignment_id, value: assignment.id, name: "kpi_evaluation[kpi_assignment_id]" %>
+
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label"><%= t("kpi.evaluations.actual_value") %></label>
+          <input type="number"
+                 step="0.01"
+                 name="kpi_evaluation[actual_value]"
+                 value="<%= latest&.actual_value %>"
+                 class="form-control"
+                 placeholder="<%= assignment.kpi_metric.unit %>">
+        </div>
+
+        <div class="col-md-5">
+          <div class="d-flex justify-content-between">
+            <label class="form-label"><%= t("kpi.evaluations.score") %></label>
+            <span class="footnote text-mono" data-score-slider-target="value"><%= latest&.score&.to_i || 0 %>%</span>
+          </div>
+          <input type="range"
+                 min="0"
+                 max="100"
+                 step="5"
+                 name="kpi_evaluation[score]"
+                 value="<%= latest&.score&.to_i || 0 %>"
+                 class="form-range"
+                 data-score-slider-target="slider"
+                 data-action="input->score-slider#update">
+        </div>
+
+        <div class="col-md-4 d-flex gap-2">
+          <input type="text"
+                 name="kpi_evaluation[notes]"
+                 value=""
+                 class="form-control"
+                 placeholder="<%= t("kpi.evaluations.notes_placeholder") %>">
+          <%= f.submit t("kpi.evaluations.save_score"), class: "btn btn-primary" %>
+        </div>
+      </div>
+
+      <% if error %>
+        <p class="footnote text-danger mt-2"><%= error %></p>
+      <% end %>
+      <% if just_saved %>
+        <p class="footnote text-success mt-2"><%= t("kpi.evaluations.saved") %></p>
+      <% end %>
+    <% end %>
+
+    <% if assignment.kpi_evaluations.any? %>
+      <details class="kpi-eval-row__history mt-3">
+        <summary class="footnote text-secondary-apple"><%= t("kpi.evaluations.history") %> (<%= assignment.kpi_evaluations.size %>)</summary>
+        <ul class="kpi-eval-row__history-list">
+          <% assignment.kpi_evaluations.order(evaluated_at: :desc).limit(10).each do |e| %>
+            <li>
+              <span class="text-mono"><%= e.score&.to_i || "—" %>%</span>
+              <% if e.actual_value.present? %><span class="text-secondary-apple">· <%= e.actual_value %><% if assignment.kpi_metric.unit.present? %> <%= assignment.kpi_metric.unit %><% end %></span><% end %>
+              <span class="text-tertiary footnote">
+                · <%= l(e.evaluated_at, format: :long) %>
+                · <%= e.evaluator.display_name %>
+              </span>
+              <% if e.notes.present? %>
+                <div class="footnote"><%= e.notes %></div>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      </details>
+    <% end %>
+  </div>
+<% end %>

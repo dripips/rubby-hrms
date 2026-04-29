@@ -1,0 +1,41 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 32px 16px; color: #1d1d1f;">
+  <div style="border: 1px solid #d2d2d7; border-radius: 16px; overflow: hidden; background: #ffffff;">
+    <div style="padding: 24px 28px; background: #f5f5f7;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8e8e93;">
+        <%= @company&.name %>
+      </div>
+      <h1 style="font-size: 22px; font-weight: 700; margin: 6px 0 0; letter-spacing: -0.011em;">
+        Спасибо за интерес к нашей компании
+      </h1>
+    </div>
+
+    <div style="padding: 24px 28px;">
+      <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+        Здравствуйте, <strong><%= @applicant.first_name %></strong>.
+      </p>
+
+      <p style="font-size: 15px; line-height: 1.6; margin: 0 0 16px; color: #424245;">
+        Спасибо за время, которое вы потратили на общение с нашей командой.
+        К сожалению, на данный момент мы приняли решение не двигаться дальше
+        с вашей кандидатурой.
+      </p>
+
+      <% if @comment.present? %>
+        <div style="background: #f5f5f7; border-left: 3px solid #8e8e93; padding: 12px 16px; margin: 16px 0; border-radius: 0 8px 8px 0;">
+          <div style="font-size: 12px; color: #8e8e93; margin-bottom: 4px;">Комментарий от рекрутера</div>
+          <div style="font-size: 14px; color: #1d1d1f; line-height: 1.5;"><%= simple_format(@comment) %></div>
+        </div>
+      <% end %>
+
+      <p style="font-size: 14px; line-height: 1.6; margin: 16px 0; color: #424245;">
+        Мы сохраним ваш контакт и обязательно свяжемся, если откроется подходящая позиция.
+        Желаем удачи в дальнейших поисках!
+      </p>
+
+      <p style="font-size: 14px; line-height: 1.5; margin: 24px 0 0; color: #6e6e73;">
+        С уважением,<br>
+        Команда <%= @company&.name %>
+      </p>
+    </div>
+  </div>
+</div>

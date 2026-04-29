@@ -1,0 +1,254 @@
+<%# Полный форматированный рендер payload одного AiRun.
+    Используется и для последнего результата, и при раскрытии в истории. %>
+<% if run.success %>
+  <% data = run.payload %>
+  <% case run.kind %>
+  <% when "analyze_resume" %>
+    <% if data["summary"].present? %>
+      <p class="callout"><%= data["summary"] %></p>
+    <% end %>
+
+    <div class="row g-3">
+      <% if data["strengths"].is_a?(Array) && data["strengths"].any? %>
+        <div class="col-md-6">
+          <div class="ai-result__heading"><%= t("ai.fields.strengths", default: "Сильные стороны") %></div>
+          <ul class="ai-result__list">
+            <% data["strengths"].each do |s| %><li><%= s %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+      <% if data["concerns"].is_a?(Array) && data["concerns"].any? %>
+        <div class="col-md-6">
+          <div class="ai-result__heading is-warning"><%= t("ai.fields.concerns", default: "Риски") %></div>
+          <ul class="ai-result__list">
+            <% data["concerns"].each do |c| %><li><%= c %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+
+    <% if data["skills"].is_a?(Array) && data["skills"].any? %>
+      <div class="mt-3">
+        <div class="ai-result__heading"><%= t("ai.fields.skills", default: "Навыки") %></div>
+        <div class="d-flex flex-wrap gap-2 mt-1">
+          <% data["skills"].each do |s| %>
+            <span class="pill pill--neutral"><%= s %></span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if data["experience_years"].present? %>
+      <div class="footnote text-tertiary mt-3">
+        <%= t("ai.fields.experience_years", default: "Опыт по оценке AI") %>:
+        <strong><%= data["experience_years"] %> <%= t("job_applicants.years", default: "лет") %></strong>
+      </div>
+    <% end %>
+
+  <% when "recommend" %>
+    <% rec_key  = data["recommendation"].to_s %>
+    <% rec_tone = InterviewRound::RECOMMENDATION_TONES[rec_key] || "neutral" %>
+    <% rec_label = rec_key.empty? ? t("ai.no_recommendation", default: "Нет рекомендации") : t("interview_rounds.recommendations.#{rec_key}", default: rec_key.humanize) %>
+    <div class="ai-recommendation">
+      <span class="pill pill--<%= rec_tone %>" style="font-size: 14px; padding: 8px 16px;">
+        <%= rec_label %>
+        <% if data["score"].present? %> · <strong><%= data["score"] %>/100</strong><% end %>
+      </span>
+      <% if data["reasoning"].present? %>
+        <p class="mt-3 mb-0"><%= data["reasoning"] %></p>
+      <% end %>
+    </div>
+
+  <% when "questions_for" %>
+    <%
+      questions = data["questions"]
+      # Защита: иногда модель возвращает items как СТРОКИ с псевдо-JSON
+      # (Ruby-style "key" => "value"). Парсим их обратно в hash.
+      normalize_q = ->(q) {
+        return q if q.is_a?(Hash)
+        return { "question" => q.to_s } unless q.is_a?(String)
+
+        s = q.to_s.strip
+        # Сначала пробуем JSON.parse как есть
+        json_try = (JSON.parse(s) rescue nil)
+        return json_try if json_try.is_a?(Hash)
+
+        # Эвристика: "key" => "value" → "key": "value", далее JSON.parse
+        normalized = s.gsub(/=>/, ":")
+        json_try = (JSON.parse(normalized) rescue nil)
+        return json_try if json_try.is_a?(Hash)
+
+        # Финальный fallback — regex по полям
+        result = {}
+        result["question"]  = s[/"question"\s*[=:]>?\s*"([^"]+)"/, 1]
+        result["category"]  = s[/"category"\s*[=:]>?\s*"([^"]+)"/, 1]
+        result["based_on"]  = s[/"based_on"\s*[=:]>?\s*"([^"]+)"/, 1]
+        result["question"] ||= s
+        result.compact
+      }
+    %>
+    <% if questions.is_a?(Array) && questions.any? %>
+      <ol class="ai-questions">
+        <% questions.each do |raw_q| %>
+          <% q = normalize_q.call(raw_q) %>
+          <li class="ai-questions__item">
+            <div class="ai-questions__text"><%= q["question"] %></div>
+            <% if q["category"].present? || q["based_on"].present? %>
+              <div class="ai-questions__meta">
+                <% if q["category"].present? %>
+                  <span class="pill pill--<%= { "validation" => "success", "risk_probe" => "warning", "tech_stack" => "info", "culture" => "purple" }[q["category"]] || "neutral" %>">
+                    <%= t("ai.question_categories.#{q["category"]}", default: q["category"].humanize) %>
+                  </span>
+                <% end %>
+                <% if q["based_on"].present? %>
+                  <span class="footnote text-tertiary">↳ <%= q["based_on"] %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <pre style="white-space: pre-wrap; font-size: 12px;"><%= JSON.pretty_generate(data) %></pre>
+    <% end %>
+
+  <% when "generate_assignment" %>
+    <div class="ai-assignment">
+      <% if data["title"].present? %>
+        <div class="ai-assignment__head">
+          <h4 class="m-0"><%= data["title"] %></h4>
+          <% if data["difficulty"].present? || data["estimated_hours"].present? %>
+            <div class="ai-assignment__badges">
+              <% if data["difficulty"].present? %>
+                <span class="pill pill--<%= { "junior" => "info", "middle" => "success", "senior" => "warning" }[data["difficulty"]] || "neutral" %>">
+                  <%= data["difficulty"].to_s.humanize %>
+                </span>
+              <% end %>
+              <% if data["estimated_hours"].present? %>
+                <span class="pill pill--neutral">~<%= data["estimated_hours"] %>ч</span>
+              <% end %>
+              <% if data["deadline_days"].present? %>
+                <span class="pill pill--neutral"><%= data["deadline_days"] %> дн. дедлайн</span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if data["description"].present? %>
+        <div class="ai-assignment__section">
+          <div class="ai-result__heading">Описание</div>
+          <p style="white-space: pre-wrap;"><%= data["description"] %></p>
+        </div>
+      <% end %>
+
+      <% if data["requirements"].present? %>
+        <div class="ai-assignment__section">
+          <div class="ai-result__heading">Требования</div>
+          <pre class="ai-assignment__pre"><%= data["requirements"] %></pre>
+        </div>
+      <% end %>
+
+      <% if data["evaluation_criteria"].present? %>
+        <div class="ai-assignment__section">
+          <div class="ai-result__heading">Критерии оценки</div>
+          <pre class="ai-assignment__pre"><%= data["evaluation_criteria"] %></pre>
+        </div>
+      <% end %>
+
+      <% if data["rationale"].present? %>
+        <div class="callout mt-3"><strong>Почему это задание:</strong> <%= data["rationale"] %></div>
+      <% end %>
+
+      <% if policy(TestAssignment).create? %>
+        <div class="mt-3 d-flex flex-wrap gap-2">
+          <%= button_to t("ai.materialize_assignment", default: "Создать как тестовое задание"),
+                        ai_materialize_assignment_run_path(run),
+                        method: :post, class: "btn btn-soft",
+                        data: { turbo_confirm: t("ai.materialize_confirm", default: "Создать тестовое задание из этого черновика? (без отправки на почту)") } %>
+          <%= button_to t("ai.materialize_and_send", default: "Создать и отправить кандидату"),
+                        ai_materialize_assignment_run_path(run, send_email: 1),
+                        method: :post, class: "btn btn-primary",
+                        data: { turbo_confirm: t("ai.materialize_send_confirm", default: "Создать задание и отправить кандидату на почту?") } %>
+        </div>
+      <% end %>
+    </div>
+
+  <% when "summarize_interview" %>
+    <% if data["verdict"].present? %>
+      <p class="callout"><%= data["verdict"] %></p>
+    <% end %>
+
+    <div class="row g-3">
+      <% if data["highlights"].is_a?(Array) && data["highlights"].any? %>
+        <div class="col-md-6">
+          <div class="ai-result__heading">✓ <%= t("ai.fields.highlights", default: "Сильные стороны") %></div>
+          <ul class="ai-result__list">
+            <% data["highlights"].each do |h| %><li><%= h %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+      <% if data["concerns"].is_a?(Array) && data["concerns"].any? %>
+        <div class="col-md-6">
+          <div class="ai-result__heading is-warning">⚠ <%= t("ai.fields.concerns", default: "Что вызвало вопросы") %></div>
+          <ul class="ai-result__list">
+            <% data["concerns"].each do |c| %><li><%= c %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+
+    <% if data["next_steps"].present? %>
+      <div class="mt-3">
+        <div class="ai-result__heading"><%= t("ai.fields.next_steps", default: "Что делать дальше") %></div>
+        <pre style="white-space: pre-wrap; margin: 4px 0 0; font-family: inherit; font-size: 14px; line-height: 1.5;"><%= data["next_steps"] %></pre>
+      </div>
+    <% end %>
+
+    <% if data["agreement_with_interviewer"].present? %>
+      <div class="footnote text-tertiary mt-3">
+        <%= t("ai.fields.agreement", default: "Согласие с интервьюером") %>:
+        <strong><%= t("ai.agreement.#{data["agreement_with_interviewer"]}", default: data["agreement_with_interviewer"]) %></strong>
+      </div>
+    <% end %>
+
+  <% else %>
+    <pre style="white-space: pre-wrap; font-size: 12px; color: var(--ds-label-secondary);"><%= JSON.pretty_generate(data) %></pre>
+  <% end %>
+
+<% else %>
+  <div class="empty-state__title text-danger mb-1"><%= t("ai.error", default: "AI не вернул структурированный ответ") %></div>
+  <% if run.error.present? %>
+    <p class="footnote text-secondary-apple"><%= run.error %></p>
+  <% end %>
+  <% if run.payload["raw"].present? %>
+    <details class="mt-2">
+      <summary class="footnote text-tertiary" style="cursor: pointer;">
+        <%= t("ai.raw_response", default: "Сырой ответ модели") %>
+      </summary>
+      <pre style="white-space: pre-wrap; font-size: 12px; margin-top: 8px;"><%= run.payload["raw"] %></pre>
+    </details>
+  <% end %>
+<% end %>
+
+<%# Метаданные снизу — можно посмотреть точную информацию по запуску %>
+<details class="mt-3">
+  <summary class="footnote text-tertiary" style="cursor: pointer;">
+    <%= t("ai.run_details", default: "Детали запуска") %>
+  </summary>
+  <table class="table-apple mt-2" style="font-size: 12px;">
+    <tr><td><%= t("ai.run_kind", default: "Тип") %></td><td><strong><%= t("ai.actions.#{run.kind}", default: run.kind.humanize) %></strong></td></tr>
+    <tr><td><%= t("ai.run_model", default: "Модель") %></td><td><strong><%= run.model %></strong></td></tr>
+    <tr><td><%= t("ai.run_when", default: "Когда") %></td><td><%= l(run.created_at, format: :long) %> · <%= run.user&.email %></td></tr>
+    <tr><td><%= t("ai.run_tokens", default: "Токены") %></td><td><%= run.input_tokens %> in · <%= run.output_tokens %> out · <strong><%= run.total_tokens %></strong> total</td></tr>
+    <tr><td><%= t("ai.run_cost", default: "Стоимость") %></td><td><strong><%= run.cost_display %></strong></td></tr>
+    <% if run.payload.present? && run.success %>
+      <tr><td colspan="2">
+        <details>
+          <summary style="cursor: pointer;"><%= t("ai.run_raw_payload", default: "Полный JSON-ответ") %></summary>
+          <pre style="white-space: pre-wrap; font-size: 11px; margin-top: 6px;"><%= JSON.pretty_generate(run.payload) %></pre>
+        </details>
+      </td></tr>
+    <% end %>
+  </table>
+</details>

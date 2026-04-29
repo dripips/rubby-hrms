@@ -1,0 +1,75 @@
+<% local_method = local_assigns.fetch(:method, :post) %>
+<div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-hidden="true" data-controller="modal-autoclose">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <%= form_with(model: assignment, url: submit_to, method: local_method, local: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= title %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('common.close') %>"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+          <div>
+            <%= f.label :employee_id, t("kpi.assignments.fields.employee"), class: "form-label" %>
+            <%= f.collection_select :employee_id, employees, :id, :full_name,
+                  { include_blank: t("kpi.assignments.choose_employee") },
+                  class: "form-select", required: true %>
+          </div>
+
+          <div>
+            <%= f.label :kpi_metric_id, t("kpi.assignments.fields.metric"), class: "form-label" %>
+            <%= f.collection_select :kpi_metric_id, metrics, :id, :name,
+                  { include_blank: t("kpi.assignments.choose_metric") },
+                  class: "form-select", required: true %>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <%= f.label :period_start, t("kpi.assignments.fields.period_start"), class: "form-label" %>
+              <%= f.date_field :period_start, class: "form-control", required: true %>
+            </div>
+            <div class="col-6">
+              <%= f.label :period_end, t("kpi.assignments.fields.period_end"), class: "form-label" %>
+              <%= f.date_field :period_end, class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2" data-controller="period-quick">
+            <% [
+                 ["this_week",     :beginning_of_week,    :end_of_week],
+                 ["this_month",    :beginning_of_month,   :end_of_month],
+                 ["this_quarter",  :beginning_of_quarter, :end_of_quarter]
+               ].each do |key, from_m, to_m| %>
+              <button type="button"
+                      class="btn btn-soft btn-sm"
+                      data-period-from="<%= Date.current.public_send(from_m) %>"
+                      data-period-to="<%= Date.current.public_send(to_m) %>"
+                      data-action="click->period-quick#apply">
+                <%= t("kpi.assignments.quick.#{key}") %>
+              </button>
+            <% end %>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-7">
+              <%= f.label :target, t("kpi.assignments.fields.target"), class: "form-label" %>
+              <%= f.number_field :target, step: 0.01, class: "form-control", placeholder: t("kpi.assignments.target_placeholder") %>
+            </div>
+            <div class="col-5">
+              <%= f.label :weight, t("kpi.assignments.fields.weight"), class: "form-label" %>
+              <%= f.number_field :weight, step: 0.1, min: 0, class: "form-control" %>
+            </div>
+          </div>
+
+          <div>
+            <%= f.label :description, t("kpi.assignments.fields.description"), class: "form-label" %>
+            <%= f.text_area :description, rows: 2, class: "form-control", placeholder: t("kpi.assignments.description_placeholder") %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

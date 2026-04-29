@@ -1,0 +1,31 @@
+<li class="template-item card-apple--inset">
+  <div class="d-flex align-items-start gap-2">
+    <span class="template-item__index"></span>
+    <div class="flex-fill row g-2">
+      <div class="col-md-6">
+        <input type="text" class="form-control form-control-sm" data-field="title"
+               placeholder="<%= t('settings.process_templates.items.title_placeholder', default: 'Название задачи') %>"
+               value="<%= item['title'] %>">
+      </div>
+      <div class="col-md-3">
+        <select class="form-select form-select-sm" data-field="kind">
+          <% task_kinds.each do |k| %>
+            <option value="<%= k %>" <%= "selected" if item['kind'].to_s == k %>><%= t("settings.process_templates.task_kinds.#{k}", default: k.humanize) %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <div class="input-group input-group-sm">
+          <input type="number" class="form-control" data-field="due_offset_days" value="<%= item['due_offset_days'].to_i %>" step="1">
+          <span class="input-group-text"><%= t("settings.process_templates.items.days_short", default: "дн") %></span>
+        </div>
+      </div>
+      <div class="col-12">
+        <textarea class="form-control form-control-sm" data-field="description" rows="1"
+                  placeholder="<%= t('settings.process_templates.items.description_placeholder', default: 'Описание (опционально)') %>"><%= item['description'] %></textarea>
+      </div>
+    </div>
+    <button type="button" class="btn-close mt-2" aria-label="remove"
+            data-action="click->template-items#remove"></button>
+  </div>
+</li>

@@ -1,0 +1,51 @@
+<%# Принимаем user явно (для broadcast-контекста где нет current_user). %>
+<% user ||= current_user %>
+<%
+  recent  = user.notifications.includes(:event).order(created_at: :desc).limit(8)
+  unread  = user.notifications.where(read_at: nil).count
+%>
+
+<div id="topbar-bell" class="dropdown notifications">
+  <button type="button"
+          class="topbar-apple__icon-btn"
+          data-bs-toggle="dropdown"
+          data-bs-display="static"
+          data-bs-auto-close="outside"
+          aria-expanded="false"
+          aria-label="<%= t('notifications.title', default: 'Уведомления') %>">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </svg>
+    <% if unread.positive? %>
+      <span class="notifications__badge"><%= unread > 99 ? "99+" : unread %></span>
+    <% end %>
+  </button>
+
+  <div class="dropdown-menu dropdown-menu-apple dropdown-menu-end notifications__menu">
+    <div class="notifications__head">
+      <span class="title-3 m-0"><%= t("notifications.title", default: "Уведомления") %></span>
+      <% if unread.positive? %>
+        <%= button_to t("notifications.mark_all_read", default: "Прочесть все"),
+                      mark_all_read_notifications_path,
+                      method: :post, class: "btn btn-soft btn-sm",
+                      form: { class: "d-inline", data: { turbo_stream: true } } %>
+      <% end %>
+    </div>
+
+    <% if recent.any? %>
+      <ul class="notifications__list">
+        <% recent.each do |notif| %>
+          <%= render "shared/notifications_item", notif: notif %>
+        <% end %>
+      </ul>
+      <div class="notifications__footer">
+        <%= link_to t("notifications.view_all", default: "Все уведомления"), notifications_path %>
+      </div>
+    <% else %>
+      <div class="notifications__empty">
+        <%= t("notifications.empty", default: "Пока ничего нового") %>
+      </div>
+    <% end %>
+  </div>
+</div>

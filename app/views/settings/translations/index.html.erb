@@ -1,0 +1,79 @@
+<% content_for :page_title, t("settings.translations.title", default: "Переводы") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.settings", default: "Настройки") %></div>
+    <h1 class="page-header__title"><%= t("settings.translations.title", default: "Переводы") %></h1>
+    <p class="page-header__subtitle"><%= t("settings.translations.subtitle", default: "Редактируйте подписи интерфейса. БД-значения переопределяют YAML.") %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("settings.languages.title", default: "Языки"), settings_languages_path, class: "btn btn-soft" %>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" %>
+
+<%= form_with(url: settings_translations_path, method: :get, local: true, class: "card-apple mb-4") do %>
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label"><%= t("settings.translations.locale", default: "Язык") %></label>
+      <select name="locale" class="form-select" onchange="this.form.submit()">
+        <% @locales.each do |lang| %>
+          <option value="<%= lang.code %>" <%= 'selected' if lang.code == @current_locale %>>
+            <%= lang.flag %> <%= lang.native_name %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-7">
+      <label class="form-label"><%= t("common.search") %></label>
+      <input type="search" name="q" value="<%= @query %>" class="form-control" placeholder="auth.welcome_back">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button type="submit" class="btn btn-primary"><%= t("common.search") %></button>
+    </div>
+  </div>
+<% end %>
+
+<div class="card-apple card-apple--flush">
+  <table class="table-apple">
+    <thead>
+      <tr>
+        <th style="width:30%;"><%= t("settings.translations.key", default: "Ключ") %></th>
+        <th style="width:30%;"><%= t("settings.translations.yaml", default: "YAML (по умолчанию)") %></th>
+        <th><%= t("settings.translations.value", default: "Текущий перевод") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if @rows.empty? %>
+        <tr><td colspan="3"><div class="empty-state"><div class="empty-state__title"><%= t("settings.translations.empty", default: "Ничего не найдено") %></div></div></td></tr>
+      <% end %>
+      <% @rows.each do |row| %>
+        <tr>
+          <td><span class="text-mono footnote"><%= row[:key] %></span></td>
+          <td class="text-secondary-apple"><%= row[:yaml] %></td>
+          <td>
+            <% existing = Translation.find_by(locale: @current_locale, key: row[:key]) %>
+            <% if existing %>
+              <%= form_with(model: existing, url: settings_translation_path(existing), method: :patch, local: true, class: "d-flex gap-2") do |f| %>
+                <%= f.text_field :value, value: existing.value, class: "form-control form-control-sm" %>
+                <button type="submit" class="btn btn-primary btn-sm"><%= t("common.save") %></button>
+              <% end %>
+            <% else %>
+              <%= form_with(url: settings_translations_path, method: :post, local: true, class: "d-flex gap-2") do %>
+                <input type="hidden" name="translation[locale]" value="<%= @current_locale %>">
+                <input type="hidden" name="translation[key]"    value="<%= row[:key] %>">
+                <input type="text"   name="translation[value]" value="" class="form-control form-control-sm" placeholder="<%= row[:yaml] %>">
+                <button type="submit" class="btn btn-secondary btn-sm"><%= t("common.save") %></button>
+              <% end %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% if @rows.size >= 500 %>
+  <p class="footnote text-tertiary text-center mt-3"><%= t("settings.translations.limit_hit", default: "Показаны первые 500 ключей. Уточните поиск.") %></p>
+<% end %>

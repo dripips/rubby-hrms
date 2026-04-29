@@ -1,0 +1,45 @@
+<% content_for(:page_title) { t("offboarding.new", default: "Новый офбординг") } %>
+
+<header class="page-header">
+  <h1 class="title-1 m-0">👋 <%= t("offboarding.new", default: "Новый офбординг") %></h1>
+  <p class="footnote text-secondary-apple m-0"><%= t("offboarding.new_hint", default: "Выберите сотрудника, причину и дату последнего дня — задачи материализуются автоматически.") %></p>
+</header>
+
+<%= form_with(model: @process, url: offboarding_processes_path, local: true, class: "card-apple form-apple") do |f| %>
+  <% if @process.errors.any? %>
+    <div class="alert alert-danger"><%= @process.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <%= f.label :employee_id, t("offboarding.fields.employee", default: "Сотрудник"), class: "form-label" %>
+      <%= f.select :employee_id,
+                   Employee.kept.working.order(:last_name).map { |e| [e.full_name, e.id] },
+                   { include_blank: true, selected: @process.employee_id },
+                   class: "form-select", data: { controller: "apple-select" } %>
+    </div>
+
+    <div class="col-md-6">
+      <%= f.label :template_id, t("offboarding.fields.template", default: "Шаблон"), class: "form-label" %>
+      <%= f.select :template_id, @templates.map { |t| [t.name, t.id] }, { include_blank: t("common.no_template", default: "Без шаблона") }, class: "form-select", data: { controller: "apple-select" } %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :reason, t("offboarding.fields.reason", default: "Причина"), class: "form-label" %>
+      <%= f.select :reason,
+                   OffboardingProcess::REASONS.map { |r| [t("offboarding.reasons.#{r}", default: r.humanize), r] },
+                   {},
+                   class: "form-select" %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :last_day, t("offboarding.fields.last_day", default: "Последний день"), class: "form-label" %>
+      <%= f.date_field :last_day, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 mt-3">
+    <%= f.submit t("offboarding.start", default: "Запустить офбординг"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel", default: "Отмена"), offboarding_processes_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

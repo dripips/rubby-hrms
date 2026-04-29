@@ -1,0 +1,34 @@
+<%
+  scope     = AiLock.for_employee(employee)
+  busy      = AiLock.running?(scope)
+  busy_kind = busy ? AiLock.kind_for(scope) : nil
+
+  buttons = [
+    { kind: "burnout_brief",       icon: "✨", label: t("ai.leaves.run_burnout"),         path: ai_burnout_brief_employee_path(employee) },
+    { kind: "kpi_brief",           icon: "📊", label: t("ai.leaves.run_kpi_brief"),       path: ai_kpi_brief_employee_path(employee) },
+    { kind: "meeting_agenda",      icon: "📋", label: t("ai.leaves.run_meeting_agenda"),  path: ai_meeting_agenda_employee_path(employee) },
+    { kind: "compensation_review", icon: "💰", label: t("ai.leaves.run_compensation_review", default: "Обзор компенсации"), path: ai_compensation_review_employee_path(employee) },
+    { kind: "exit_risk_brief",     icon: "🚪", label: t("ai.leaves.run_exit_risk", default: "Риск ухода"),                  path: ai_exit_risk_brief_employee_path(employee) }
+  ]
+%>
+<div id="ai-controls-employee-<%= employee.id %>" class="ai-actions d-flex flex-wrap gap-2 mb-3 align-items-center">
+  <% buttons.each do |b| %>
+    <% if busy %>
+      <button type="button" class="btn btn-soft btn-sm" disabled>
+        <span class="spinner-dot me-2"></span><%= b[:icon] %> <%= b[:label] %>
+      </button>
+    <% else %>
+      <%= button_to "#{b[:icon]} #{b[:label]}", b[:path],
+                    method: :post,
+                    class: "btn btn-soft btn-sm",
+                    form: { class: "d-inline", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+    <% end %>
+  <% end %>
+
+  <% if busy && busy_kind %>
+    <span class="footnote text-tertiary ms-1">
+      <span class="pill pill--info">AI · <%= t("ai.actions.#{busy_kind}", default: busy_kind.humanize) %></span>
+      <%= t("ai.busy_hint", default: "Задача уже выполняется. Дождитесь результата — он появится автоматически.") %>
+    </span>
+  <% end %>
+</div>

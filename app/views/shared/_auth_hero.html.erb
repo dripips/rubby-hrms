@@ -1,0 +1,28 @@
+<aside class="auth-shell__hero-side">
+  <div class="auth-hero">
+    <div class="auth-hero__brand">
+      <span class="auth-hero__mark"><%= t("app.name").first %></span>
+      <span class="auth-hero__name"><%= t("app.name") %></span>
+      <span class="auth-hero__tagline"><%= t("app.tagline") %></span>
+    </div>
+
+    <div class="auth-hero__rotator"
+         data-controller="hero-rotator"
+         data-hero-rotator-interval-value="3800">
+      <% slogans = %w[title slogan_1 slogan_2 slogan_3 slogan_4].map { |k| t("auth.hero.#{k}") } %>
+      <% slogans.each_with_index do |line, i| %>
+        <h2 class="auth-hero__slogan <%= 'is-active' if i.zero? %>" data-hero-rotator-target="slide">
+          <%= line %>
+        </h2>
+      <% end %>
+    </div>
+
+    <p class="auth-hero__sub"><%= t("auth.hero.subtitle") %></p>
+
+    <div class="auth-hero__dots" aria-hidden="true">
+      <% slogans.each_index do |i| %>
+        <span class="auth-hero__dot <%= 'is-active' if i.zero? %>"></span>
+      <% end %>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,33 @@
+<% content_for :page_title, t("notifications.title", default: "Уведомления") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("user_menu.profile", default: "Профиль") %></div>
+    <h1 class="page-header__title"><%= t("notifications.title", default: "Уведомления") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("notifications.subtitle", default: "Все события системы — AI, интервью, статусы") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <% unread = current_user.notifications.where(read_at: nil).count %>
+    <% if unread.positive? %>
+      <%= button_to t("notifications.mark_all_read", default: "Прочесть все") + " (#{unread})",
+                    mark_all_read_notifications_path, method: :post, class: "btn btn-soft" %>
+    <% end %>
+  </div>
+</header>
+
+<% if @notifications.any? %>
+  <div class="card-apple p-0" style="overflow: hidden;">
+    <ul class="notifications__list notifications__list--full">
+      <% @notifications.each do |notif| %>
+        <%= render "shared/notifications_item", notif: notif %>
+      <% end %>
+    </ul>
+  </div>
+<% else %>
+  <div class="empty-state card-apple">
+    <div class="empty-state__title"><%= t("notifications.empty", default: "Пока ничего нового") %></div>
+    <p class="footnote"><%= t("notifications.empty_hint", default: "Тут будут события: завершение AI-задач, ближайшие интервью, статусы кандидатов.") %></p>
+  </div>
+<% end %>

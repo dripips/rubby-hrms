@@ -1,0 +1,66 @@
+<%
+  emp        = process.employee
+  done_count = process.tasks.completed.count
+  total      = process.tasks.count
+  pct        = process.progress_percent
+  state      = process.state
+  overdue    = process.overdue_tasks.count
+  variant    = local_assigns.fetch(:variant, :card)
+%>
+
+<% if variant == :compact %>
+  <%= link_to onboarding_process_path(process), class: "list-apple__item" do %>
+    <% if emp.avatar_url.present? %>
+      <span class="avatar-apple avatar-apple--photo" style="background-image: url(<%= emp.avatar_url %>);"></span>
+    <% else %>
+      <span class="avatar-apple"><%= emp.initials %></span>
+    <% end %>
+    <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+      <span class="title-3 m-0 link-plain"><%= emp.full_name %></span>
+      <span class="footnote text-secondary-apple text-truncate">
+        <%= emp.position&.name %><% if emp.department %> · <%= emp.department.name %><% end %>
+      </span>
+    </div>
+    <span class="status-pill status-pill--<%= state %>"><%= t("onboarding.states.#{state}") %></span>
+    <span class="footnote text-tertiary"><%= pct %>% · <%= done_count %>/<%= total %></span>
+  <% end %>
+<% else %>
+  <%= link_to onboarding_process_path(process), class: "process-card" do %>
+    <div class="process-card__head">
+      <% if emp.avatar_url.present? %>
+        <span class="avatar-apple avatar-apple--photo" style="background-image: url(<%= emp.avatar_url %>);"></span>
+      <% else %>
+        <span class="avatar-apple"><%= emp.initials %></span>
+      <% end %>
+      <div class="flex-fill min-w-0">
+        <div class="process-card__title text-truncate"><%= emp.full_name %></div>
+        <div class="process-card__subtitle text-truncate">
+          <%= emp.position&.name %><% if emp.department %> · <%= emp.department.name %><% end %>
+        </div>
+      </div>
+      <span class="status-pill status-pill--<%= state %>"><%= t("onboarding.states.#{state}") %></span>
+    </div>
+
+    <div class="process-card__meta">
+      <% if process.mentor %>🧑‍🏫 <%= process.mentor.short_name %><% end %>
+      <% if process.started_on %>· 📅 <%= l(process.started_on, format: :short) %><% end %>
+      <% if process.target_complete_on && process.state == "active" %>
+        <% days_left = (process.target_complete_on - Date.current).to_i %>
+        · <%= days_left.positive? ? "#{days_left}d" : "просрочен" %>
+      <% end %>
+      <% if overdue.positive? %>
+        · <span class="text-danger">⚠ <%= overdue %></span>
+      <% end %>
+    </div>
+
+    <div class="process-card__progress-wrap">
+      <div class="process-card__progress-row">
+        <strong><%= pct %>%</strong>
+        <span class="text-tertiary"><%= done_count %> / <%= total %> <%= t("onboarding.progress.tasks_done") %></span>
+      </div>
+      <div class="process-card__progress-bar">
+        <div class="process-card__progress-fill" style="width: <%= pct %>%"></div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

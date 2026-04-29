@@ -1,0 +1,55 @@
+<div class="card-apple ai-result mt-3" style="background: var(--ds-fill-4); border-style: dashed;">
+  <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="pill pill--info">AI · <%= t("ai.actions.summarize_interview", default: "Резюме раунда") %></span>
+      <span class="footnote text-tertiary"><%= run.model %></span>
+      <span class="footnote text-tertiary"><%= time_ago_in_words(run.created_at) %> <%= t("common.ago") %></span>
+    </div>
+    <span class="footnote text-tertiary"><%= run.total_tokens %> tokens · <%= run.cost_display %></span>
+  </div>
+
+  <% if run.success && run.payload.is_a?(Hash) %>
+    <% data = run.payload %>
+    <% if data["verdict"].present? %>
+      <p class="callout"><%= data["verdict"] %></p>
+    <% end %>
+
+    <div class="row g-3">
+      <% if data["highlights"].is_a?(Array) && data["highlights"].any? %>
+        <div class="col-md-6">
+          <div class="ai-result__heading">✓ <%= t("ai.fields.highlights", default: "Сильные стороны") %></div>
+          <ul class="ai-result__list">
+            <% data["highlights"].each do |h| %><li><%= h %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+      <% if data["concerns"].is_a?(Array) && data["concerns"].any? %>
+        <div class="col-md-6">
+          <div class="ai-result__heading is-warning">⚠ <%= t("ai.fields.concerns", default: "Что вызвало вопросы") %></div>
+          <ul class="ai-result__list">
+            <% data["concerns"].each do |c| %><li><%= c %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+
+    <% if data["next_steps"].present? %>
+      <div class="mt-3">
+        <div class="ai-result__heading"><%= t("ai.fields.next_steps", default: "Что делать дальше") %></div>
+        <pre style="white-space: pre-wrap; margin: 4px 0 0; font-family: inherit; font-size: 14px; line-height: 1.5;"><%= data["next_steps"] %></pre>
+      </div>
+    <% end %>
+
+    <% if data["agreement_with_interviewer"].present? %>
+      <div class="footnote text-tertiary mt-3">
+        <%= t("ai.fields.agreement", default: "Согласие с интервьюером") %>:
+        <strong><%= t("ai.agreement.#{data["agreement_with_interviewer"]}", default: data["agreement_with_interviewer"]) %></strong>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="empty-state__title text-danger mb-1"><%= t("ai.error", default: "AI вернул ошибку") %></div>
+    <% if run.error.present? %>
+      <p class="footnote text-secondary-apple"><%= run.error %></p>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,165 @@
+<% content_for :page_title, t("leaves.new") %>
+
+<%
+  my_employee = current_user.employee || Employee.kept.find_by(user: current_user)
+  quota = my_employee ? EmployeeLeaveQuota.new(employee: my_employee).rows : []
+%>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.leaves") %></div>
+    <h1 class="page-header__title"><%= t("leaves.new") %></h1>
+    <p class="page-header__subtitle"><%= t("leaves.new_subtitle") %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), leave_requests_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%
+  is_hr_view = current_user.role_superadmin? || current_user.role_hr?
+%>
+<div class="row g-3" data-controller="leave-form<%= ' employee-leave-panel' if is_hr_view %>"
+     <% if is_hr_view %>data-employee-leave-panel-url-value="<%= employee_panel_leave_requests_path %>"<% end %>>
+  <div class="col-12 col-xl-8">
+    <div class="card-apple">
+      <%= form_with(model: @leave_request, url: leave_requests_path, local: true, class: "d-flex flex-column gap-4") do |f| %>
+        <% if @leave_request.errors.any? %>
+          <div class="alert alert-danger" style="background: var(--ds-red-tint); color: var(--ds-red); border-radius: var(--ds-radius-md); padding: var(--ds-space-3) var(--ds-space-4);">
+            <%= @leave_request.errors.full_messages.to_sentence %>
+          </div>
+        <% end %>
+
+        <% if is_hr_view %>
+          <div>
+            <label class="form-label"><%= t("leaves.fields.employee") %></label>
+            <%= f.collection_select :employee_id, @employees, :id, :full_name,
+                                    { selected: @leave_request.employee_id || @employees.first&.id },
+                                    class: "form-select",
+                                    data: { employee_leave_panel_target: "select", action: "change->employee-leave-panel#refresh" } %>
+          </div>
+        <% else %>
+          <%= f.hidden_field :employee_id %>
+        <% end %>
+
+        <%# Type chip-select %>
+        <div>
+          <label class="form-label"><%= t("leaves.fields.type") %></label>
+          <div class="leave-type-chips" role="radiogroup">
+            <% @leave_types.each_with_index do |type, idx| %>
+              <% checked = (@leave_request.leave_type_id == type.id) || (@leave_request.leave_type_id.nil? && idx == 0) %>
+              <label class="leave-type-chip" style="--chip-color: <%= type.color || '#0A84FF' %>;">
+                <%= f.radio_button :leave_type_id, type.id, checked: checked, class: "leave-type-chip__input" %>
+                <span class="leave-type-chip__dot"></span>
+                <span class="leave-type-chip__name"><%= type.name %></span>
+                <% if type.requires_doc %>
+                  <span class="leave-type-chip__hint footnote"><%= t("leaves.requires_doc_short") %></span>
+                <% end %>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%# Date range with live counter %>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label"><%= t("leaves.fields.started_on") %></label>
+            <%= f.date_field :started_on, class: "form-control", required: true,
+                             data: { leave_form_target: "from", action: "change->leave-form#recalc" } %>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label"><%= t("leaves.fields.ended_on") %></label>
+            <%= f.date_field :ended_on, class: "form-control", required: true,
+                             data: { leave_form_target: "to", action: "change->leave-form#recalc" } %>
+          </div>
+          <div class="col-md-4">
+            <div class="leave-day-counter" data-leave-form-target="counter">
+              <span class="leave-day-counter__label"><%= t("leaves.day_counter.label") %></span>
+              <span class="leave-day-counter__value text-mono" data-leave-form-target="counterValue">0</span>
+              <span class="leave-day-counter__unit"><%= t("leaves.day_counter.unit") %></span>
+            </div>
+          </div>
+        </div>
+
+        <%# Quick presets %>
+        <div class="d-flex flex-wrap gap-2">
+          <% [
+              ["1", 1],
+              ["3", 3],
+              ["7", 7],
+              ["14", 14],
+              ["28", 28]
+             ].each do |label, days| %>
+            <button type="button" class="btn btn-soft btn-sm"
+                    data-action="click->leave-form#applyPreset"
+                    data-leave-form-days-param="<%= days %>">
+              <%= t("leaves.presets.days_label", count: days) %>
+            </button>
+          <% end %>
+        </div>
+
+        <div>
+          <label class="form-label"><%= t("leaves.fields.reason") %></label>
+          <%= f.text_area :reason, class: "form-control", rows: 3, placeholder: t("leaves.reason_placeholder") %>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <%= f.submit t("leaves.save_draft"), class: "btn btn-soft" %>
+          <%= f.submit t("leaves.submit_now"), name: "submit", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-4">
+    <% if is_hr_view %>
+      <%# HR/superadmin: live-loaded panel of selected employee %>
+      <div data-employee-leave-panel-target="panel">
+        <%= render "employee_panel",
+                   employee: (@employees.first || my_employee),
+                   quota:    EmployeeLeaveQuota.new(employee: (@employees.first || my_employee)).rows,
+                   history:  LeaveRequest.kept.where(employee: (@employees.first || my_employee)).order(applied_at: :desc, created_at: :desc).limit(8) %>
+      </div>
+    <% elsif quota.any? %>
+      <%# Employee self-service: their own quota %>
+      <div class="card-apple">
+        <div class="card-apple__header">
+          <div>
+            <h3 class="card-apple__title m-0"><%= t("leaves.my_quota.title", year: Date.current.year) %></h3>
+            <p class="card-apple__subtitle m-0"><%= t("leaves.my_quota.subtitle") %></p>
+          </div>
+        </div>
+        <div class="d-flex flex-column gap-3 mt-3">
+          <% quota.each do |row| %>
+            <% pct = row.accrued > 0 ? ((row.used.to_f / row.accrued) * 100).round : 0 %>
+            <div class="leave-quota">
+              <div class="leave-quota__head">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="leave-quota__dot" style="background: <%= row.leave_type.color || '#0A84FF' %>;"></span>
+                  <strong><%= row.leave_type.name %></strong>
+                </div>
+                <div class="text-mono">
+                  <strong><%= row.remaining %></strong>
+                  <span class="text-tertiary footnote">/ <%= row.accrued %></span>
+                </div>
+              </div>
+              <div class="leave-quota__track">
+                <div class="leave-quota__fill" style="width: <%= [pct, 100].min %>%; background: <%= row.leave_type.color || '#0A84FF' %>;"></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="card-apple mt-3">
+      <h3 class="card-apple__title mb-3"><%= t("leaves.workflow_title") %></h3>
+      <ol class="d-flex flex-column gap-2 m-0" style="padding-left: 18px;">
+        <li class="footnote"><%= t("leaves.workflow_step_1") %></li>
+        <li class="footnote"><%= t("leaves.workflow_step_2") %></li>
+        <li class="footnote"><%= t("leaves.workflow_step_3") %></li>
+        <li class="footnote"><%= t("leaves.workflow_step_4") %></li>
+      </ol>
+    </div>
+  </div>
+</div>

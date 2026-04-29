@@ -1,0 +1,70 @@
+<%
+  children    = department.children.kept.order(:sort_order, :name)
+  employees   = department.employees.kept.includes(:position).order(:last_name, :first_name)
+  expandable  = children.any? || employees.any?
+  is_open     = expanded_set.include?(department.id)
+%>
+<li class="dept-tree__node" data-dept-tree-target="node" data-dept-id="<%= department.id %>">
+  <div class="dept-tree__row">
+    <% if expandable %>
+      <button type="button"
+              class="dept-tree__toggle <%= 'is-expanded' if is_open %>"
+              data-action="click->dept-tree#toggle"
+              data-dept-tree-id-param="<%= department.id %>"
+              aria-expanded="<%= is_open %>">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>
+      </button>
+    <% else %>
+      <span class="dept-tree__leaf"></span>
+    <% end %>
+
+    <span class="dept-tree__name"><%= department.name %></span>
+
+    <% if department.code.present? %>
+      <span class="dept-tree__code text-mono"><%= department.code %></span>
+    <% end %>
+
+    <% if department.head.present? %>
+      <span class="dept-tree__head">
+        <span class="avatar-apple"><%= department.head.initials %></span>
+        <span class="footnote text-secondary-apple"><%= department.head.short_name %></span>
+      </span>
+    <% end %>
+
+    <span class="dept-tree__count">
+      <%= t("departments.employees_count", count: employees.size) %>
+    </span>
+
+    <div class="dept-tree__actions">
+      <%= link_to department_path(department), class: "btn btn-ghost btn-sm" do %>
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8h9M9 4.5l3.5 3.5-3.5 3.5"/></svg>
+      <% end %>
+    </div>
+  </div>
+
+  <% if expandable %>
+    <ul class="dept-tree__children <%= 'is-collapsed' unless is_open %>"
+        data-dept-tree-target="children"
+        data-dept-id="<%= department.id %>">
+      <% employees.each do |emp| %>
+        <li class="dept-tree__employee">
+          <%= link_to employee_path(emp), class: "dept-tree__employee-link" do %>
+            <span class="avatar-apple"><%= emp.initials %></span>
+            <span class="dept-tree__employee-name"><%= emp.full_name %></span>
+            <% if emp.position %>
+              <span class="dept-tree__employee-position"><%= emp.position.name %></span>
+            <% end %>
+            <% if emp == department.head %>
+              <span class="pill pill--info"><%= t("departments.fields.head") %></span>
+            <% end %>
+            <span class="dept-tree__employee-spacer"></span>
+            <% tone = case emp.state when "active" then "success" when "probation" then "warning" when "on_leave" then "info" when "terminated" then "danger" else "" end %>
+            <span class="pill pill--<%= tone %>"><%= t("employees.states.#{emp.state}") %></span>
+          <% end %>
+        </li>
+      <% end %>
+
+      <%= render partial: "tree_node", collection: children, as: :department, locals: { expanded_set: expanded_set } %>
+    </ul>
+  <% end %>
+</li>

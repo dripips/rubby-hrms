@@ -1,0 +1,75 @@
+<%
+  tone = (payload["tone"].presence || "neutral").to_s
+  tone_pill = case tone
+              when "supportive"  then "info"
+              when "celebratory" then "success"
+              when "corrective"  then "warning"
+              else                    "neutral"
+              end
+%>
+<div class="ai-leaves-result">
+  <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+    <div class="d-flex align-items-center gap-2">
+      <span class="ai-spark">✨</span>
+      <strong><%= t("ai.leaves.meeting_agenda_title") %></strong>
+    </div>
+    <span class="pill pill--<%= tone_pill %>"><%= t("ai.leaves.tone.#{tone}", default: tone.humanize) %></span>
+  </div>
+
+  <% if payload["intent"].present? %>
+    <p class="m-0 mb-2"><em><%= payload["intent"] %></em></p>
+  <% end %>
+
+  <% if Array(payload["talking_points"]).any? %>
+    <div class="ai-leaves-result__section">
+      <div class="ai-leaves-result__section-title">📋 <%= t("ai.leaves.talking_points") %></div>
+      <ol class="ai-leaves-result__list ai-leaves-result__list--ordered">
+        <% Array(payload["talking_points"]).each do |tp| %>
+          <li>
+            <strong><%= tp["topic"] %></strong>
+            <% if tp["details"].present? %>— <%= tp["details"] %><% end %>
+            <% if tp["data_point"].present? %>
+              <div class="footnote text-tertiary">📊 <%= tp["data_point"] %></div>
+            <% end %>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  <% end %>
+
+  <% if Array(payload["open_questions"]).any? %>
+    <div class="ai-leaves-result__section">
+      <div class="ai-leaves-result__section-title">❓ <%= t("ai.leaves.open_questions") %></div>
+      <ul class="ai-leaves-result__list">
+        <% Array(payload["open_questions"]).each do |q| %><li><%= q %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if Array(payload["watch_outs"]).any? %>
+    <div class="ai-leaves-result__warnings mt-3">
+      <strong>⚠ <%= t("ai.leaves.watch_outs") %>:</strong>
+      <ul class="m-0 mt-1">
+        <% Array(payload["watch_outs"]).each do |w| %><li class="footnote"><%= w %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if payload["after_meeting_action"].present? %>
+    <div class="ai-leaves-result__rec">
+      <strong>✅ <%= t("ai.leaves.after_meeting") %>:</strong>
+      <%= payload["after_meeting_action"] %>
+    </div>
+  <% end %>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="footnote text-tertiary"><%= run.cost_display %> · <%= run.total_tokens %> tok · <%= run.model %></span>
+    <% if local_assigns.fetch(:show_refresh, true) %>
+      <%= button_to t("ai.leaves.refresh"),
+                    ai_meeting_agenda_employee_path(employee),
+                    method: :post,
+                    class: "btn btn-soft btn-sm",
+                    form: { class: "d-inline" } %>
+    <% end %>
+  </div>
+</div>

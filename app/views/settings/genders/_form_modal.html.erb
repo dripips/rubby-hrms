@@ -1,0 +1,47 @@
+<div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <%= form_with(model: gender, url: form_url, method: http_method, local: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= modal_title %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+          <div>
+            <%= f.label :name, t("settings.genders.fields.name"), class: "form-label" %>
+            <%= f.text_field :name, class: "form-control", required: true,
+                            placeholder: t("settings.genders.fields.name_placeholder") %>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :code, t("settings.genders.fields.code"), class: "form-label" %>
+              <%= f.text_field :code, class: "form-control text-mono", required: true,
+                              placeholder: "non_binary" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :sort_order, t("settings.genders.fields.sort_order"), class: "form-label" %>
+              <%= f.number_field :sort_order, class: "form-control", min: 0 %>
+            </div>
+          </div>
+          <div>
+            <%= f.label :pronouns, t("settings.genders.fields.pronouns"), class: "form-label" %>
+            <%= f.text_field :pronouns, class: "form-control", placeholder: "they/them" %>
+          </div>
+          <div>
+            <%= f.label :avatar_seed, t("settings.genders.fields.avatar_seed"), class: "form-label" %>
+            <%= f.text_field :avatar_seed, class: "form-control text-mono", placeholder: "neutral" %>
+            <p class="footnote text-secondary-apple mt-1"><%= t("settings.genders.fields.avatar_seed_hint") %></p>
+          </div>
+          <label class="form-check">
+            <%= f.check_box :active, class: "form-check-input" %>
+            <span class="form-check-label"><%= t("settings.genders.active") %></span>
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

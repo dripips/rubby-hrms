@@ -1,0 +1,28 @@
+<%
+  languages = Language.enabled.to_a
+  current = languages.find { |l| l.code == I18n.locale.to_s } || languages.first
+  variant ||= :glass  # :glass — для тёмных фонов (auth), :solid — для светлых (topbar)
+%>
+
+<% if current && languages.size > 1 %>
+  <div class="lang-switcher lang-switcher--<%= variant %>">
+    <button type="button" class="lang-switcher__trigger" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+      <span class="fi fi-<%= current.flag.presence || current.code %> lang-switcher__flag"></span>
+      <span class="lang-switcher__code"><%= current.code.upcase %></span>
+      <svg class="lang-switcher__chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M3.5 6l4.5 4 4.5-4"/></svg>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-apple dropdown-menu-end lang-switcher__menu">
+      <% languages.each do |lang| %>
+        <li>
+          <%= link_to url_for(locale: lang.code), class: "dropdown-item lang-switcher__item #{'active' if lang.code == current.code}" do %>
+            <span class="fi fi-<%= lang.flag.presence || lang.code %> lang-switcher__menu-flag"></span>
+            <span class="lang-switcher__menu-name"><%= lang.native_name %></span>
+            <% if lang.code == current.code %>
+              <svg class="lang-switcher__check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3.5 8.5l3 3 6-6.5"/></svg>
+            <% end %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

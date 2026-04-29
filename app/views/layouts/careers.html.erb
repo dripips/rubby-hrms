@@ -1,0 +1,138 @@
+<% careers = @careers || CareersSettings.for(@company || Company.kept.first) %>
+<%
+  theme_cookie = cookies[:theme].presence_in(%w[light dark auto])
+  data_theme   = (theme_cookie == "light" || theme_cookie == "dark") ? theme_cookie : nil  # auto/none = let CSS prefers-color-scheme decide
+  bs_theme     = theme_cookie == "dark" ? "dark" : "light"
+%>
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" <%= "data-theme=\"#{data_theme}\"".html_safe if data_theme %> data-bs-theme="<%= bs_theme %>" style="--careers-primary: <%= careers.color_primary %>;">
+  <head>
+    <title><%= content_for(:title) || "#{(@company&.name || 'Careers')} · #{t('careers.layout.title', default: 'Карьера')}" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <meta name="description" content="<%= t('careers.layout.meta_description', default: 'Открытые вакансии и форма подачи заявки') %>">
+
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
+    <%# ── Analytics (Google Analytics, Яндекс.Метрика, FB/VK Pixel) ───── %>
+    <% if careers.ga_id.present? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= careers.ga_id %>"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<%= j careers.ga_id %>');
+      </script>
+    <% end %>
+    <% if careers.yandex_metrika_id.present? %>
+      <script>
+        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+        ym(<%= j careers.yandex_metrika_id %>, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+      </script>
+      <noscript><div><img src="https://mc.yandex.ru/watch/<%= j careers.yandex_metrika_id %>" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <% end %>
+    <% if careers.fb_pixel_id.present? %>
+      <script>
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '<%= j careers.fb_pixel_id %>');
+        fbq('track', 'PageView');
+      </script>
+    <% end %>
+    <% if careers.vk_pixel_id.present? %>
+      <script>
+        var _tmr = window._tmr || (window._tmr = []);
+        _tmr.push({id: "<%= j careers.vk_pixel_id %>", type: "pageView", start: (new Date()).getTime()});
+        (function (d, w, id) { if (d.getElementById(id)) return; var ts = d.createElement("script"); ts.type = "text/javascript"; ts.async = true; ts.id = id;
+        ts.src = "https://top-fwz1.mail.ru/js/code.js"; var f = function () { var s = d.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ts, s); };
+        if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "tmr-code");
+      </script>
+    <% end %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="careers-body">
+    <header class="careers-topbar">
+      <%= link_to careers_path, class: "careers-topbar__brand" do %>
+        <span class="careers-topbar__logo">
+          <% if careers.logo? %>
+            <img src="<%= rails_blob_path(careers.logo) %>" alt="<%= careers.site_name(@company&.name) %>">
+          <% else %>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          <% end %>
+        </span>
+        <span class="careers-topbar__name"><%= careers.site_name(@company&.name || "Careers") %></span>
+        <span class="careers-topbar__suffix"><%= careers.t("site_subtitle") %></span>
+      <% end %>
+
+      <div class="careers-topbar__spacer"></div>
+
+      <%# Theme switcher (light / dark / auto) %>
+      <div class="careers-theme-switcher" data-controller="theme" role="group" aria-label="Theme">
+        <button type="button" class="careers-theme-switcher__btn" data-theme-target="option" data-theme-mode-param="light" data-action="click->theme#set" title="Light">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        </button>
+        <button type="button" class="careers-theme-switcher__btn" data-theme-target="option" data-theme-mode-param="auto" data-action="click->theme#set" title="Auto">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+        </button>
+        <button type="button" class="careers-theme-switcher__btn" data-theme-target="option" data-theme-mode-param="dark" data-action="click->theme#set" title="Dark">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+
+      <%= render "shared/language_switcher", variant: :solid %>
+
+      <%# Кнопка "В кабинет" — только если явно включено в настройках careers
+          (по умолчанию выключено — публичный сайт не раскрывает админку) %>
+      <% if user_signed_in? && careers.show_admin_link? %>
+        <%= link_to t("careers.layout.dashboard", default: "В кабинет"), root_path, class: "btn btn-soft btn-sm" %>
+      <% end %>
+    </header>
+
+    <main class="careers-main">
+      <% if notice %>
+        <div class="careers-flash careers-flash--success"><%= notice %></div>
+      <% end %>
+      <% if alert %>
+        <div class="careers-flash careers-flash--alert"><%= alert %></div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+
+    <footer class="careers-footer">
+      <div class="careers-footer__links">
+        <%= link_to careers.t("footer_link_privacy"), careers_page_path("privacy") %>
+        <%= link_to careers.t("footer_link_terms"),   careers_page_path("terms") %>
+        <%= link_to careers.t("footer_link_cookies"), careers_page_path("cookies") %>
+        <% if careers.contact_email.present? %>
+          <a href="mailto:<%= careers.contact_email %>"><%= careers.contact_email %></a>
+        <% end %>
+      </div>
+      <p>© <%= Date.current.year %> <%= careers.site_name(@company&.name) %>. <%= careers.t("footer_note") %></p>
+    </footer>
+
+    <%# Cookie consent banner — рендер только когда включён в настройках %>
+    <% if careers.cookie_banner? %>
+      <%= render "careers/cookie_banner", careers: careers %>
+    <% end %>
+  </body>
+</html>

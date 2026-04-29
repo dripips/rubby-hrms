@@ -1,0 +1,207 @@
+<% content_for :page_title, t("audit.title") %>
+
+<% sensitive_keys = %w[password password_digest encrypted_password api_key smtp_password secret token reset_password_token].freeze %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.admin") %></div>
+    <h1 class="page-header__title"><%= t("audit.title") %></h1>
+    <p class="page-header__subtitle"><%= t("audit.subtitle", count: @total) %></p>
+  </div>
+</header>
+
+<%= form_with(url: audit_path, method: :get, local: true, class: "card-apple mb-3") do %>
+  <div class="row g-3 align-items-end">
+    <div class="col-md-2">
+      <label class="form-label"><%= t("audit.filters.period") %></label>
+      <select name="period" class="form-select" onchange="this.form.submit()">
+        <% %w[1d 7d 30d 90d all].each do |p| %>
+          <option value="<%= p %>" <%= 'selected' if @period == p %>><%= t("audit.periods.#{p}") %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label"><%= t("audit.filters.model") %></label>
+      <select name="item_type" class="form-select" onchange="this.form.submit()">
+        <option value=""><%= t("common.all") %></option>
+        <% AuditController::TRACKED_MODELS.each do |m| %>
+          <option value="<%= m %>" <%= 'selected' if @item_type == m %>><%= t("audit.models.#{m.underscore}", default: m) %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label"><%= t("audit.filters.event") %></label>
+      <select name="event" class="form-select" onchange="this.form.submit()">
+        <option value=""><%= t("common.all") %></option>
+        <% AuditController::EVENTS.each do |ev| %>
+          <option value="<%= ev %>" <%= 'selected' if @event == ev %>><%= t("audit.events.#{ev.tr('.', '_')}", default: ev.humanize) %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label"><%= t("audit.filters.user") %></label>
+      <select name="whodunnit" class="form-select" onchange="this.form.submit()">
+        <option value=""><%= t("common.all") %></option>
+        <% User.kept.order(:email).each do |u| %>
+          <option value="<%= u.id %>" <%= 'selected' if @whodunnit == u.id.to_s %>><%= u.display_name %> (<%= u.email %>)</option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <%= link_to t("audit.filters.reset"), audit_path, class: "btn btn-soft" %>
+    </div>
+  </div>
+<% end %>
+
+<% if @model_counts_24h.any? %>
+  <div class="d-flex flex-wrap gap-2 mb-3">
+    <span class="footnote text-secondary-apple"><%= t("audit.last_24h") %>:</span>
+    <% @model_counts_24h.sort_by { |_,c| -c }.each do |item_type, count| %>
+      <%= link_to audit_path(item_type: item_type, period: "1d"), class: "pill pill--info" do %>
+        <%= t("audit.models.#{item_type.underscore}", default: item_type) %>: <%= count %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="card-apple card-apple--flush">
+  <% if @versions.any? %>
+    <table class="table-apple">
+      <thead>
+        <tr>
+          <th style="width: 14%;"><%= t("audit.fields.when") %></th>
+          <th style="width: 16%;"><%= t("audit.fields.who") %></th>
+          <th style="width: 12%;"><%= t("audit.fields.model") %></th>
+          <th style="width: 10%;"><%= t("audit.fields.event") %></th>
+          <th><%= t("audit.fields.changes") %></th>
+          <th style="width: 110px;" class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @versions.each do |v| %>
+          <%
+            user = @users_index[v.whodunnit.to_s]
+            tone = case v.event
+                   when "create"             then "success"
+                   when "destroy"            then "danger"
+                   when "auth.sign_in"       then "info"
+                   when "auth.sign_out"      then "neutral"
+                   when "data.exported"      then "purple"
+                   else                           "info"
+                   end
+            changes  = (v.respond_to?(:changeset) ? (v.changeset rescue {}) : {}) || {}
+            if changes.empty? && v.event == "destroy" && v.object.present?
+              destroyed = (v.reify rescue nil)
+              changes   = destroyed&.attributes&.transform_values { |val| [val, nil] } || {}
+            elsif changes.empty? && v.event == "create" && v.object_changes.blank? && v.object.present?
+              created = (v.reify rescue nil)
+              changes = created&.attributes&.transform_values { |val| [nil, val] } || {}
+            end
+            metadata = (v.respond_to?(:metadata) && v.metadata.is_a?(Hash)) ? v.metadata : {}
+            is_custom_event = !AuditController::REVERTABLE_EVENTS.include?(v.event)
+            is_reverted = v.respond_to?(:reverted_at) && v.reverted_at.present?
+          %>
+          <tr class="<%= 'audit-row--reverted' if is_reverted %>">
+            <td>
+              <div><%= l(v.created_at, format: :audit) %></div>
+              <div class="footnote text-tertiary"><%= time_ago_in_words(v.created_at) %> <%= t("common.ago") %></div>
+              <% if metadata["ip"].present? || metadata["user_agent"].present? %>
+                <div class="footnote text-tertiary text-mono mt-1">
+                  <% if metadata["ip"].present? %><span title="IP">📍 <%= metadata["ip"] %></span><% end %>
+                </div>
+              <% end %>
+            </td>
+            <td>
+              <% if user %>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar-apple"><%= user.email.first(2).upcase %></div>
+                  <div>
+                    <div><%= user.display_name %></div>
+                    <div class="footnote text-tertiary"><%= user.full_role_name %></div>
+                  </div>
+                </div>
+              <% else %>
+                <span class="text-tertiary">—</span>
+              <% end %>
+            </td>
+            <td>
+              <% if is_custom_event %>
+                <strong><%= t("audit.models.system", default: v.item_type) %></strong>
+              <% else %>
+                <strong><%= t("audit.models.#{v.item_type.underscore}", default: v.item_type) %></strong>
+                <div class="footnote text-tertiary text-mono">#<%= v.item_id %></div>
+              <% end %>
+            </td>
+            <td><span class="pill pill--<%= tone %>"><%= t("audit.events.#{v.event.tr('.', '_')}", default: v.event.humanize) %></span></td>
+            <td>
+              <% if is_custom_event && metadata.except("ip", "user_agent", "request_id").any? %>
+                <ul class="audit-diff">
+                  <% metadata.except("ip", "user_agent", "request_id").each do |k, val| %>
+                    <li>
+                      <span class="audit-diff__attr"><%= t("audit.metadata_keys.#{k}", default: k.to_s.humanize) %></span>
+                      <span class="audit-diff__new"><%= audit_diff_value(val, length: 80) %></span>
+                    </li>
+                  <% end %>
+                </ul>
+              <% elsif changes.is_a?(Hash) && changes.any? %>
+                <% klass = v.item_type.safe_constantize %>
+                <ul class="audit-diff">
+                  <% changes.each do |attr, vals| %>
+                    <% next if sensitive_keys.any? { |k| attr.to_s.include?(k) } %>
+                    <% from_v, to_v = (vals.is_a?(Array) ? vals : [nil, vals]) %>
+                    <li>
+                      <span class="audit-diff__attr"><%= klass.respond_to?(:human_attribute_name) ? klass.human_attribute_name(attr) : attr.humanize %></span>
+                      <% if v.event == "create" %>
+                        <span class="audit-diff__new"><%= audit_diff_value(to_v, length: 80) %></span>
+                      <% elsif v.event == "destroy" %>
+                        <span class="audit-diff__old"><%= audit_diff_value(from_v, length: 80) %></span>
+                      <% else %>
+                        <span class="audit-diff__old"><%= audit_diff_value(from_v) %></span>
+                        <span class="audit-diff__arrow">→</span>
+                        <span class="audit-diff__new"><%= audit_diff_value(to_v) %></span>
+                      <% end %>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <span class="text-tertiary footnote">—</span>
+              <% end %>
+            </td>
+            <td class="text-end">
+              <% if is_reverted %>
+                <span class="pill pill--neutral" title="<%= l(v.reverted_at, format: :long) %>"><%= t("audit.reverted") %></span>
+              <% elsif !is_custom_event && policy(v).revert? %>
+                <%= button_to t("audit.revert"),
+                              revert_audit_path(v),
+                              method: :post,
+                              class: "btn btn-soft btn-sm",
+                              form: { class: "d-inline" },
+                              data: { turbo_confirm: t("audit.revert_confirm") } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state" style="padding: var(--ds-space-6);">
+      <div class="empty-state__title"><%= t("audit.empty") %></div>
+      <p class="footnote"><%= t("audit.empty_hint") %></p>
+    </div>
+  <% end %>
+</div>
+
+<% if @total > AuditController::PER %>
+  <% pages = (@total.to_f / AuditController::PER).ceil %>
+  <nav class="audit-pagination mt-3" aria-label="Pagination">
+    <% if @page > 1 %>
+      <%= link_to "← #{t('audit.pagination.prev')}", request.params.merge(page: @page - 1), class: "btn btn-soft btn-sm" %>
+    <% end %>
+    <span class="footnote text-secondary-apple">
+      <%= t("audit.pagination.page_of", page: @page, total: pages) %>
+    </span>
+    <% if @page < pages %>
+      <%= link_to "#{t('audit.pagination.next')} →", request.params.merge(page: @page + 1), class: "btn btn-soft btn-sm" %>
+    <% end %>
+  </nav>
+<% end %>

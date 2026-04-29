@@ -1,0 +1,53 @@
+<% content_for :page_title, t("navigation.leaves") %>
+
+<%
+  pending_count = LeaveRequest.kept.where(state: %w[submitted manager_approved]).count
+  active_count  = LeaveRequest.kept.where(state: "active").count
+  upcoming      = LeaveRequest.kept.where(state: "hr_approved").where("started_on >= ?", Date.current).count
+
+  show_all_tab  = current_user.role_hr? || current_user.role_superadmin?
+  show_team_tab = current_user.role_manager? || current_user.role_hr? || current_user.role_superadmin?
+%>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("app.name") %></div>
+    <h1 class="page-header__title"><%= t("navigation.leaves") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("leaves.summary", p: pending_count, a: active_count, u: upcoming) %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("leaves.new"), new_leave_request_path, class: "btn btn-primary" %>
+  </div>
+</header>
+
+<nav class="section-tabs" aria-label="<%= t("navigation.leaves") %>">
+  <%= link_to leave_requests_path(view: "me"), class: "section-tabs__item #{'is-active' if @view == 'me'}" do %>
+    <%= render "shared/icons/user" %>
+    <span><%= t("leaves.tabs.me") %></span>
+  <% end %>
+  <% if show_team_tab %>
+    <%= link_to leave_requests_path(view: "team"), class: "section-tabs__item #{'is-active' if @view == 'team'}" do %>
+      <%= render "shared/icons/people" %>
+      <span><%= t("leaves.tabs.team") %></span>
+      <% if @team_pending&.any? %>
+        <span class="pill pill--warning ms-1"><%= @team_pending.size %></span>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if show_all_tab %>
+    <%= link_to leave_requests_path(view: "all"), class: "section-tabs__item #{'is-active' if @view == 'all'}" do %>
+      <%= render "shared/icons/trending" %>
+      <span><%= t("leaves.tabs.analytics") %></span>
+    <% end %>
+  <% end %>
+</nav>
+
+<% if @view == "me" %>
+  <%= render "view_me", quota: @my_quota, my_requests: @my_requests %>
+<% elsif @view == "team" %>
+  <%= render "view_team", team_pending: @team_pending, team_on_leave: @team_on_leave %>
+<% else %>
+  <%= render "view_all" %>
+<% end %>

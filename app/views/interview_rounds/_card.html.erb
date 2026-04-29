@@ -1,0 +1,137 @@
+<% tone = case round.state
+          when "completed" then "success"
+          when "cancelled", "no_show" then "danger"
+          when "in_progress" then "info"
+          else "neutral"
+          end %>
+
+<div class="interview-card card-apple" data-round-id="<%= round.id %>">
+  <div class="interview-card__head">
+    <div class="d-flex align-items-center gap-2">
+      <span class="pill pill--<%= tone %>"><%= round.kind_label %></span>
+      <span class="footnote text-secondary-apple"><%= round.state_label %></span>
+      <% if round.recommendation.present? %>
+        <span class="pill pill--<%= round.recommendation_tone %>">
+          <%= round.recommendation_label %>
+          <% if round.overall_score %> · <strong><%= round.overall_score %>/100</strong><% end %>
+        </span>
+      <% end %>
+    </div>
+
+    <% if policy(round).destroy? %>
+      <%= button_to "", interview_round_path(round), method: :delete,
+                    class: "btn-close", form: { class: "d-inline" },
+                    "aria-label": t("common.delete"),
+                    data: { turbo_confirm: t("common.confirm_delete", default: "Удалить?") } %>
+    <% end %>
+  </div>
+
+  <dl class="interview-card__meta">
+    <div>
+      <dt><%= t("interview_rounds.fields.scheduled_at") %></dt>
+      <dd><%= l(round.scheduled_at, format: :long) %> · <%= round.duration_minutes %> <%= t("interview_rounds.minutes_short", default: "мин") %></dd>
+    </div>
+    <div>
+      <dt><%= t("interview_rounds.fields.interviewer") %></dt>
+      <dd><%= round.interviewer&.display_name || t("common.unassigned", default: "Не назначен") %></dd>
+    </div>
+    <% if round.location.present? %>
+      <div>
+        <dt><%= t("interview_rounds.fields.location") %></dt>
+        <dd><%= round.location %></dd>
+      </div>
+    <% end %>
+    <% if round.meeting_url.present? %>
+      <div>
+        <dt><%= t("interview_rounds.fields.meeting_url") %></dt>
+        <dd><%= link_to truncate(round.meeting_url, length: 40), round.meeting_url, target: "_blank", rel: "noopener" %></dd>
+      </div>
+    <% end %>
+  </dl>
+
+  <% if round.has_scorecard? %>
+    <div class="scorecard">
+      <div class="scorecard__title"><%= t("interview_rounds.scorecard", default: "Scorecard") %></div>
+      <div class="scorecard__grid">
+        <% round.competencies.each do |c| %>
+          <% v = round.score_for(c) %>
+          <div class="scorecard__row">
+            <span class="scorecard__name"><%= t("interview_rounds.competencies.#{c}", default: c.humanize) %></span>
+            <div class="scorecard__bars">
+              <% (1..5).each do |n| %>
+                <span class="scorecard__bar <%= 'is-on' if v >= n %>"></span>
+              <% end %>
+            </div>
+            <span class="scorecard__value"><%= v.zero? ? "—" : "#{v}/5" %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if round.notes.present? %>
+    <div class="callout"><%= simple_format(round.notes) %></div>
+  <% end %>
+
+  <%# AI помощники — на разных стадиях раунда разные кнопки %>
+  <% ai_setting = AppSetting.fetch(company: Company.kept.first, category: "ai") %>
+  <% ai_enabled = RecruitmentAi.new(setting: ai_setting).enabled? %>
+
+  <% if ai_enabled %>
+    <%= turbo_stream_from round, "ai_questions" %>
+
+    <%= render "ai/rounds/controls", round: round %>
+
+    <% if round.state == "scheduled" %>
+      <div id="ai-questions-<%= round.id %>">
+        <% latest_q = AiRun.for_round(round).where(kind: "questions_for").recent.first %>
+        <% if latest_q %>
+          <%= render "ai/rounds/questions", round: round, run: latest_q %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if round.state == "completed" %>
+      <div id="ai-summary-<%= round.id %>">
+        <% latest_s = AiRun.for_round(round).where(kind: "summarize_interview").recent.first %>
+        <% if latest_s %>
+          <%= render "ai/rounds/summary", round: round, run: latest_s %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if policy(round).update? %>
+    <div class="interview-card__actions">
+      <% if round.state == "scheduled" %>
+        <%= button_to t("interview_rounds.actions.start", default: "Начать"),
+                      start_interview_round_path(round), method: :post,
+                      class: "btn btn-soft btn-sm", form: { class: "d-inline" } %>
+        <%= button_to t("interview_rounds.actions.no_show", default: "Не пришёл"),
+                      no_show_interview_round_path(round), method: :post,
+                      class: "btn btn-soft btn-sm", form: { class: "d-inline" } %>
+      <% end %>
+
+      <% if %w[scheduled in_progress].include?(round.state) %>
+        <button type="button" class="btn btn-primary btn-sm"
+                data-bs-toggle="modal" data-bs-target="#scorecardModal-<%= round.id %>">
+          <%= t("interview_rounds.actions.fill_scorecard", default: "Заполнить scorecard") %>
+        </button>
+        <%= button_to t("interview_rounds.actions.cancel", default: "Отменить"),
+                      cancel_interview_round_path(round), method: :post,
+                      class: "btn btn-ghost btn-sm", form: { class: "d-inline" } %>
+      <% end %>
+
+      <% if %w[completed cancelled no_show].include?(round.state) %>
+        <%= button_to t("interview_rounds.actions.reopen", default: "Переоткрыть"),
+                      reopen_interview_round_path(round), method: :post,
+                      class: "btn btn-ghost btn-sm", form: { class: "d-inline" } %>
+      <% end %>
+    </div>
+
+    <%# Модалка scorecard для этого раунда %>
+    <% if %w[scheduled in_progress].include?(round.state) %>
+      <%= render "interview_rounds/scorecard_modal", round: round %>
+    <% end %>
+  <% end %>
+</div>

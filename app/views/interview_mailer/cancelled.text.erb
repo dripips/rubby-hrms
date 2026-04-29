@@ -1,0 +1,7 @@
+HRMS · Recruitment — Интервью отменено
+
+Раунд интервью с кандидатом <%= @applicant.full_name %> отменён.
+Никаких действий с вашей стороны не требуется.
+
+Тип:        <%= @round.kind_label %>
+Когда было: <%= l(@round.scheduled_at, format: :long) %>

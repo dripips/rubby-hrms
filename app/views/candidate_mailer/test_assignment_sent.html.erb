@@ -1,0 +1,56 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 32px 16px; color: #1d1d1f;">
+  <div style="border: 1px solid #d2d2d7; border-radius: 16px; overflow: hidden; background: #ffffff;">
+    <div style="padding: 24px 28px; background: linear-gradient(135deg, #0066ff, #5856d6); color: #fff;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85;">
+        <%= @company&.name %>
+      </div>
+      <h1 style="font-size: 22px; font-weight: 700; margin: 6px 0 0; letter-spacing: -0.011em;">
+        Тестовое задание
+      </h1>
+    </div>
+
+    <div style="padding: 24px 28px;">
+      <p style="font-size: 15px; line-height: 1.5; margin: 0 0 16px; color: #424245;">
+        Здравствуйте, <strong><%= @applicant.first_name %></strong>!
+      </p>
+
+      <p style="font-size: 15px; line-height: 1.5; margin: 0 0 16px; color: #424245;">
+        Спасибо что прошли первые этапы. По итогам мы готовы предложить вам тестовое задание.
+        Это позволит нам глубже оценить ваш подход и опыт.
+      </p>
+
+      <h2 style="font-size: 17px; font-weight: 700; margin: 24px 0 8px;">
+        <%= @assignment.title %>
+      </h2>
+
+      <% if @assignment.description.present? %>
+        <p style="font-size: 14px; line-height: 1.6; color: #1d1d1f; white-space: pre-wrap; margin: 0 0 16px;"><%= @assignment.description %></p>
+      <% end %>
+
+      <% if @assignment.requirements.present? %>
+        <div style="background: #f5f5f7; border-radius: 12px; padding: 16px; margin: 16px 0;">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #8e8e93; margin-bottom: 6px;">
+            Требования
+          </div>
+          <pre style="white-space: pre-wrap; font-family: inherit; font-size: 14px; line-height: 1.5; margin: 0;"><%= @assignment.requirements %></pre>
+        </div>
+      <% end %>
+
+      <% if @assignment.deadline %>
+        <p style="font-size: 14px; color: #424245;">
+          <strong>Дедлайн:</strong> <%= l(@assignment.deadline, format: :long) %>
+        </p>
+      <% end %>
+
+      <p style="font-size: 14px; line-height: 1.5; margin: 24px 0 0; color: #424245;">
+        После выполнения отправьте решение в ответ на это письмо или загрузите по согласованной ссылке.
+        Если возникнут вопросы — пишите, поможем.
+      </p>
+
+      <p style="font-size: 14px; line-height: 1.5; margin: 16px 0 0; color: #6e6e73;">
+        Удачи!<br>
+        Команда <%= @company&.name %>
+      </p>
+    </div>
+  </div>
+</div>

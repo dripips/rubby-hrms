@@ -1,0 +1,88 @@
+<%
+  trend       = (payload["trend"].presence || "flat").to_s
+  trend_tone  = case trend
+                when "rising"  then "success"
+                when "falling" then "danger"
+                when "mixed"   then "warning"
+                else                "info"
+                end
+  confidence  = (payload["confidence"].presence || "medium").to_s
+  promotion   = (payload["promotion_signal"].presence || "no_signal").to_s
+%>
+<div class="ai-leaves-result">
+  <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+    <div class="d-flex align-items-center gap-2">
+      <span class="ai-spark">✨</span>
+      <strong><%= t("ai.leaves.kpi_brief_title") %></strong>
+    </div>
+    <div class="d-flex gap-2 flex-wrap justify-content-end">
+      <span class="pill pill--<%= trend_tone %>"><%= t("ai.leaves.trend.#{trend}", default: trend.humanize) %></span>
+      <span class="pill pill--neutral"><%= t("ai.leaves.confidence.#{confidence}", default: confidence.humanize) %></span>
+      <% if payload["recognition_worthy"] %>
+        <span class="pill pill--success">🏆 <%= t("ai.leaves.recognition") %></span>
+      <% end %>
+      <% if promotion == "ready" %>
+        <span class="pill pill--success">⬆ <%= t("ai.leaves.promotion.ready") %></span>
+      <% elsif promotion == "approaching" %>
+        <span class="pill pill--info">→ <%= t("ai.leaves.promotion.approaching") %></span>
+      <% end %>
+    </div>
+  </div>
+
+  <% if payload["headline"].present? %>
+    <p class="m-0 mb-2"><strong><%= payload["headline"] %></strong></p>
+  <% end %>
+
+  <% if Array(payload["strengths"]).any? %>
+    <div class="ai-leaves-result__section">
+      <div class="ai-leaves-result__section-title">💪 <%= t("ai.leaves.strengths") %></div>
+      <ul class="ai-leaves-result__list">
+        <% Array(payload["strengths"]).each do |item| %><li><%= item %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if Array(payload["risks"]).any? %>
+    <div class="ai-leaves-result__section">
+      <div class="ai-leaves-result__section-title">⚠ <%= t("ai.leaves.risks") %></div>
+      <ul class="ai-leaves-result__list">
+        <% Array(payload["risks"]).each do |item| %><li><%= item %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if Array(payload["metric_breakdown"]).any? %>
+    <div class="ai-leaves-result__section">
+      <div class="ai-leaves-result__section-title">📊 <%= t("ai.leaves.metric_breakdown") %></div>
+      <ul class="ai-leaves-result__list">
+        <% Array(payload["metric_breakdown"]).each do |row| %>
+          <% mt = row["trend"] || "flat" %>
+          <% icon = mt == "rising" ? "📈" : (mt == "falling" ? "📉" : "→") %>
+          <li>
+            <%= icon %> <strong><%= row["metric"] %></strong> — <%= row["comment"] %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if Array(payload["next_actions"]).any? %>
+    <div class="ai-leaves-result__rec">
+      <strong><%= t("ai.leaves.next_actions") %>:</strong>
+      <ul class="m-0 mt-1" style="padding-left: 18px;">
+        <% Array(payload["next_actions"]).each do |a| %><li><%= a %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="footnote text-tertiary"><%= run.cost_display %> · <%= run.total_tokens %> tok · <%= run.model %></span>
+    <% if local_assigns.fetch(:show_refresh, true) %>
+      <%= button_to t("ai.leaves.refresh"),
+                    ai_kpi_brief_employee_path(employee),
+                    method: :post,
+                    class: "btn btn-soft btn-sm",
+                    form: { class: "d-inline" } %>
+    <% end %>
+  </div>
+</div>

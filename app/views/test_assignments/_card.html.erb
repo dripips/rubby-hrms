@@ -1,0 +1,157 @@
+<%= turbo_frame_tag dom_id(assignment) do %>
+  <div class="card-apple mb-3">
+    <div class="d-flex align-items-start gap-3 mb-2">
+      <span class="icon-tile icon-tile--<%= assignment.status_tone %>">📝</span>
+      <div style="flex:1;">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <h3 class="card-apple__title m-0"><%= assignment.title %></h3>
+          <span class="pill pill--<%= assignment.status_tone %>"><%= t("test_assignments.states.#{assignment.state}") %></span>
+          <% if assignment.overdue? %>
+            <span class="pill pill--danger"><%= t("test_assignments.overdue") %></span>
+          <% end %>
+        </div>
+        <div class="footnote text-secondary-apple mt-1">
+          <%= t("test_assignments.created_by") %>:
+          <strong><%= assignment.created_by.email %></strong>
+          · <%= time_ago_in_words(assignment.created_at) %> <%= t("common.ago") %>
+          <% if assignment.deadline %> · <%= t("test_assignments.fields.deadline") %>: <%= l(assignment.deadline, format: :long) %><% end %>
+          <% if assignment.score %> · <%= t("test_assignments.fields.score") %>: <strong><%= assignment.score %>/100</strong><% end %>
+        </div>
+      </div>
+      <% if policy(assignment).destroy? %>
+        <%= button_to "", test_assignment_path(assignment), method: :delete, class: "btn-close", form: { class: "d-inline" }, "aria-label": t("common.delete"), data: { turbo_confirm: t("common.confirm_delete") } %>
+      <% end %>
+    </div>
+
+    <% if assignment.description.present? %>
+      <div class="mb-2"><strong class="form-label"><%= t("test_assignments.fields.description") %>:</strong>
+        <p style="white-space: pre-wrap; margin: 4px 0 0;"><%= assignment.description %></p>
+      </div>
+    <% end %>
+
+    <% if assignment.requirements.present? %>
+      <div class="mb-2"><strong class="form-label"><%= t("test_assignments.fields.requirements") %>:</strong>
+        <p style="white-space: pre-wrap; margin: 4px 0 0;"><%= assignment.requirements %></p>
+      </div>
+    <% end %>
+
+    <% if assignment.brief_files.attached? %>
+      <div class="d-flex flex-wrap gap-2 mt-2">
+        <% assignment.brief_files.each do |f| %>
+          <%= link_to f.filename.to_s, rails_blob_path(f, disposition: "attachment"), class: "btn btn-soft btn-sm" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if assignment.submission_text.present? || assignment.submission_files.attached? %>
+      <hr class="divider">
+      <strong class="form-label"><%= t("test_assignments.submission") %>:</strong>
+      <% if assignment.submitted_at %>
+        <div class="footnote text-secondary-apple mb-2"><%= l(assignment.submitted_at, format: :long) %></div>
+      <% end %>
+      <% if assignment.submission_text.present? %>
+        <p style="white-space: pre-wrap;"><%= assignment.submission_text %></p>
+      <% end %>
+      <% if assignment.submission_files.attached? %>
+        <div class="d-flex flex-wrap gap-2">
+          <% assignment.submission_files.each do |f| %>
+            <%= link_to f.filename.to_s, rails_blob_path(f, disposition: "attachment"), class: "btn btn-secondary btn-sm" %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% if assignment.reviewer_notes.present? %>
+      <hr class="divider">
+      <strong class="form-label"><%= t("test_assignments.review_notes") %>:</strong>
+      <p style="white-space: pre-wrap; margin: 4px 0 0;"><%= assignment.reviewer_notes %></p>
+      <% if assignment.reviewed_by %>
+        <div class="footnote text-tertiary mt-1"><%= assignment.reviewed_by.email %> · <%= l(assignment.reviewed_at, format: :long) if assignment.reviewed_at %></div>
+      <% end %>
+    <% end %>
+
+    <%# Workflow actions %>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <% if assignment.state == "sent" %>
+        <%= button_to t("test_assignments.actions.start"), start_test_assignment_path(assignment), method: :post, class: "btn btn-soft btn-sm", form: { class: "d-inline" } %>
+      <% end %>
+      <% if %w[sent in_progress].include?(assignment.state) %>
+        <%= button_to t("test_assignments.actions.send_email"),
+                      notify_test_assignment_path(assignment),
+                      method: :post, class: "btn btn-soft btn-sm",
+                      form: { class: "d-inline" },
+                      data: { turbo_confirm: t("test_assignments.confirm_send_email", email: applicant.email.presence || "—") } %>
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#submitWorkModal<%= assignment.id %>">
+          <%= t("test_assignments.actions.submit_work") %>
+        </button>
+      <% end %>
+      <% if assignment.state == "submitted" %>
+        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModal<%= assignment.id %>">
+          <%= t("test_assignments.actions.review") %>
+        </button>
+      <% end %>
+      <% if assignment.state != "cancelled" && assignment.state != "reviewed" %>
+        <%= button_to t("test_assignments.actions.cancel"), cancel_test_assignment_path(assignment), method: :post, class: "btn btn-ghost btn-sm", form: { class: "d-inline" } %>
+      <% end %>
+      <% if assignment.state == "reviewed" || assignment.state == "cancelled" %>
+        <%= button_to t("test_assignments.actions.reopen"), reopen_test_assignment_path(assignment), method: :post, class: "btn btn-soft btn-sm", form: { class: "d-inline" } %>
+      <% end %>
+    </div>
+
+    <%# Modal: Submit work %>
+    <div class="modal fade" id="submitWorkModal<%= assignment.id %>" tabindex="-1" aria-hidden="true" data-controller="modal-autoclose">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <%= form_with(url: submit_work_test_assignment_path(assignment), method: :post, multipart: true) do |f| %>
+            <div class="modal-header">
+              <h5 class="modal-title title-3 m-0"><%= t("test_assignments.actions.submit_work") %></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body d-flex flex-column gap-3">
+              <div>
+                <label class="form-label"><%= t("test_assignments.submission_text") %></label>
+                <textarea name="test_assignment[submission_text]" class="form-control" rows="4" placeholder="<%= t('test_assignments.submission_text_placeholder', default: 'Краткое описание работы, ссылки, выводы') %>"></textarea>
+              </div>
+              <div>
+                <label class="form-label"><%= t("test_assignments.fields.submission_files") %></label>
+                <input type="file" name="test_assignment[submission_files][]" multiple class="form-control">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+              <button type="submit" class="btn btn-primary"><%= t("test_assignments.actions.submit_work") %></button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%# Modal: Review %>
+    <div class="modal fade" id="reviewModal<%= assignment.id %>" tabindex="-1" aria-hidden="true" data-controller="modal-autoclose">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <%= form_with(url: review_test_assignment_path(assignment), method: :post) do |f| %>
+            <div class="modal-header">
+              <h5 class="modal-title title-3 m-0"><%= t("test_assignments.actions.review") %></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body d-flex flex-column gap-3">
+              <div>
+                <label class="form-label"><%= t("test_assignments.fields.score") %> (0–100)</label>
+                <input type="number" name="test_assignment[score]" class="form-control" min="0" max="100" required>
+              </div>
+              <div>
+                <label class="form-label"><%= t("test_assignments.fields.reviewer_notes", default: "Комментарий ревьюера") %></label>
+                <textarea name="test_assignment[reviewer_notes]" class="form-control" rows="4"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+              <button type="submit" class="btn btn-success"><%= t("test_assignments.actions.review") %></button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

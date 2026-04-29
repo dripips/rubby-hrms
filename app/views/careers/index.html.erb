@@ -1,0 +1,106 @@
+<%
+  hero_classes = ["careers-hero"]
+  hero_classes << "careers-hero--with-image" if @careers.hero_image?
+  hero_styles = []
+  hero_styles << "background: #{@careers.color_hero_bg};" if @careers.color_hero_bg && !@careers.hero_image?
+%>
+<section class="<%= hero_classes.join(' ') %>" <%= "style=\"#{hero_styles.join(' ')}\"".html_safe if hero_styles.any? %>>
+  <% if @careers.hero_image? %>
+    <img src="<%= rails_blob_path(@careers.hero_image) %>" alt="" class="careers-hero__bg">
+  <% end %>
+  <div class="careers-hero__inner">
+    <div class="careers-hero__eyebrow"><%= @careers.t("hero_eyebrow") %></div>
+    <h1 class="careers-hero__title">
+      <%= @careers.t("hero_title", name: @careers.site_name(@company&.name)) %>
+    </h1>
+    <p class="careers-hero__lead">
+      <%= @careers.t("hero_lead") %>
+    </p>
+  </div>
+</section>
+
+<%# Поиск + фильтры — показываем только если открытых вакансий > 3 %>
+<% if @available_departments.any? || @available_employment_types.any? %>
+  <%= form_with(url: careers_path, method: :get, local: true, class: "careers-filters") do %>
+    <div class="careers-filters__search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="careers-filters__search-icon">
+        <circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/>
+      </svg>
+      <input type="search" name="q" value="<%= params[:q] %>" placeholder="<%= @careers.t("filters_search_placeholder", default: "Поиск по названию, описанию…") %>" class="careers-filters__input">
+      <button type="submit" class="btn btn-primary careers-filters__submit">
+        <%= @careers.t("filters_apply", default: "Найти") %>
+      </button>
+    </div>
+
+    <% if @available_departments.size > 1 || @available_employment_types.size > 1 %>
+      <div class="careers-filters__chips">
+        <%= link_to @careers.t("filters_all", default: "Все"), careers_path, class: "careers-filters__chip #{'is-active' if params[:department_id].blank? && params[:employment_type].blank? && params[:q].blank?}" %>
+        <% @available_departments.each do |dep_id, dep_name| %>
+          <%= link_to dep_name, careers_path(department_id: dep_id, q: params[:q], employment_type: params[:employment_type]),
+                      class: "careers-filters__chip #{'is-active' if params[:department_id].to_s == dep_id.to_s}" %>
+        <% end %>
+        <% @available_employment_types.each do |et| %>
+          <% label = t("job_openings.employment_types.#{et}", default: et.to_s.humanize) %>
+          <%= link_to label, careers_path(employment_type: et, q: params[:q], department_id: params[:department_id]),
+                      class: "careers-filters__chip #{'is-active' if params[:employment_type].to_s == et}" %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if @openings.any? %>
+  <section class="careers-list careers-list--<%= @careers.layout %>">
+    <% @openings.each do |op| %>
+      <%= link_to careers_opening_path(op.code.presence || op.id), class: "careers-card" do %>
+        <div class="careers-card__head">
+          <h2 class="careers-card__title"><%= op.title %></h2>
+          <% if @careers.show_salary? && (op.salary_from.present? || op.salary_to.present?) %>
+            <span class="careers-card__salary">
+              <% if op.salary_from && op.salary_to %>
+                <%= number_with_delimiter(op.salary_from.to_i, delimiter: " ") %> – <%= number_with_delimiter(op.salary_to.to_i, delimiter: " ") %> <%= op.currency %>
+              <% elsif op.salary_from %>
+                <%= @careers.t("card_salary_from") %> <%= number_with_delimiter(op.salary_from.to_i, delimiter: " ") %> <%= op.currency %>
+              <% elsif op.salary_to %>
+                <%= @careers.t("card_salary_to") %> <%= number_with_delimiter(op.salary_to.to_i, delimiter: " ") %> <%= op.currency %>
+              <% end %>
+            </span>
+          <% end %>
+        </div>
+
+        <div class="careers-card__meta">
+          <% if @careers.show_department? && op.department.present? %>
+            <span class="careers-card__chip"><%= op.department.name %></span>
+          <% end %>
+          <% if op.position.present? %>
+            <span class="careers-card__chip"><%= op.position.name %></span>
+          <% end %>
+          <% if @careers.show_employment_type? && op.employment_type.present? %>
+            <span class="careers-card__chip"><%= t("job_openings.employment_types.#{op.employment_type}", default: op.employment_type.humanize) %></span>
+          <% end %>
+        </div>
+
+        <% if op.description.present? %>
+          <p class="careers-card__excerpt"><%= truncate(op.description.to_s.strip, length: 280) %></p>
+        <% end %>
+
+        <span class="careers-card__cta">
+          <%= @careers.t("card_open_cta") %>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 4l4 4-4 4"/></svg>
+        </span>
+      <% end %>
+    <% end %>
+  </section>
+
+  <%# Pagination — рендерится только если страниц > 1 %>
+  <% if @openings.respond_to?(:total_pages) && @openings.total_pages > 1 %>
+    <nav class="careers-paginate">
+      <%= paginate @openings, theme: "careers" %>
+    </nav>
+  <% end %>
+<% else %>
+  <div class="careers-empty">
+    <h2><%= @careers.t("empty_title") %></h2>
+    <p><%= @careers.t("empty_hint") %></p>
+  </div>
+<% end %>

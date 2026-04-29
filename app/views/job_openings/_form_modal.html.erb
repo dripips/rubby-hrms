@@ -1,0 +1,76 @@
+<div class="modal fade" id="newOpeningModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <%= form_with(model: opening, url: job_openings_path, local: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= t("job_openings.new", default: "Новая вакансия") %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <%= f.label :title, t("job_openings.fields.title"), class: "form-label" %>
+              <%= f.text_field :title, class: "form-control", required: true, placeholder: "Senior Backend Developer" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :openings_count, t("job_openings.fields.openings_count"), class: "form-label" %>
+              <%= f.number_field :openings_count, class: "form-control", value: 1, min: 1 %>
+            </div>
+
+            <div class="col-md-6">
+              <%= f.label :department_id, t("job_openings.fields.department"), class: "form-label" %>
+              <%= f.collection_select :department_id, form_data[:departments], :id, :name, { include_blank: "—" }, class: "form-select" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :position_id, t("job_openings.fields.position"), class: "form-label" %>
+              <%= f.collection_select :position_id, form_data[:positions], :id, :name, { include_blank: "—" }, class: "form-select" %>
+            </div>
+
+            <div class="col-md-4">
+              <%= f.label :grade_id, t("job_openings.fields.grade"), class: "form-label" %>
+              <%= f.collection_select :grade_id, form_data[:grades], :id, :name, { include_blank: "—" }, class: "form-select" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :owner_id, t("job_openings.fields.owner"), class: "form-label" %>
+              <%= f.collection_select :owner_id, form_data[:recruiters], :id, :email, { include_blank: "—" }, class: "form-select" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :state, t("job_openings.fields.state"), class: "form-label" %>
+              <%= f.select :state, JobOpening.states.keys.map { |s| [t("job_openings.states.#{s}"), s] }, {}, class: "form-select" %>
+            </div>
+
+            <div class="col-md-4">
+              <%= f.label :salary_from, t("job_openings.fields.salary_from"), class: "form-label" %>
+              <%= f.number_field :salary_from, class: "form-control", step: 1000 %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :salary_to, t("job_openings.fields.salary_to"), class: "form-label" %>
+              <%= f.number_field :salary_to, class: "form-control", step: 1000 %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :currency, t("job_openings.fields.currency"), class: "form-label" %>
+              <%= f.select :currency, %w[RUB USD EUR], {}, class: "form-select" %>
+            </div>
+
+            <div class="col-12">
+              <%= f.label :description, t("job_openings.fields.description"), class: "form-label" %>
+              <%= f.text_area :description, class: "form-control", rows: 3 %>
+            </div>
+            <div class="col-12">
+              <%= f.label :requirements, t("job_openings.fields.requirements"), class: "form-label" %>
+              <%= f.text_area :requirements, class: "form-control", rows: 3 %>
+            </div>
+            <div class="col-12">
+              <%= f.label :nice_to_have, t("job_openings.fields.nice_to_have"), class: "form-label" %>
+              <%= f.text_area :nice_to_have, class: "form-control", rows: 2 %>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

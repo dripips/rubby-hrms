@@ -1,0 +1,57 @@
+<% content_for :page_title, t("navigation.job_applicants", default: "Кандидаты") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.recruitment") %></div>
+    <h1 class="page-header__title"><%= t("navigation.job_applicants", default: "Кандидаты") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("job_applicants.summary", default: "Всего: %{n} · Активных: %{a}", n: @applicants.size, a: @applicants.count { |a| JobApplicant::ACTIVE_STAGES.include?(a.stage) }) %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newApplicantModal">
+      + <%= t("job_applicants.new", default: "Новый кандидат") %>
+    </button>
+  </div>
+</header>
+
+<%= render "shared/recruitment_tabs" %>
+
+<div class="row g-3">
+  <% @applicants.each do |a| %>
+    <div class="col-12 col-md-6 col-xl-4">
+      <%= link_to job_applicant_path(a), class: "card-apple card-apple--hover d-block" do %>
+        <div class="d-flex align-items-center gap-3 mb-2">
+          <% if a.avatar_url %>
+            <span class="avatar-apple avatar-apple--lg avatar-apple--photo" style="background-image: url(<%= a.avatar_url %>);"></span>
+          <% else %>
+            <span class="avatar-apple avatar-apple--lg"><%= a.initials %></span>
+          <% end %>
+          <div style="flex:1; min-width:0;">
+            <div class="headline" style="margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><%= a.full_name %></div>
+            <div class="footnote"><%= a.current_position %><% if a.current_company %> · <%= a.current_company %><% end %></div>
+          </div>
+          <span class="kanban__col-dot is-<%= a.stage %>"></span>
+        </div>
+        <div class="d-flex align-items-center gap-2 footnote text-secondary-apple flex-wrap">
+          <span><%= t("job_applicants.stages.#{a.stage}") %></span>
+          <% if a.job_opening %>
+            <span>·</span>
+            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><%= a.job_opening.title %></span>
+          <% end %>
+          <span class="kanban__card-source ms-auto"><%= a.source %></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <% if @applicants.empty? %>
+    <div class="col-12">
+      <div class="empty-state card-apple">
+        <div class="empty-state__title"><%= t("job_applicants.empty", default: "Кандидатов пока нет") %></div>
+        <p class="footnote"><%= t("job_applicants.empty_hint", default: "Добавьте первого кандидата вручную или дождитесь откликов с careers-страницы.") %></p>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<%= render "form_modal", applicant: @new_applicant, form_data: @form_data %>

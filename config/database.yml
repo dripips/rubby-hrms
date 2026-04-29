@@ -1,0 +1,37 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("HRMS_DATABASE_HOST", "localhost") %>
+  port: <%= ENV.fetch("HRMS_DATABASE_PORT", 5432) %>
+  username: <%= ENV.fetch("HRMS_DATABASE_USERNAME", "postgres") %>
+  password: <%= ENV.fetch("HRMS_DATABASE_PASSWORD", "") %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  variables:
+    statement_timeout: 30000
+
+development:
+  <<: *default
+  database: hrms_development
+
+test:
+  <<: *default
+  database: hrms_test
+
+production:
+  primary: &primary_production
+    <<: *default
+    database: hrms_production
+    username: hrms
+    password: <%= ENV["HRMS_DATABASE_PASSWORD"] %>
+  cache:
+    <<: *primary_production
+    database: hrms_production_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    database: hrms_production_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: hrms_production_cable
+    migrations_paths: db/cable_migrate

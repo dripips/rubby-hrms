@@ -1,0 +1,12 @@
+HRMS · Recruitment — Интервью запланировано
+
+На вас назначен раунд интервью с кандидатом <%= @applicant.full_name %>.
+
+Тип:        <%= @round.kind_label %>
+Когда:      <%= l(@round.scheduled_at, format: :long) %> (<%= @round.duration_minutes %> мин)
+<% if @round.location.present? %>Место:      <%= @round.location %>
+<% end %><% if @round.meeting_url.present? %>Ссылка:     <%= @round.meeting_url %>
+<% end %><% if @applicant.job_opening %>Вакансия:   <%= @applicant.job_opening.title %>
+<% end %>
+
+После раунда заполните scorecard с компетенциями и финальной рекомендацией.

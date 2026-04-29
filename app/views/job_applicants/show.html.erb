@@ -1,0 +1,293 @@
+<% content_for :page_title, @applicant.full_name %>
+
+<header class="page-header">
+  <div class="d-flex align-items-center gap-3">
+    <% if @applicant.avatar_url %>
+      <span class="avatar-apple avatar-apple--xl avatar-apple--photo" style="background-image: url(<%= @applicant.avatar_url %>);"></span>
+    <% else %>
+      <span class="avatar-apple avatar-apple--xl"><%= @applicant.initials %></span>
+    <% end %>
+    <div>
+      <div class="page-header__eyebrow">
+        <% if @applicant.job_opening %>
+          <%= link_to @applicant.job_opening.title, job_opening_path(@applicant.job_opening) %>
+        <% else %>
+          <%= t("job_applicants.talent_pool", default: "Talent Pool") %>
+        <% end %>
+        · <%= t("job_applicants.sources.#{@applicant.source}", default: @applicant.source) %>
+      </div>
+      <h1 class="page-header__title m-0"><%= @applicant.full_name %></h1>
+      <p class="page-header__subtitle">
+        <%= @applicant.current_position %><% if @applicant.current_company %> · <%= @applicant.current_company %><% end %>
+      </p>
+    </div>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to job_applicants_path, class: "btn btn-secondary" do %>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4l-4 4 4 4"/></svg>
+      <%= t("common.back") %>
+    <% end %>
+    <% if policy(@applicant).update? %>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editApplicantModal-<%= @applicant.id %>">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5a1.5 1.5 0 0 1 2.12 2.12L4.5 13.74l-3 1 1-3 9-9z"/></svg>
+        <%= t("common.edit", default: "Редактировать") %>
+      </button>
+    <% end %>
+    <% if policy(@applicant).destroy? %>
+      <%= button_to job_applicant_path(@applicant), method: :delete, class: "btn btn-danger", data: { turbo_confirm: t("common.confirm_delete", default: "Удалить?") }, form: { class: "d-inline" } do %>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6 4.5V3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.5M5 4.5v9.5a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V4.5"/></svg>
+        <%= t("common.delete") %>
+      <% end %>
+    <% end %>
+  </div>
+</header>
+
+<%# Edit modal — рендерится единожды на странице, открывается по клику %>
+<% if policy(@applicant).update? %>
+  <%= render "job_applicants/form_modal", applicant: @applicant, form_data: @form_data %>
+<% end %>
+
+<%# ── Stage actions ───────────────────────────────────────────────────────── %>
+<div id="applicant-stage-actions">
+  <%= render "job_applicants/stage_actions", applicant: @applicant %>
+</div>
+
+<%# ── Tabs ───────────────────────────────────────────────────────────────── %>
+<div data-controller="applicant-tabs">
+  <ul class="applicant-tabs">
+    <% assignments = @applicant.test_assignments.kept.includes(:created_by, :reviewed_by).order(created_at: :desc) %>
+    <% interviews  = @applicant.interview_rounds.kept.includes(:interviewer, :created_by).order(scheduled_at: :desc) %>
+    <% [["profile", t("job_applicants.tabs.profile", default: "Профиль")],
+        ["resume", t("job_applicants.tabs.resume", default: "Резюме")],
+        ["portfolio", t("job_applicants.tabs.portfolio", default: "Портфолио")],
+        ["assignments", t("job_applicants.tabs.assignments", default: "Тестовые"), assignments.size],
+        ["interviews", t("job_applicants.tabs.interviews", default: "Интервью"), interviews.size],
+        ["ai", t("job_applicants.tabs.ai", default: "AI")],
+        ["notes", t("job_applicants.tabs.notes", default: "Заметки"), @notes.size],
+        ["history", t("job_applicants.tabs.history", default: "История"), @stage_changes.size]
+       ].each do |tab| %>
+      <li class="applicant-tabs__item">
+        <button type="button" class="applicant-tabs__btn"
+                data-applicant-tabs-target="tab"
+                data-tab="<%= tab[0] %>"
+                data-action="click->applicant-tabs#switch">
+          <%= tab[1] %>
+          <% if tab[2] %><span class="footnote text-tertiary"> · <%= tab[2] %></span><% end %>
+        </button>
+      </li>
+    <% end %>
+  </ul>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="profile">
+    <div class="row g-3">
+      <div class="col-12 col-xl-7">
+        <div class="card-apple">
+          <h3 class="card-apple__title mb-3"><%= t("job_applicants.tabs.profile") %></h3>
+          <dl class="row g-3 m-0">
+            <% [
+              [t("job_applicants.fields.last_name"), @applicant.last_name],
+              [t("job_applicants.fields.first_name"), @applicant.first_name],
+              ["Email", @applicant.email],
+              [t("job_applicants.fields.phone"), @applicant.phone],
+              [t("job_applicants.fields.location"), @applicant.location],
+              [t("job_applicants.fields.current_company"), @applicant.current_company],
+              [t("job_applicants.fields.current_position"), @applicant.current_position],
+              [t("job_applicants.fields.years_of_experience"), @applicant.years_of_experience ? "#{@applicant.years_of_experience} #{t('job_applicants.years', default: 'лет')}" : nil],
+              [t("job_applicants.fields.expected_salary"), @applicant.expected_salary ? "#{@applicant.expected_salary.to_i} #{@applicant.currency}" : nil]
+            ].each do |label, value| %>
+              <dt class="col-sm-5 form-label"><%= label %></dt>
+              <dd class="col-sm-7"><%= value.presence || "—" %></dd>
+            <% end %>
+          </dl>
+          <% if @applicant.summary.present? %>
+            <hr class="divider">
+            <p class="callout"><%= @applicant.summary %></p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-5">
+        <div class="card-apple">
+          <h3 class="card-apple__title mb-3"><%= t("job_applicants.links", default: "Ссылки") %></h3>
+          <div class="d-flex flex-column gap-2">
+            <% [
+              [t("job_applicants.fields.portfolio_url"), @applicant.portfolio_url],
+              ["LinkedIn", @applicant.linkedin_url],
+              ["GitHub", @applicant.github_url],
+              ["Telegram", @applicant.telegram]
+            ].each do |label, value| %>
+              <% if value.present? %>
+                <div>
+                  <div class="form-label m-0"><%= label %></div>
+                  <%= link_to value, value.to_s.start_with?("http") ? value : "https://#{value.sub(/^@/, '')}", target: "_blank", rel: "noopener" %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="resume">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("job_applicants.tabs.resume") %></h3>
+      <% if @applicant.resume.attached? %>
+        <% if @applicant.resume.content_type == "application/pdf" %>
+          <iframe src="<%= rails_blob_path(@applicant.resume, disposition: 'inline') %>" style="width:100%; height: 70vh; border-radius: var(--ds-radius-md); border: 1px solid var(--ds-separator);"></iframe>
+        <% else %>
+          <div class="footnote">
+            <%= @applicant.resume.filename %> (<%= number_to_human_size(@applicant.resume.byte_size) %>)
+          </div>
+          <%= link_to t("job_applicants.download", default: "Скачать"), rails_blob_path(@applicant.resume, disposition: "attachment"), class: "btn btn-soft mt-2" %>
+        <% end %>
+      <% else %>
+        <div class="empty-state">
+          <div class="empty-state__title"><%= t("job_applicants.no_resume", default: "Резюме не загружено") %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="portfolio">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("job_applicants.tabs.portfolio") %></h3>
+      <% if @applicant.portfolio_files.any? %>
+        <div class="row g-3">
+          <% @applicant.portfolio_files.each do |file| %>
+            <div class="col-md-4 col-6">
+              <%= link_to rails_blob_path(file, disposition: "inline"), target: "_blank", class: "card-apple card-apple--hover d-block text-center text-decoration-none", style: "padding: 18px;" do %>
+                <% if file.image? %>
+                  <%= image_tag rails_blob_path(file), style: "max-width:100%; max-height: 200px; border-radius: var(--ds-radius-sm);" %>
+                <% else %>
+                  <div style="font-size: 36px;">📄</div>
+                <% end %>
+                <div class="footnote mt-2" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><%= file.filename %></div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      <% if @applicant.portfolio_files.empty? && @applicant.portfolio_url.blank? %>
+        <div class="empty-state">
+          <div class="empty-state__title"><%= t("job_applicants.no_portfolio", default: "Портфолио не приложено") %></div>
+        </div>
+      <% end %>
+      <% if @applicant.portfolio_url.present? %>
+        <div class="mt-3">
+          <strong><%= t("job_applicants.fields.portfolio_url") %>:</strong>
+          <%= link_to @applicant.portfolio_url, @applicant.portfolio_url, target: "_blank", rel: "noopener" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="assignments">
+    <div class="card-apple mb-3">
+      <%= form_with(model: TestAssignment.new, url: job_applicant_test_assignments_path(@applicant), multipart: true, class: "d-flex flex-column gap-3") do |f| %>
+        <h3 class="card-apple__title m-0"><%= t("test_assignments.new", default: "Выдать тестовое задание") %></h3>
+
+        <div class="row g-3">
+          <div class="col-md-8">
+            <%= f.label :title, t("test_assignments.fields.title", default: "Название"), class: "form-label" %>
+            <%= f.text_field :title, class: "form-control", required: true, placeholder: "Например: API интеграции" %>
+          </div>
+          <div class="col-md-4">
+            <%= f.label :deadline, t("test_assignments.fields.deadline", default: "Дедлайн"), class: "form-label" %>
+            <%= f.datetime_local_field :deadline, class: "form-control", value: 1.week.from_now.strftime("%Y-%m-%dT%H:%M") %>
+          </div>
+          <div class="col-12">
+            <%= f.label :description, t("test_assignments.fields.description", default: "Описание задания"), class: "form-label" %>
+            <%= f.text_area :description, class: "form-control", rows: 4 %>
+          </div>
+          <div class="col-12">
+            <%= f.label :requirements, t("test_assignments.fields.requirements", default: "Что оценивается"), class: "form-label" %>
+            <%= f.text_area :requirements, class: "form-control", rows: 2 %>
+          </div>
+          <div class="col-12">
+            <%= f.label :brief_files, t("test_assignments.fields.brief_files", default: "Файлы условий (PDF, ZIP, изображения)"), class: "form-label" %>
+            <%= f.file_field :brief_files, multiple: true, class: "form-control" %>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <%= f.submit t("test_assignments.send_now", default: "Отправить кандидату"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+
+    <% if assignments.empty? %>
+      <div class="empty-state"><div class="empty-state__title"><%= t("test_assignments.empty", default: "Тестовых заданий пока нет") %></div></div>
+    <% end %>
+
+    <div id="test_assignments_list">
+      <%= render partial: "test_assignments/card", collection: assignments, as: :assignment, locals: { applicant: @applicant } %>
+    </div>
+  </div>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="interviews">
+    <%= render "interview_rounds/panel", applicant: @applicant, interviews: interviews %>
+  </div>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="ai">
+    <%= render "ai/applicants/panel", applicant: @applicant %>
+  </div>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="notes">
+    <div class="card-apple mb-3">
+      <%= form_with(model: @new_note, url: job_applicant_applicant_notes_path(@applicant), local: true, class: "d-flex flex-column gap-2") do |f| %>
+        <%= f.text_area :body, class: "form-control", rows: 3, placeholder: t("applicant_notes.placeholder", default: "Поделитесь впечатлениями о кандидате...") %>
+        <div class="d-flex justify-content-end">
+          <%= f.submit t("applicant_notes.add", default: "Добавить заметку"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+
+    <% @notes.each do |note| %>
+      <div class="card-apple mb-2">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="avatar-apple"><%= note.author.email[0,2].upcase %></span>
+          <div style="flex:1;">
+            <div class="headline" style="margin:0;"><%= note.author.email %></div>
+            <div class="footnote"><%= time_ago_in_words(note.created_at) %> <%= t("common.ago") %></div>
+          </div>
+          <% if note.author_id == current_user.id || current_user.role_superadmin? %>
+            <%= button_to "", applicant_note_path(note), method: :delete, class: "btn-close", form: { class: "d-inline" }, "aria-label": t("common.delete") %>
+          <% end %>
+        </div>
+        <p class="m-0" style="white-space: pre-wrap;"><%= note.body %></p>
+      </div>
+    <% end %>
+    <% if @notes.empty? %>
+      <div class="empty-state"><div class="empty-state__title"><%= t("applicant_notes.empty", default: "Пока нет заметок") %></div></div>
+    <% end %>
+  </div>
+
+  <div class="applicant-panel" data-applicant-tabs-target="panel" data-tab="history">
+    <div class="card-apple">
+      <% if @stage_changes.any? %>
+        <ol class="timeline">
+          <% @stage_changes.each do |ch| %>
+            <% tone = case ch.to_stage when "hired" then "is-green" when "rejected","withdrawn" then "is-red" when "interview" then "is-orange" when "screening" then "is-purple" else "is-blue" end %>
+            <li class="timeline__item">
+              <span class="timeline__dot <%= tone %>"></span>
+              <div class="timeline__title">
+                <%= t("job_applicants.stages.#{ch.from_stage}", default: ch.from_stage&.humanize || "—") %>
+                →
+                <%= t("job_applicants.stages.#{ch.to_stage}") %>
+              </div>
+              <div class="timeline__meta">
+                <%= ch.user.email %> · <%= l(ch.changed_at, format: :long) %>
+              </div>
+              <% if ch.comment.present? %>
+                <div class="timeline__body"><%= ch.comment %></div>
+              <% end %>
+            </li>
+          <% end %>
+        </ol>
+      <% else %>
+        <div class="empty-state"><div class="empty-state__title"><%= t("job_applicants.no_history", default: "Пока без изменений стадии") %></div></div>
+      <% end %>
+    </div>
+  </div>
+</div>

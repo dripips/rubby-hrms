@@ -1,0 +1,14 @@
+<div class="card-apple ai-result mt-3" style="background: var(--ds-fill-4); border-style: dashed;">
+  <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="pill pill--info">AI · <%= t("ai.actions.questions_for", default: "Вопросы для раунда") %></span>
+      <span class="footnote text-tertiary"><%= run.model %></span>
+      <span class="footnote text-tertiary"><%= time_ago_in_words(run.created_at) %> <%= t("common.ago") %></span>
+    </div>
+    <span class="footnote text-tertiary"><%= run.total_tokens %> tokens · <%= run.cost_display %></span>
+  </div>
+
+  <%# Делегируем рендер тела общему partial — там есть нормализация
+      строк-под-Ruby-hash в нормальные объекты + красивый layout. %>
+  <%= render "ai/applicants/run_body", run: run %>
+</div>

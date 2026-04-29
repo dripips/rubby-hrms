@@ -1,0 +1,101 @@
+<%
+  modal_id = applicant.persisted? ? "editApplicantModal-#{applicant.id}" : "newApplicantModal"
+  modal_title = applicant.persisted? ?
+    t("job_applicants.edit", default: "Редактировать кандидата") :
+    t("job_applicants.new", default: "Новый кандидат")
+%>
+<div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-hidden="true" data-controller="modal-autoclose">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <%= form_with(model: applicant, local: true, multipart: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= modal_title %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <%= f.label :last_name, t("job_applicants.fields.last_name"), class: "form-label" %>
+              <%= f.text_field :last_name, class: "form-control", required: true %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :first_name, t("job_applicants.fields.first_name"), class: "form-label" %>
+              <%= f.text_field :first_name, class: "form-control", required: true %>
+            </div>
+
+            <div class="col-md-6">
+              <%= f.label :email, "Email", class: "form-label" %>
+              <%= f.email_field :email, class: "form-control" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :phone, t("job_applicants.fields.phone"), class: "form-label" %>
+              <%= f.telephone_field :phone, class: "form-control" %>
+            </div>
+
+            <div class="col-md-8">
+              <%= f.label :job_opening_id, t("job_applicants.fields.opening"), class: "form-label" %>
+              <%= f.collection_select :job_opening_id, form_data[:openings], :id, :title, { include_blank: t("job_applicants.talent_pool", default: "— Talent Pool —") }, class: "form-select" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :owner_id, t("job_applicants.fields.owner"), class: "form-label" %>
+              <%= f.collection_select :owner_id, form_data[:recruiters], :id, :email, { include_blank: "—" }, class: "form-select" %>
+            </div>
+
+            <div class="col-md-6">
+              <%= f.label :current_company, t("job_applicants.fields.current_company"), class: "form-label" %>
+              <%= f.text_field :current_company, class: "form-control" %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :current_position, t("job_applicants.fields.current_position"), class: "form-label" %>
+              <%= f.text_field :current_position, class: "form-control" %>
+            </div>
+
+            <div class="col-md-4">
+              <%= f.label :years_of_experience, t("job_applicants.fields.years_of_experience"), class: "form-label" %>
+              <%= f.number_field :years_of_experience, class: "form-control", min: 0 %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :expected_salary, t("job_applicants.fields.expected_salary"), class: "form-label" %>
+              <%= f.number_field :expected_salary, class: "form-control", step: 1000 %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :source, t("job_applicants.fields.source"), class: "form-label" %>
+              <%= f.select :source, %w[manual careers_page hh linkedin referral email].map { |s| [t("job_applicants.sources.#{s}", default: s.humanize), s] }, {}, class: "form-select" %>
+            </div>
+
+            <div class="col-md-6">
+              <%= f.label :portfolio_url, t("job_applicants.fields.portfolio_url"), class: "form-label" %>
+              <%= f.url_field :portfolio_url, class: "form-control", placeholder: "https://..." %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :linkedin_url, "LinkedIn", class: "form-label" %>
+              <%= f.url_field :linkedin_url, class: "form-control" %>
+            </div>
+
+            <div class="col-md-4">
+              <%= f.label :photo, t("job_applicants.fields.photo", default: "Фото"), class: "form-label" %>
+              <%= f.file_field :photo, class: "form-control", accept: "image/*" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :resume, t("job_applicants.fields.resume"), class: "form-label" %>
+              <%= f.file_field :resume, class: "form-control", accept: ".pdf,.doc,.docx" %>
+            </div>
+            <div class="col-md-4">
+              <%= f.label :portfolio_files, t("job_applicants.fields.portfolio_files"), class: "form-label" %>
+              <%= f.file_field :portfolio_files, multiple: true, class: "form-control" %>
+            </div>
+
+            <div class="col-12">
+              <%= f.label :summary, t("job_applicants.fields.summary"), class: "form-label" %>
+              <%= f.text_area :summary, class: "form-control", rows: 2 %>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

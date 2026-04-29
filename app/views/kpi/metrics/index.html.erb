@@ -1,0 +1,102 @@
+<% content_for :page_title, t("kpi.metrics.title") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.kpi") %></div>
+    <h1 class="page-header__title"><%= t("kpi.metrics.title") %></h1>
+    <p class="page-header__subtitle"><%= t("kpi.metrics.subtitle") %></p>
+  </div>
+  <% if policy(KpiMetric).create? %>
+    <div class="page-header__actions">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newKpiMetricModal">
+        + <%= t("kpi.metrics.new") %>
+      </button>
+    </div>
+  <% end %>
+</header>
+
+<%= render "kpi/subnav" %>
+
+<div class="card-apple card-apple--flush">
+  <% if @metrics.any? %>
+    <table class="table-apple">
+      <thead>
+        <tr>
+          <th><%= t("kpi.metrics.fields.name") %></th>
+          <th><%= t("kpi.metrics.fields.code") %></th>
+          <th><%= t("kpi.metrics.fields.unit") %></th>
+          <th><%= t("kpi.metrics.fields.target_direction") %></th>
+          <th><%= t("kpi.metrics.fields.weight_default") %></th>
+          <th><%= t("kpi.metrics.fields.active") %></th>
+          <% if policy(KpiMetric).update? %>
+            <th class="text-end"><%= t("common.actions") %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @metrics.each do |m| %>
+          <tr>
+            <td><strong><%= m.name %></strong></td>
+            <td><span class="text-mono footnote"><%= m.code %></span></td>
+            <td class="text-secondary-apple"><%= m.unit.presence || "—" %></td>
+            <td>
+              <span class="pill pill--<%= m.target_direction_maximize? ? 'success' : (m.target_direction_minimize? ? 'warning' : 'info') %>">
+                <%= t("kpi.metrics.target_directions.#{m.target_direction}") %>
+              </span>
+            </td>
+            <td class="text-mono"><%= number_with_precision(m.weight_default, precision: 2, strip_insignificant_zeros: true) %></td>
+            <td>
+              <% if m.active? %>
+                <span class="pill pill--success"><%= t("kpi.metrics.statuses.active") %></span>
+              <% else %>
+                <span class="pill pill--neutral"><%= t("kpi.metrics.statuses.inactive") %></span>
+              <% end %>
+            </td>
+            <% if policy(m).update? %>
+              <td class="text-end">
+                <button type="button" class="btn btn-ghost btn-sm" data-bs-toggle="modal" data-bs-target="#editKpiMetricModal<%= m.id %>">
+                  <%= t("common.edit") %>
+                </button>
+                <% if policy(m).destroy? %>
+                  <%= button_to t("common.delete"),
+                                kpi_metric_path(m),
+                                method: :delete,
+                                class: "btn btn-ghost btn-sm text-danger",
+                                form: { class: "d-inline" },
+                                data: { turbo_confirm: t("common.confirm.delete") } %>
+                <% end %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state" style="padding: var(--ds-space-6);">
+      <div class="empty-state__title"><%= t("kpi.metrics.empty") %></div>
+      <p class="footnote"><%= t("kpi.metrics.empty_hint") %></p>
+      <% if policy(KpiMetric).create? %>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newKpiMetricModal">
+          + <%= t("kpi.metrics.new") %>
+        </button>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<%= render "form_modal",
+           metric:    @new_metric,
+           modal_id:  "newKpiMetricModal",
+           submit_to: kpi_metrics_path,
+           title:     t("kpi.metrics.new") %>
+
+<% @metrics.each do |m| %>
+  <% if policy(m).update? %>
+    <%= render "form_modal",
+               metric:    m,
+               modal_id:  "editKpiMetricModal#{m.id}",
+               submit_to: kpi_metric_path(m),
+               method:    :patch,
+               title:     t("kpi.metrics.edit") %>
+  <% end %>
+<% end %>

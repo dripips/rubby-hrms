@@ -1,0 +1,40 @@
+<%# Locals: id (string, unique), default (lang slug), samples (Hash{slug => code}) %>
+<%
+  labels = {
+    "curl"   => "curl",
+    "fetch"  => "JS · fetch",
+    "js"     => "JS",
+    "ts"     => "TypeScript",
+    "ruby"   => "Ruby",
+    "python" => "Python",
+    "php"    => "PHP"
+  }
+  # Mapping наших slug → Prism language class
+  prism_lang = {
+    "curl"   => "bash",
+    "fetch"  => "javascript",
+    "js"     => "javascript",
+    "ts"     => "typescript",
+    "ruby"   => "ruby",
+    "python" => "python",
+    "php"    => "php"
+  }
+%>
+<div class="code-tabs" data-controller="code-tabs" data-code-tabs-default-lang-value="<%= default %>">
+  <div class="code-tabs__nav">
+    <% samples.each_key do |lang| %>
+      <button type="button"
+              class="code-tabs__tab"
+              data-code-tabs-target="tab"
+              data-lang="<%= lang %>"
+              data-action="click->code-tabs#switch">
+        <%= labels[lang] || lang %>
+      </button>
+    <% end %>
+  </div>
+  <% samples.each do |lang, code| %>
+    <pre class="code-tabs__block api-docs__code language-<%= prism_lang[lang] || "plaintext" %>"
+         data-code-tabs-target="block"
+         data-lang="<%= lang %>"><code class="language-<%= prism_lang[lang] || "plaintext" %>"><%= code.strip %></code></pre>
+  <% end %>
+</div>

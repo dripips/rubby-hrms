@@ -1,0 +1,107 @@
+<div class="modal fade" id="assignmentBriefModal-<%= applicant.id %>" tabindex="-1" data-controller="modal-autoclose">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <%= form_with(url: ai_generate_assignment_applicant_path(applicant), method: :post, html: { class: "" }) do |f| %>
+        <div class="modal-header">
+          <div>
+            <div class="footnote text-secondary-apple"><%= applicant.full_name %></div>
+            <h5 class="modal-title title-3 m-0"><%= t("ai.brief.title", default: "Бриф для AI: тестовое задание") %></h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body d-flex flex-column gap-3">
+          <p class="footnote text-secondary-apple m-0">
+            <%= t("ai.brief.subtitle", default: "Несколько параметров — и AI составит задание точно под условия. Все поля опциональны (пусто = AI решит сам).") %>
+          </p>
+
+          <%# Сложность %>
+          <div>
+            <label class="form-label"><%= t("ai.brief.fields.difficulty", default: "Сложность") %></label>
+            <div class="d-flex gap-2 flex-wrap">
+              <% [%w[auto auto], %w[junior junior], %w[middle middle], %w[senior senior]].each do |val, label| %>
+                <label class="recommendation-chip recommendation-chip--<%= val == "senior" ? "warning" : (val == "junior" ? "success" : "info") %>">
+                  <input type="radio" name="brief[difficulty]" value="<%= val %>"
+                         <%= 'checked' if val == "auto" %>>
+                  <span><%= t("ai.brief.difficulty.#{label}", default: label.humanize) %></span>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <%# Время на выполнение %>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label"><%= t("ai.brief.fields.hours", default: "Часов на выполнение") %></label>
+              <select name="brief[hours]" class="form-select">
+                <option value=""><%= t("ai.brief.hours.auto", default: "AI решит сам") %></option>
+                <% [2, 4, 6, 8, 12, 16, 24, 40].each do |h| %>
+                  <option value="<%= h %>">~<%= h %> ч</option>
+                <% end %>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label"><%= t("ai.brief.fields.deadline_days", default: "Дедлайн, дней") %></label>
+              <select name="brief[deadline_days]" class="form-select">
+                <option value=""><%= t("ai.brief.deadline.auto", default: "AI решит сам") %></option>
+                <% [3, 5, 7, 10, 14].each do |d| %>
+                  <option value="<%= d %>"><%= d %> дн.</option>
+                <% end %>
+              </select>
+            </div>
+          </div>
+
+          <%# Оплата %>
+          <div class="card-apple" style="background: var(--ds-fill-4); padding: 16px; border: none;">
+            <label class="form-check form-switch m-0 mb-2">
+              <input type="hidden" name="brief[paid]" value="0">
+              <input type="checkbox" name="brief[paid]" value="1" class="form-check-input" id="brief_paid_<%= applicant.id %>"
+                     data-controller="toggle" data-toggle-target-value="#brief_payment_<%= applicant.id %>">
+              <span class="form-check-label">
+                <strong><%= t("ai.brief.fields.paid", default: "Оплачиваемое тестовое") %></strong>
+              </span>
+            </label>
+            <div id="brief_payment_<%= applicant.id %>" style="display: none;">
+              <div class="row g-3">
+                <div class="col-md-7">
+                  <label class="form-label"><%= t("ai.brief.fields.payment_amount", default: "Сумма, RUB") %></label>
+                  <input type="number" name="brief[payment_amount]" class="form-control" min="0" step="500" placeholder="5000">
+                </div>
+                <div class="col-md-5 d-flex align-items-end">
+                  <div class="footnote text-secondary-apple">
+                    <%= t("ai.brief.payment_hint", default: "AI учтёт это в постановке (упомянет вознаграждение в тексте)") %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <%# Focus areas %>
+          <div>
+            <label class="form-label"><%= t("ai.brief.fields.focus", default: "На что AI обратить особое внимание (опционально)") %></label>
+            <textarea name="brief[focus]" rows="3" class="form-control"
+                      placeholder="<%= t("ai.brief.focus_placeholder", default: "Напр.: чистый код важнее перформанса, проверить умение писать тесты, дать кейс с edge-cases в БД") %>"></textarea>
+          </div>
+
+          <%# Формат сдачи %>
+          <div>
+            <label class="form-label"><%= t("ai.brief.fields.delivery", default: "Формат сдачи") %></label>
+            <select name="brief[delivery]" class="form-select">
+              <option value=""><%= t("ai.brief.delivery.auto", default: "AI решит сам") %></option>
+              <option value="github_repo"><%= t("ai.brief.delivery.github", default: "GitHub-репозиторий") %></option>
+              <option value="archive"><%= t("ai.brief.delivery.archive", default: "Архив (zip)") %></option>
+              <option value="pull_request"><%= t("ai.brief.delivery.pr", default: "Pull request в наш репо") %></option>
+              <option value="online_doc"><%= t("ai.brief.delivery.doc", default: "Документ (Notion/Google Docs)") %></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-soft" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("ai.brief.submit", default: "Сгенерировать"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,96 @@
+<% payload = run.payload || {} %>
+<div id="ai-offboarding-panel-<%= process.id %>" class="ai-leaves-result">
+  <% if !run.success %>
+    <div class="ai-leaves-result ai-leaves-result--error">
+      <strong>⚠ <%= t("ai.leaves.error_title") %></strong>
+      <p class="footnote m-0 mt-1"><%= run.error.presence || t("ai.error") %></p>
+    </div>
+
+  <% elsif run.kind == "knowledge_transfer_plan" %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="ai-spark">📚</span>
+      <strong><%= t("ai.offboarding.kt_title", default: "Передача знаний") %></strong>
+      <span class="footnote text-tertiary ms-auto"><%= run.cost_display %> · <%= run.total_tokens %> tok</span>
+    </div>
+    <% if payload["headline"] %><p class="title-3 m-0 mb-2"><%= payload["headline"] %></p><% end %>
+    <% if Array(payload["areas"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.areas", default: "Области передачи") %></h4>
+      <% payload["areas"].each do |a| %>
+        <div class="card-apple--inset mb-2 p-2">
+          <strong><%= a["topic"] %></strong>
+          <% if a["criticality"] %>
+            <% tone = { "high" => "danger", "medium" => "warning", "low" => "info" }[a["criticality"]] || "neutral" %>
+            <span class="pill pill--<%= tone %>"><%= a["criticality"] %></span>
+          <% end %>
+          <% if a["format"] %><span class="pill pill--neutral"><%= a["format"] %></span><% end %>
+          <% if a["duration_hours"] %><span class="footnote text-tertiary"><%= a["duration_hours"] %>h</span><% end %>
+          <% if a["recipient_hint"] %><div class="footnote text-secondary-apple">→ <%= a["recipient_hint"] %></div><% end %>
+        </div>
+      <% end %>
+    <% end %>
+    <% if Array(payload["session_plan"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.session_plan", default: "План сессий") %></h4>
+      <ol class="m-0 ps-3 mb-2"><% payload["session_plan"].each { |s| %><li><%= s %></li><% } %></ol>
+    <% end %>
+    <% if Array(payload["documentation_to_leave"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.docs_to_leave", default: "Документы оставить") %></h4>
+      <ul class="list-unstyled m-0"><% payload["documentation_to_leave"].each { |d| %><li>📄 <%= d %></li><% } %></ul>
+    <% end %>
+
+  <% elsif run.kind == "exit_interview_brief" %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="ai-spark">🎤</span>
+      <strong><%= t("ai.offboarding.exit_brief_title", default: "Exit interview") %></strong>
+      <span class="footnote text-tertiary ms-auto"><%= run.cost_display %> · <%= run.total_tokens %> tok</span>
+    </div>
+    <% if Array(payload["themes"]).any? %>
+      <div class="d-flex flex-wrap gap-1 mb-2">
+        <% payload["themes"].each { |t| %><span class="pill pill--info"><%= t %></span><% } %>
+      </div>
+    <% end %>
+    <% if Array(payload["questions"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.questions", default: "Вопросы") %></h4>
+      <% payload["questions"].each do |q| %>
+        <div class="card-apple--inset mb-2 p-2">
+          <strong>?</strong> <%= q["question"] %>
+          <% if q["theme"] %><span class="pill pill--neutral"><%= q["theme"] %></span><% end %>
+          <% if q["why_this"] %><div class="footnote text-secondary-apple mt-1"><%= q["why_this"] %></div><% end %>
+        </div>
+      <% end %>
+    <% end %>
+    <% if Array(payload["must_capture"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.must_capture", default: "Обязательно зафиксировать") %></h4>
+      <ul class="list-unstyled m-0"><% payload["must_capture"].each { |m| %><li>★ <%= m %></li><% } %></ul>
+    <% end %>
+
+  <% else %><%# replacement_brief %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="ai-spark">🧭</span>
+      <strong><%= payload["title"].presence || t("ai.offboarding.replacement_title", default: "ТЗ на замену") %></strong>
+      <%= button_to t("ai.offboarding.create_opening", default: "Создать вакансию"),
+                    ai_create_opening_offboarding_run_path(run),
+                    method: :post, class: "btn btn-primary btn-sm ms-auto",
+                    form: { class: "d-inline" } %>
+    </div>
+    <% if payload["headline"] %><p class="footnote text-secondary-apple"><%= payload["headline"] %></p><% end %>
+    <% if payload["summary"] %><p class="m-0 mb-2"><%= payload["summary"] %></p><% end %>
+    <% if Array(payload["responsibilities"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.responsibilities", default: "Обязанности") %></h4>
+      <ul class="list-unstyled m-0 mb-2"><% payload["responsibilities"].each { |r| %><li>• <%= r %></li><% } %></ul>
+    <% end %>
+    <% if Array(payload["must_have"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.must_have", default: "Обязательно") %></h4>
+      <ul class="list-unstyled m-0 mb-2"><% payload["must_have"].each { |r| %><li>★ <%= r %></li><% } %></ul>
+    <% end %>
+    <% if Array(payload["nice_to_have"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.offboarding.nice_to_have", default: "Будет плюсом") %></h4>
+      <ul class="list-unstyled m-0 mb-2"><% payload["nice_to_have"].each { |r| %><li>+ <%= r %></li><% } %></ul>
+    <% end %>
+    <% if payload["level_recommendation"] %>
+      <span class="pill pill--info"><%= payload["level_recommendation"] %></span>
+    <% end %>
+    <% if payload["salary_band_hint"] %>
+      <span class="pill pill--neutral"><%= payload["salary_band_hint"] %></span>
+    <% end %>
+  <% end %>
+</div>

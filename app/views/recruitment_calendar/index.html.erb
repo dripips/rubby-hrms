@@ -1,0 +1,175 @@
+<% content_for :page_title, t("navigation.recruitment_calendar", default: "Календарь интервью") %>
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/locales/ru.global.min.js"></script>
+<% end %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.recruitment") %></div>
+    <h1 class="page-header__title"><%= t("navigation.recruitment_calendar", default: "Календарь интервью") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("recruitment_calendar.subtitle", default: "Все запланированные раунды интервью на таймлайне. Цвета — статус. Hover на событии — подробности.") %>
+    </p>
+  </div>
+</header>
+
+<%= render "shared/recruitment_tabs" %>
+
+<div data-controller="recruitment-calendar"
+     data-recruitment-calendar-events-url-value="<%= recruitment_calendar_events_path(format: :json) %>"
+     data-recruitment-calendar-locale-value="<%= I18n.locale %>">
+
+  <%# ── Фильтры (pill-chips) ─────────────────────────────────────────────── %>
+  <div class="card-apple calendar-filters mb-3">
+    <div class="calendar-filters__chips">
+      <div class="filter-chip" data-controller="apple-select">
+        <span class="filter-chip__label"><%= t("recruitment_calendar.filters.interviewer", default: "Интервьюер") %></span>
+        <span class="filter-chip__value" data-apple-select-target="display" data-recruitment-calendar-target="interviewerLabel"><%= t("common.all", default: "Все") %></span>
+        <select data-apple-select-target="source"
+                data-recruitment-calendar-target="interviewerFilter"
+                data-action="change->recruitment-calendar#refetch"
+                aria-label="<%= t("recruitment_calendar.filters.interviewer") %>">
+          <option value=""><%= t("common.all") %></option>
+          <% @interviewers.each do |u| %>
+            <option value="<%= u.id %>"><%= u.display_name %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div class="filter-chip" data-controller="apple-select">
+        <span class="filter-chip__label"><%= t("recruitment_calendar.filters.kind", default: "Тип") %></span>
+        <span class="filter-chip__value" data-apple-select-target="display" data-recruitment-calendar-target="kindLabel"><%= t("common.all") %></span>
+        <select data-apple-select-target="source"
+                data-recruitment-calendar-target="kindFilter"
+                data-action="change->recruitment-calendar#refetch"
+                aria-label="<%= t("recruitment_calendar.filters.kind") %>">
+          <option value=""><%= t("common.all") %></option>
+          <% @kinds.each do |k| %>
+            <option value="<%= k %>"><%= t("interview_rounds.kinds.#{k}") %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <div class="filter-chip" data-controller="apple-select">
+        <span class="filter-chip__label"><%= t("recruitment_calendar.filters.state", default: "Статус") %></span>
+        <span class="filter-chip__value" data-apple-select-target="display" data-recruitment-calendar-target="stateLabel"><%= t("common.all") %></span>
+        <select data-apple-select-target="source"
+                data-recruitment-calendar-target="stateFilter"
+                data-action="change->recruitment-calendar#refetch"
+                aria-label="<%= t("recruitment_calendar.filters.state") %>">
+          <option value=""><%= t("common.all") %></option>
+          <% @states.each do |s| %>
+            <option value="<%= s %>"><%= t("interview_rounds.states.#{s}") %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <button type="button" class="btn btn-ghost btn-sm calendar-filters__reset"
+              data-action="click->recruitment-calendar#resetFilters">
+        <%= t("recruitment_calendar.filters.reset", default: "Сбросить") %>
+      </button>
+    </div>
+  </div>
+
+  <%# ── Сам календарь ────────────────────────────────────────────────────── %>
+  <div class="card-apple calendar-card">
+    <div data-recruitment-calendar-target="calendar"></div>
+  </div>
+
+  <%# ── Hover-popover (singleton) ────────────────────────────────────────── %>
+  <div class="event-popover" data-recruitment-calendar-target="popover" hidden>
+    <div class="event-popover__head">
+      <div class="event-popover__avatar" data-recruitment-calendar-target="popoverAvatar"></div>
+      <div class="event-popover__title">
+        <div class="event-popover__candidate" data-recruitment-calendar-target="popoverCandidate"></div>
+        <div class="event-popover__opening" data-recruitment-calendar-target="popoverOpening"></div>
+      </div>
+      <span class="pill" data-recruitment-calendar-target="popoverState"></span>
+    </div>
+    <dl class="event-popover__facts">
+      <dt><%= t("recruitment_calendar.popover.kind", default: "Раунд") %></dt>
+      <dd data-recruitment-calendar-target="popoverKind"></dd>
+
+      <dt><%= t("recruitment_calendar.popover.when", default: "Когда") %></dt>
+      <dd data-recruitment-calendar-target="popoverWhen"></dd>
+
+      <dt><%= t("recruitment_calendar.popover.interviewer", default: "Интервьюер") %></dt>
+      <dd data-recruitment-calendar-target="popoverInterviewer"></dd>
+
+      <dt class="event-popover__optional" data-recruitment-calendar-target="popoverLocationLabel"><%= t("recruitment_calendar.popover.location", default: "Место") %></dt>
+      <dd class="event-popover__optional" data-recruitment-calendar-target="popoverLocation"></dd>
+
+      <dt class="event-popover__optional" data-recruitment-calendar-target="popoverScoreLabel"><%= t("recruitment_calendar.popover.score", default: "Оценка") %></dt>
+      <dd class="event-popover__optional" data-recruitment-calendar-target="popoverScore"></dd>
+    </dl>
+  </div>
+
+  <%# ── Agenda — следующие 30 дней, сортируется ───────────────────────── %>
+  <% if @upcoming.any? %>
+    <div class="card-apple mt-3">
+      <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("recruitment_calendar.agenda.title", default: "Ближайшие 30 дней") %></h3>
+          <p class="footnote text-secondary-apple m-0 mt-1"><%= t("recruitment_calendar.agenda.hint", default: "Кликни на колонку чтобы отсортировать") %></p>
+        </div>
+        <span class="pill pill--neutral"><%= @upcoming.size %></span>
+      </div>
+
+      <table class="table-apple agenda-table" data-recruitment-calendar-target="agenda">
+        <thead>
+          <tr>
+            <th data-sort="when" data-action="click->recruitment-calendar#sort"><%= t("recruitment_calendar.agenda.when", default: "Когда") %> <span class="agenda-table__arrow">↑</span></th>
+            <th data-sort="candidate" data-action="click->recruitment-calendar#sort"><%= t("recruitment_calendar.agenda.candidate", default: "Кандидат") %></th>
+            <th data-sort="kind" data-action="click->recruitment-calendar#sort"><%= t("recruitment_calendar.agenda.kind", default: "Раунд") %></th>
+            <th data-sort="interviewer" data-action="click->recruitment-calendar#sort"><%= t("recruitment_calendar.agenda.interviewer", default: "Интервьюер") %></th>
+            <th data-sort="state" data-action="click->recruitment-calendar#sort"><%= t("recruitment_calendar.agenda.state", default: "Статус") %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @upcoming.each do |r| %>
+            <% applicant = r.job_applicant %>
+            <tr data-href="<%= job_applicant_path(applicant, anchor: "interviews") %>"
+                data-when="<%= r.scheduled_at.iso8601 %>"
+                data-candidate="<%= applicant&.full_name %>"
+                data-kind="<%= r.kind %>"
+                data-interviewer="<%= r.interviewer&.display_name %>"
+                data-state="<%= r.state %>"
+                style="cursor: pointer;"
+                onclick="window.location = this.dataset.href;">
+              <td>
+                <div class="agenda-table__when">
+                  <strong><%= l(r.scheduled_at, format: :short) %></strong>
+                  <span class="footnote text-tertiary"><%= r.duration_minutes %> мин</span>
+                </div>
+              </td>
+              <td>
+                <div class="agenda-table__candidate">
+                  <% if applicant&.avatar_url %>
+                    <span class="avatar-apple avatar-apple--sm avatar-apple--photo" style="background-image: url(<%= applicant.avatar_url %>);"></span>
+                  <% else %>
+                    <span class="avatar-apple avatar-apple--sm"><%= applicant&.initials %></span>
+                  <% end %>
+                  <div>
+                    <strong><%= applicant&.full_name %></strong>
+                    <% if applicant&.job_opening %>
+                      <div class="footnote text-tertiary"><%= applicant.job_opening.title %></div>
+                    <% end %>
+                  </div>
+                </div>
+              </td>
+              <td><span class="pill pill--neutral"><%= r.kind_label %></span></td>
+              <td><%= r.interviewer&.display_name || "—" %></td>
+              <td>
+                <span class="pill pill--<%= case r.state when 'scheduled' then 'info' when 'completed' then 'success' when 'cancelled' then 'neutral' when 'no_show' then 'danger' else 'info' end %>">
+                  <%= t("interview_rounds.states.#{r.state}") %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

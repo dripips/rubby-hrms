@@ -1,0 +1,35 @@
+<%
+  scope     = AiLock.for_onboarding(process)
+  busy      = AiLock.running?(scope)
+  busy_kind = busy ? AiLock.kind_for(scope) : nil
+
+  buttons = [
+    { kind: "onboarding_plan",  icon: "🧩", label: t("ai.onboarding.run_plan",   default: "Дополнить план"),  path: ai_plan_onboarding_path(process) },
+    { kind: "welcome_letter",   icon: "📨", label: t("ai.onboarding.run_welcome",default: "Welcome-письмо"),  path: ai_welcome_letter_onboarding_path(process) },
+    { kind: "mentor_match",     icon: "🧑‍🏫", label: t("ai.onboarding.run_mentor",  default: "Подобрать наставника"), path: ai_mentor_match_onboarding_path(process) },
+    { kind: "probation_review", icon: "📊", label: t("ai.onboarding.run_review", default: "Probation review"), path: ai_probation_review_onboarding_path(process) }
+  ]
+%>
+<div id="ai-controls-onboarding-<%= process.id %>" class="card-apple mb-3">
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <h3 class="card-apple__title m-0">✨ <%= t("ai.onboarding.title", default: "AI-ассистент онбординга") %></h3>
+    <% if busy && busy_kind %>
+      <span class="footnote text-tertiary"><span class="pill pill--info">AI · <%= t("ai.actions.#{busy_kind}", default: busy_kind.humanize) %></span></span>
+    <% end %>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+    <% buttons.each do |b| %>
+      <% if busy %>
+        <button type="button" class="btn btn-soft btn-sm" disabled>
+          <span class="spinner-dot me-2"></span><%= b[:icon] %> <%= b[:label] %>
+        </button>
+      <% else %>
+        <%= button_to "#{b[:icon]} #{b[:label]}", b[:path],
+                      method: :post,
+                      class: "btn btn-soft btn-sm",
+                      form: { class: "d-inline", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

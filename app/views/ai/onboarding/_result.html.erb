@@ -1,0 +1,98 @@
+<% payload = run.payload || {} %>
+<div id="ai-onboarding-panel-<%= process.id %>" class="ai-leaves-result">
+  <% if !run.success %>
+    <div class="ai-leaves-result ai-leaves-result--error">
+      <strong>⚠ <%= t("ai.leaves.error_title") %></strong>
+      <p class="footnote m-0 mt-1"><%= run.error.presence || t("ai.error") %></p>
+    </div>
+  <% elsif run.kind == "welcome_letter" %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="ai-spark">📨</span>
+      <strong><%= payload["subject"] %></strong>
+      <span class="footnote text-tertiary ms-auto"><%= run.cost_display %> · <%= run.total_tokens %> tok</span>
+    </div>
+    <pre class="callout" style="white-space: pre-wrap; font-family: inherit; font-size: 13px;"><%= payload["body"] %></pre>
+
+  <% elsif run.kind == "mentor_match" %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="ai-spark">🧑‍🏫</span>
+      <strong><%= t("ai.onboarding.mentor_match_title", default: "Кандидаты в наставники") %></strong>
+      <span class="footnote text-tertiary ms-auto"><%= run.cost_display %> · <%= run.total_tokens %> tok</span>
+    </div>
+    <% Array(payload["candidates"]).each do |c| %>
+      <div class="card-apple--inset mb-2 p-3">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <span class="pill pill--info">#<%= c["rank"] %></span>
+          <strong><%= c["name"] %></strong>
+          <% if c["fit_score"] %><span class="pill pill--success"><%= c["fit_score"] %>/100</span><% end %>
+          <% emp = Employee.kept.find_by(id: c["employee_id"]) %>
+          <% if emp %>
+            <%= link_to t("ai.onboarding.set_as_mentor", default: "Назначить наставником"),
+                        onboarding_process_path(process, onboarding_process: { mentor_id: emp.id }),
+                        method: :patch,
+                        class: "btn btn-ghost btn-sm ms-auto",
+                        data: { turbo_method: :patch } %>
+          <% end %>
+        </div>
+        <ul class="list-unstyled m-0">
+          <% Array(c["reasons"]).each do |r| %><li class="footnote text-secondary-apple">• <%= r %></li><% end %>
+        </ul>
+      </div>
+    <% end %>
+    <% if payload["verdict"] %>
+      <p class="footnote text-secondary-apple m-0"><strong>Вердикт:</strong> <%= payload["verdict"] %></p>
+    <% end %>
+
+  <% elsif run.kind == "probation_review" %>
+    <%
+      verdict = payload["verdict"].to_s
+      tone = { "hire" => "success", "extend" => "info", "let_go" => "danger", "undecided" => "warning" }[verdict] || "neutral"
+    %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="ai-spark">📊</span>
+      <strong><%= t("ai.onboarding.probation_review_title", default: "Probation review") %></strong>
+      <span class="pill pill--<%= tone %>"><%= t("ai.onboarding.probation_verdicts.#{verdict}", default: verdict.humanize) %></span>
+      <span class="footnote text-tertiary ms-auto"><%= run.cost_display %> · <%= run.total_tokens %> tok</span>
+    </div>
+    <% if payload["headline"] %><p class="title-3 m-0 mb-2"><%= payload["headline"] %></p><% end %>
+    <% if Array(payload["strengths"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.onboarding.strengths", default: "Сильные стороны") %></h4>
+      <ul class="list-unstyled m-0 mb-2"><% payload["strengths"].each { |s| %><li>+ <%= s %></li><% } %></ul>
+    <% end %>
+    <% if Array(payload["concerns"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.onboarding.concerns", default: "Зоны риска") %></h4>
+      <ul class="list-unstyled m-0 mb-2"><% payload["concerns"].each { |s| %><li>− <%= s %></li><% } %></ul>
+    <% end %>
+    <% if Array(payload["manager_questions"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.onboarding.manager_questions", default: "Вопросы для руководителя") %></h4>
+      <ul class="list-unstyled m-0 mb-2"><% payload["manager_questions"].each { |q| %><li>? <%= q %></li><% } %></ul>
+    <% end %>
+    <% if Array(payload["recommended_actions"]).any? %>
+      <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.onboarding.recommended_actions", default: "Рекомендуемые действия") %></h4>
+      <ul class="list-unstyled m-0"><% payload["recommended_actions"].each { |a| %><li>→ <%= a %></li><% } %></ul>
+    <% end %>
+
+  <% else %><%# onboarding_plan %>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="ai-spark">🧩</span>
+      <strong><%= t("ai.onboarding.plan_title", default: "План онбординга от AI") %></strong>
+      <% if Array(payload["tasks"]).any? %>
+        <%= button_to t("ai.onboarding.materialize", default: "Добавить в задачи"),
+                      ai_materialize_tasks_onboarding_run_path(run),
+                      method: :post, class: "btn btn-primary btn-sm ms-auto",
+                      form: { class: "d-inline" } %>
+      <% end %>
+    </div>
+    <% if payload["rationale"] %><p class="footnote text-secondary-apple"><%= payload["rationale"] %></p><% end %>
+    <ol class="m-0 ps-3">
+      <% Array(payload["tasks"]).each do |task| %>
+        <li class="mb-1">
+          <strong><%= task["title"] %></strong>
+          <% if task["kind"] %><span class="pill pill--neutral"><%= t("settings.process_templates.task_kinds.#{task['kind']}", default: task['kind']) %></span><% end %>
+          <% if task["due_offset_days"] %><span class="footnote text-tertiary">+<%= task["due_offset_days"] %>d</span><% end %>
+          <% if task["description"] %><div class="footnote text-secondary-apple"><%= task["description"] %></div><% end %>
+        </li>
+      <% end %>
+    </ol>
+  <% end %>
+</div>

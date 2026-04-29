@@ -1,0 +1,40 @@
+<% content_for :page_title, t("navigation.departments") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("app.name") %></div>
+    <h1 class="page-header__title"><%= t("navigation.departments") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("departments.total_count", default: "Всего отделов: %{n}", n: @flat.count) %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="btn btn-soft" data-action="click->dept-tree#expandAll">
+      <%= t("departments.expand_all", default: "Развернуть все") %>
+    </button>
+    <button type="button" class="btn btn-soft" data-action="click->dept-tree#collapseAll">
+      <%= t("departments.collapse_all", default: "Свернуть все") %>
+    </button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDepartmentModal">
+      + <%= t("departments.new", default: "Новый отдел") %>
+    </button>
+  </div>
+</header>
+
+<div class="card-apple">
+  <% if @roots.any? %>
+    <ul class="dept-tree"
+        data-controller="dept-tree"
+        data-dept-tree-storage-key-value="<%= DepartmentsController::TREE_PREF_KEY %>"
+        data-dept-tree-expanded-value="<%= @expanded_set.to_a.to_json %>">
+      <%= render partial: "tree_node", collection: @roots, as: :department, locals: { expanded_set: @expanded_set } %>
+    </ul>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-state__title"><%= t("departments.empty", default: "Нет отделов") %></div>
+      <p class="footnote"><%= t("departments.empty_hint", default: "Добавьте первый отдел, чтобы начать строить оргструктуру.") %></p>
+    </div>
+  <% end %>
+</div>
+
+<%= render "form_modal", department: @new_department, departments: @flat, employees: @employees %>

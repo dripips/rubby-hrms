@@ -1,0 +1,41 @@
+<%
+  level = payload["risk_level"].to_s
+  tone = case level
+         when "high"   then "danger"
+         when "medium" then "warning"
+         else               "info"
+         end
+%>
+<div class="ai-leaves-result__head d-flex align-items-center gap-2 mb-2">
+  <span class="ai-spark">🚪</span>
+  <strong><%= t("ai.leaves.exit_risk_brief_title", default: "Риск ухода") %></strong>
+  <span class="ai-leaves-result__status footnote text-secondary-apple ms-auto"><%= run.cost_display %> · <%= run.total_tokens %> tok</span>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-2">
+  <span class="pill pill--<%= tone %>">
+    <%= t("ai.leaves.risk_levels.#{level}", default: level.humanize) %>
+    <% if payload["risk_score"] %> · <%= payload["risk_score"] %>/100<% end %>
+  </span>
+  <% if payload["urgency"] %>
+    <span class="pill pill--neutral"><%= t("ai.leaves.urgency.#{payload['urgency']}", default: payload["urgency"].to_s.humanize) %></span>
+  <% end %>
+</div>
+
+<% if payload["headline"].present? %>
+  <p class="title-3 m-0 mb-2"><%= payload["headline"] %></p>
+<% end %>
+
+<% if Array(payload["signals"]).any? %>
+  <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.leaves.signals", default: "Сигналы") %></h4>
+  <ul class="list-unstyled m-0 mb-2">
+    <% payload["signals"].each do |s| %><li>• <%= s %></li><% end %>
+  </ul>
+<% end %>
+
+<% if Array(payload["retention_actions"]).any? %>
+  <h4 class="footnote text-secondary-apple mb-1"><%= t("ai.leaves.retention_actions", default: "Действия по удержанию") %></h4>
+  <ul class="list-unstyled m-0">
+    <% payload["retention_actions"].each do |a| %><li>→ <%= a %></li><% end %>
+  </ul>
+<% end %>

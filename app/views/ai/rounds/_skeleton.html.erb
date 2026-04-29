@@ -1,0 +1,14 @@
+<div class="card-apple ai-skeleton mt-3" style="background: var(--ds-fill-4); border-style: dashed;">
+  <div class="d-flex align-items-center gap-2 mb-2">
+<% kind ||= "questions_for" %>
+    <span class="pill pill--info">AI · <%= t("ai.actions.#{kind}", default: kind.humanize) %></span>
+    <span class="footnote text-tertiary"><%= t("ai.processing", default: "обрабатывается на сервере...") %></span>
+    <div class="ai-skeleton__spinner" aria-label="loading">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="ai-skeleton__bar" style="width: 92%;"></div>
+  <div class="ai-skeleton__bar" style="width: 78%;"></div>
+  <div class="ai-skeleton__bar" style="width: 86%;"></div>
+  <div class="ai-skeleton__bar" style="width: 65%;"></div>
+</div>

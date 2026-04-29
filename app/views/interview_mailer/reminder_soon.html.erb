@@ -1,0 +1,58 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 16px; color: #1d1d1f;">
+  <div style="border: 1px solid #d2d2d7; border-radius: 16px; overflow: hidden; background: #ffffff;">
+    <div style="padding: 24px 28px; background: linear-gradient(135deg, #ff9500, #ff3b30); color: #fff;">
+      <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85;">
+        HRMS · Напоминание
+      </div>
+      <h1 style="font-size: 26px; font-weight: 700; margin: 6px 0 0; letter-spacing: -0.011em;">
+        Через <%= @minutes %> мин · <%= @round.kind_label %>
+      </h1>
+      <p style="font-size: 14px; margin: 6px 0 0; opacity: 0.92;">
+        с <strong><%= @applicant.full_name %></strong>
+      </p>
+    </div>
+
+    <div style="padding: 24px 28px;">
+      <table style="width: 100%; border-collapse: collapse; margin: 8px 0 16px;">
+        <tr>
+          <td style="padding: 8px 0; font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em; width: 140px;">Когда</td>
+          <td style="padding: 8px 0; font-size: 14px;"><strong><%= l(@round.scheduled_at, format: :long) %></strong> · <%= @round.duration_minutes %> мин</td>
+        </tr>
+        <% if @round.location.present? %>
+          <tr>
+            <td style="padding: 8px 0; font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em;">Место</td>
+            <td style="padding: 8px 0; font-size: 14px;"><%= @round.location %></td>
+          </tr>
+        <% end %>
+        <% if @round.meeting_url.present? %>
+          <tr>
+            <td style="padding: 8px 0; font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em;">Ссылка</td>
+            <td style="padding: 8px 0; font-size: 14px;"><a href="<%= @round.meeting_url %>" style="color: #0066ff; word-break: break-all;"><%= @round.meeting_url %></a></td>
+          </tr>
+        <% end %>
+        <% if @applicant.job_opening %>
+          <tr>
+            <td style="padding: 8px 0; font-size: 12px; color: #8e8e93; text-transform: uppercase; letter-spacing: 0.06em;">Вакансия</td>
+            <td style="padding: 8px 0; font-size: 14px;"><%= @applicant.job_opening.title %></td>
+          </tr>
+        <% end %>
+      </table>
+
+      <% if @round.meeting_url.present? %>
+        <a href="<%= @round.meeting_url %>" style="display: inline-block; padding: 12px 22px; background: #0066ff; color: #fff; font-weight: 600; border-radius: 12px; text-decoration: none; font-size: 14px;">
+          Присоединиться к встрече
+        </a>
+      <% end %>
+
+      <div style="padding-top: 16px; border-top: 1px solid #f2f2f7; margin-top: 20px;">
+        <p style="font-size: 13px; color: #6e6e73; margin: 0;">
+          Не забудьте после раунда заполнить scorecard с оценками и рекомендацией.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size: 11px; color: #8e8e93; text-align: center; margin: 16px 0 0;">
+    Сообщение отправлено системой HRMS
+  </p>
+</div>

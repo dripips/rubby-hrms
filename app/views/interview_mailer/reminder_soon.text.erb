@@ -1,0 +1,14 @@
+HRMS · Напоминание
+
+Через <%= @minutes %> минут начнётся <%= @round.kind_label %>-интервью с <%= @applicant.full_name %>.
+
+Когда:    <%= l(@round.scheduled_at, format: :long) %> · <%= @round.duration_minutes %> мин
+<% if @round.location.present? %>Место:    <%= @round.location %>
+<% end %><% if @round.meeting_url.present? %>Ссылка:   <%= @round.meeting_url %>
+<% end %><% if @applicant.job_opening %>Вакансия: <%= @applicant.job_opening.title %>
+<% end %>
+
+После раунда заполните scorecard.
+
+—
+HRMS Recruitment

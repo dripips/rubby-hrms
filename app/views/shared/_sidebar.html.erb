@@ -1,0 +1,163 @@
+<aside class="sidebar-apple offcanvas-lg offcanvas-start" id="appSidebar" tabindex="-1">
+  <div class="sidebar-apple__head">
+    <%= link_to root_path, class: "sidebar-apple__brand" do %>
+      <span class="sidebar-apple__brand-mark">H</span>
+      <span><%= t("app.name") %></span>
+    <% end %>
+    <button type="button" class="btn-close d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#appSidebar" aria-label="Close"></button>
+  </div>
+
+  <%
+    nav_sections = [
+      { title: t("navigation.workspace"),
+        items: [
+          { key: :dashboard,  path: dashboard_path,  icon: "grid"   },
+          { key: :employees,  path: employees_path,  icon: "people" }
+        ] },
+      { title: t("navigation.org"),
+        items: [
+          { key: :departments, path: departments_path,    icon: "diagram"  },
+          { key: :leaves,      path: leave_requests_path, icon: "calendar" },
+          { key: :kpi,         path: kpi_dashboard_path,  icon: "trending" },
+          *(current_user&.role_superadmin? || current_user&.role_hr? || current_user&.role_manager? ? [
+            { key: :onboarding,  path: onboarding_processes_path,  icon: "people" },
+            { key: :offboarding, path: offboarding_processes_path, icon: "people" }
+          ] : [])
+        ] },
+      *(current_user&.role_superadmin? || current_user&.role_hr? || current_user&.role_manager? ? [
+        { title: t("navigation.recruitment", default: "Найм"),
+          items: [
+            { key: :recruitment_kanban,    path: recruitment_kanban_path,    icon: "kanban" },
+            { key: :job_openings,          path: job_openings_path,          icon: "briefcase" },
+            { key: :job_applicants,        path: job_applicants_path,        icon: "user_search" },
+            { key: :interview_rounds,      path: interview_rounds_path,      icon: "calendar" },
+            { key: :recruitment_calendar,  path: recruitment_calendar_path,  icon: "calendar" },
+            { key: :recruitment_analytics, path: recruitment_analytics_path, icon: "trending" }
+          ] }
+      ] : []),
+      { title: t("navigation.admin"),
+        items: [
+          { key: :documents,    path: documents_path,    icon: "file"     },
+          { key: :dictionaries, path: dictionaries_path, icon: "book"     },
+          { key: :audit,        path: audit_path,        icon: "shield"   },
+          *(current_user&.role_superadmin? || current_user&.role_hr? ? [
+            { key: :settings,   path: settings_languages_path, icon: "settings" }
+          ] : [])
+        ] }
+    ]
+  %>
+
+  <nav class="sidebar-apple__nav">
+    <% nav_sections.each do |section| %>
+      <div class="sidebar-apple__section-title"><%= section[:title] %></div>
+      <% section[:items].each do |item| %>
+        <%
+          item_root = item[:path].to_s.split("?").first
+          active = current_page?(item[:path]) ||
+                   (params[:section].to_s == item[:key].to_s) ||
+                   (item_root.length > 1 && request.path.start_with?(item_root))
+        %>
+        <%= link_to item[:path], class: "sidebar-apple__item #{'active' if active}" do %>
+          <%= render "shared/icons/#{item[:icon]}" %>
+          <span><%= t("navigation.#{item[:key]}") %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <% if user_signed_in? %>
+    <div class="sidebar-profile" data-controller="theme">
+      <div class="dropup">
+        <button class="sidebar-profile__btn" type="button"
+                data-bs-toggle="dropdown"
+                data-bs-display="static"
+                data-bs-auto-close="outside"
+                aria-expanded="false">
+          <div class="avatar-apple"><%= current_user.email.first(2).upcase %></div>
+          <div class="sidebar-profile__meta">
+            <div class="sidebar-profile__name"><%= current_user.display_name %></div>
+            <div class="sidebar-profile__role"><%= current_user.full_role_name %></div>
+          </div>
+          <span class="sidebar-profile__chev"><%= render "shared/icons/chevron_up" %></span>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-apple">
+          <li class="dropdown-menu-apple__user">
+            <div class="footnote text-secondary-apple"><%= current_user.email %></div>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+
+          <li>
+            <%= link_to "#", class: "dropdown-item" do %>
+              <span class="dropdown-item__icon"><%= render "shared/icons/user" %></span>
+              <span><%= t("user_menu.profile", default: "Профиль") %></span>
+            <% end %>
+          </li>
+          <li>
+            <%= link_to "#", class: "dropdown-item" do %>
+              <span class="dropdown-item__icon"><%= render "shared/icons/settings" %></span>
+              <span><%= t("user_menu.settings", default: "Настройки") %></span>
+            <% end %>
+          </li>
+
+          <li><hr class="dropdown-divider"></li>
+
+          <li class="dropdown-menu-apple__group"><%= t("user_menu.theme", default: "Тема") %></li>
+          <li>
+            <div class="theme-segments" role="radiogroup">
+              <button type="button"
+                      class="theme-segment"
+                      data-theme-target="option"
+                      data-action="click->theme#set"
+                      data-theme-mode-param="light">
+                <%= render "shared/icons/sun" %>
+                <span><%= t("user_menu.theme_light", default: "Светлая") %></span>
+              </button>
+              <button type="button"
+                      class="theme-segment"
+                      data-theme-target="option"
+                      data-action="click->theme#set"
+                      data-theme-mode-param="dark">
+                <%= render "shared/icons/moon" %>
+                <span><%= t("user_menu.theme_dark", default: "Тёмная") %></span>
+              </button>
+              <button type="button"
+                      class="theme-segment"
+                      data-theme-target="option"
+                      data-action="click->theme#set"
+                      data-theme-mode-param="auto">
+                <%= render "shared/icons/monitor" %>
+                <span><%= t("user_menu.theme_auto", default: "Системная") %></span>
+              </button>
+            </div>
+          </li>
+
+          <li><hr class="dropdown-divider"></li>
+
+          <li class="dropdown-menu-apple__group"><%= t("user_menu.language", default: "Язык") %></li>
+          <li>
+            <div class="theme-segments">
+              <%= link_to url_for(locale: :ru), class: "theme-segment #{'active' if I18n.locale == :ru}" do %>
+                <span class="theme-segment__code">RU</span>
+                <span class="footnote">Русский</span>
+              <% end %>
+              <%= link_to url_for(locale: :en), class: "theme-segment #{'active' if I18n.locale == :en}" do %>
+                <span class="theme-segment__code">EN</span>
+                <span class="footnote">English</span>
+              <% end %>
+            </div>
+          </li>
+
+          <li><hr class="dropdown-divider"></li>
+
+          <li>
+            <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item dropdown-item--danger", form: { class: "d-block" } do %>
+              <span class="dropdown-item__icon"><%= render "shared/icons/logout" %></span>
+              <span><%= t("navigation.sign_out") %></span>
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</aside>

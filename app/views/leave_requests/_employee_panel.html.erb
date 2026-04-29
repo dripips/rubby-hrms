@@ -1,0 +1,75 @@
+<%
+  is_self = current_user.employee && current_user.employee.id == employee.id
+  quota_title = is_self ? t("leaves.my_quota.title", year: Date.current.year)
+                        : t("leaves.quota.title", year: Date.current.year)
+  quota_subtitle = is_self ? t("leaves.my_quota.subtitle") : employee.full_name
+%>
+<div class="d-flex flex-column gap-3">
+  <%# ── Quota ─────────────────────────────────────────────────────────── %>
+  <div class="card-apple">
+    <div class="card-apple__header">
+      <div>
+        <h3 class="card-apple__title m-0"><%= quota_title %></h3>
+        <p class="card-apple__subtitle m-0"><%= quota_subtitle %></p>
+      </div>
+    </div>
+    <% if quota.any? %>
+      <div class="d-flex flex-column gap-3 mt-3">
+        <% quota.each do |row| %>
+          <% pct = row.accrued > 0 ? ((row.used.to_f / row.accrued) * 100).round : 0 %>
+          <div class="leave-quota">
+            <div class="leave-quota__head">
+              <div class="d-flex align-items-center gap-2">
+                <span class="leave-quota__dot" style="background: <%= row.leave_type.color || '#0A84FF' %>;"></span>
+                <strong><%= row.leave_type.name %></strong>
+              </div>
+              <div class="text-mono">
+                <strong><%= row.remaining %></strong>
+                <span class="text-tertiary footnote">/ <%= row.accrued %></span>
+              </div>
+            </div>
+            <div class="leave-quota__track">
+              <div class="leave-quota__fill" style="width: <%= [pct, 100].min %>%; background: <%= row.leave_type.color || '#0A84FF' %>;"></div>
+            </div>
+            <% if row.pending > 0 %>
+              <div class="footnote text-secondary-apple">
+                <%= t("leaves.my_quota.pending", count: row.pending) %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="footnote text-secondary-apple m-0 mt-3"><%= t("leaves.my_quota.empty") %></p>
+    <% end %>
+  </div>
+
+  <%# ── History (recent 8) ────────────────────────────────────────────── %>
+  <div class="card-apple">
+    <div class="card-apple__header">
+      <div>
+        <h3 class="card-apple__title m-0"><%= t("leaves.history_title") %></h3>
+        <p class="card-apple__subtitle m-0"><%= t("leaves.history_subtitle") %></p>
+      </div>
+    </div>
+    <% if history.any? %>
+      <div class="d-flex flex-column gap-2 mt-3">
+        <% history.each do |req| %>
+          <%= link_to leave_request_path(req), class: "leave-row" do %>
+            <span class="leave-row__type-dot" style="background: <%= req.leave_type.color || '#0A84FF' %>;"></span>
+            <div class="leave-row__body">
+              <div class="leave-row__title"><%= req.leave_type.name %></div>
+              <div class="footnote text-secondary-apple">
+                <%= l(req.started_on, format: :short) %> – <%= l(req.ended_on, format: :short) %>
+                · <%= t("leaves.days_count", count: req.days.to_i) %>
+              </div>
+            </div>
+            <span class="pill pill--<%= leave_state_tone(req.state) %>"><%= t("leaves.states.#{req.state}") %></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="footnote text-secondary-apple m-0 mt-3"><%= t("leaves.history_empty") %></p>
+    <% end %>
+  </div>
+</div>

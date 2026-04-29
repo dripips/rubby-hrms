@@ -1,0 +1,26 @@
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h3 class="card-apple__title m-0"><%= t("job_applicants.tabs.interviews", default: "Интервью") %></h3>
+    <p class="footnote text-secondary-apple m-0">
+      <%= t("interview_rounds.subtitle", default: "Раунды интервью с scorecard 1–5 по компетенциям и финальной рекомендацией") %>
+    </p>
+  </div>
+  <% if policy(InterviewRound).create? %>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newInterviewModal">
+      + <%= t("interview_rounds.new", default: "Назначить интервью") %>
+    </button>
+  <% end %>
+</div>
+
+<% if interviews.any? %>
+  <div class="d-flex flex-column gap-3">
+    <% interviews.each do |round| %>
+      <%= render "interview_rounds/card", round: round %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state card-apple">
+    <div class="empty-state__title"><%= t("interview_rounds.empty", default: "Раундов интервью нет") %></div>
+    <p class="footnote"><%= t("interview_rounds.empty_hint", default: "Назначьте первое интервью — HR, технический, культурный или финальный раунд.") %></p>
+  </div>
+<% end %>

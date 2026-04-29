@@ -1,0 +1,54 @@
+<% local_method = local_assigns.fetch(:method, :post) %>
+<div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-hidden="true" data-controller="modal-autoclose">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <%= form_with(model: metric, url: submit_to, method: local_method, local: true) do |f| %>
+        <div class="modal-header">
+          <h5 class="modal-title title-3 m-0"><%= title %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t('common.close') %>"></button>
+        </div>
+        <div class="modal-body d-flex flex-column gap-3">
+          <div>
+            <%= f.label :name, t("kpi.metrics.fields.name"), class: "form-label" %>
+            <%= f.text_field :name, class: "form-control", required: true, placeholder: t("kpi.metrics.placeholders.name") %>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-7">
+              <%= f.label :code, t("kpi.metrics.fields.code"), class: "form-label" %>
+              <%= f.text_field :code, class: "form-control text-mono", required: true, placeholder: "SALES_REVENUE" %>
+            </div>
+            <div class="col-5">
+              <%= f.label :unit, t("kpi.metrics.fields.unit"), class: "form-label" %>
+              <%= f.text_field :unit, class: "form-control", placeholder: t("kpi.metrics.placeholders.unit") %>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-7">
+              <%= f.label :target_direction, t("kpi.metrics.fields.target_direction"), class: "form-label" %>
+              <%= f.select :target_direction,
+                           KpiMetric.target_directions.keys.map { |k| [t("kpi.metrics.target_directions.#{k}"), k] },
+                           {},
+                           class: "form-select" %>
+              <p class="footnote text-secondary-apple mt-1"><%= t("kpi.metrics.target_direction_hint") %></p>
+            </div>
+            <div class="col-5">
+              <%= f.label :weight_default, t("kpi.metrics.fields.weight_default"), class: "form-label" %>
+              <%= f.number_field :weight_default, class: "form-control", step: 0.1, min: 0 %>
+            </div>
+          </div>
+
+          <div class="form-check">
+            <%= f.check_box :active, class: "form-check-input" %>
+            <%= f.label :active, t("kpi.metrics.fields.active"), class: "form-check-label" %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>
+          <%= f.submit t("common.save"), class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

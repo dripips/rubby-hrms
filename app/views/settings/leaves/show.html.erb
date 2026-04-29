@@ -1,0 +1,173 @@
+<% content_for :page_title, t("settings.leaves.title") %>
+
+<%
+  rules = LeaveApprovalRule.kept.where(company: Company.kept.first).order(:priority, :id)
+  leave_types = LeaveType.active.where(company: Company.kept.first)
+  departments = Department.kept.where(company: Company.kept.first).order(:name)
+  grades      = Grade.active.where(company: Company.kept.first)
+  users       = User.kept.includes(:employee).order(:email)
+%>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.settings") %></div>
+    <h1 class="page-header__title"><%= t("settings.leaves.title") %></h1>
+    <p class="page-header__subtitle"><%= t("settings.leaves.subtitle") %></p>
+  </div>
+  <div class="page-header__actions">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newLeaveRuleModal">
+      + <%= t("settings.leaves.rule.new") %>
+    </button>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" %>
+
+<%# ── Rules table ──────────────────────────────────────────────────── %>
+<div class="card-apple card-apple--flush mb-3">
+  <div class="card-apple__header" style="padding: var(--ds-space-4) var(--ds-space-5) 0;">
+    <div>
+      <h3 class="card-apple__title"><%= t("settings.leaves.rule.list_title") %></h3>
+      <p class="card-apple__subtitle"><%= t("settings.leaves.rule.list_subtitle") %></p>
+    </div>
+  </div>
+
+  <% if rules.any? %>
+    <table class="table-apple">
+      <thead>
+        <tr>
+          <th style="width: 8%;"><%= t("settings.leaves.rule.priority") %></th>
+          <th><%= t("settings.leaves.rule.name") %></th>
+          <th><%= t("settings.leaves.rule.conditions") %></th>
+          <th><%= t("settings.leaves.rule.chain") %></th>
+          <th style="width: 10%;"><%= t("common.status") %></th>
+          <th style="width: 110px;" class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rules.each do |rule| %>
+          <%
+            conds = []
+            conds << t("settings.leaves.rule.cond_type", name: rule.leave_type.name) if rule.leave_type
+            conds << t("settings.leaves.rule.cond_dept", name: rule.department.name) if rule.department
+            conds << t("settings.leaves.rule.cond_min_days", n: rule.min_days)       if rule.min_days
+            conds << t("settings.leaves.rule.cond_max_days", n: rule.max_days)       if rule.max_days
+            conds << t("settings.leaves.rule.cond_min_grade", name: rule.min_grade.name) if rule.min_grade
+            conds = [t("settings.leaves.rule.cond_any")] if conds.empty?
+          %>
+          <tr>
+            <td><span class="text-mono"><%= rule.priority %></span></td>
+            <td>
+              <strong><%= rule.name %></strong>
+              <% if rule.description.present? %>
+                <div class="footnote text-tertiary"><%= rule.description %></div>
+              <% end %>
+            </td>
+            <td>
+              <div class="d-flex flex-wrap gap-1">
+                <% conds.each do |c| %>
+                  <span class="pill pill--neutral"><%= c %></span>
+                <% end %>
+              </div>
+            </td>
+            <td>
+              <% if rule.auto_approve? %>
+                <span class="pill pill--success"><%= t("settings.leaves.rule.auto_approve") %></span>
+              <% else %>
+                <div class="d-flex flex-wrap align-items-center gap-1">
+                  <% rule.steps.each_with_index do |step, idx| %>
+                    <% if idx > 0 %><span class="text-tertiary footnote">→</span><% end %>
+                    <% if step["kind"] == "role" %>
+                      <span class="pill pill--info"><%= t("leaves.approval_steps.#{step['value']}", default: step['value'].to_s.humanize) %></span>
+                    <% else %>
+                      <% u = users.find { |x| x.id == step["value"].to_i } %>
+                      <span class="pill pill--purple"><%= u&.display_name || "User ##{step['value']}" %></span>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% end %>
+            </td>
+            <td>
+              <% if rule.active? %>
+                <span class="pill pill--success"><%= t("settings.leaves.rule.active") %></span>
+              <% else %>
+                <span class="pill pill--neutral"><%= t("settings.leaves.rule.inactive") %></span>
+              <% end %>
+            </td>
+            <td class="text-end">
+              <button type="button" class="btn btn-ghost btn-sm" data-bs-toggle="modal" data-bs-target="#editLeaveRuleModal<%= rule.id %>">
+                <%= t("common.edit") %>
+              </button>
+              <%= button_to t("common.delete"),
+                            settings_leave_approval_rule_path(rule),
+                            method: :delete,
+                            class: "btn btn-ghost btn-sm text-danger",
+                            form: { class: "d-inline" },
+                            data: { turbo_confirm: t("common.confirm.delete") } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="empty-state" style="padding: var(--ds-space-6);">
+      <div class="empty-state__title"><%= t("settings.leaves.rule.empty") %></div>
+      <p class="footnote"><%= t("settings.leaves.rule.empty_hint") %></p>
+    </div>
+  <% end %>
+</div>
+
+<%# ── Global flags ──────────────────────────────────────────────────── %>
+<div class="card-apple">
+  <%= form_with(url: settings_leaves_path, method: :patch, local: true) do %>
+    <h3 class="card-apple__title m-0"><%= t("settings.leaves.flags_title") %></h3>
+    <p class="card-apple__subtitle m-0"><%= t("settings.leaves.flags_subtitle") %></p>
+
+    <div class="d-flex flex-column gap-2 mt-3">
+      <label class="form-check">
+        <input type="hidden" name="leaves[manager_can_quick]" value="0">
+        <input type="checkbox" name="leaves[manager_can_quick]" value="1" <%= 'checked' if @config.manager_can_quick? %> class="form-check-input">
+        <span class="form-check-label"><%= t("settings.leaves.perm.manager_can_quick") %></span>
+      </label>
+      <label class="form-check">
+        <input type="hidden" name="leaves[ceo_can_force_approve]" value="0">
+        <input type="checkbox" name="leaves[ceo_can_force_approve]" value="1" <%= 'checked' if @config.ceo_can_force_approve? %> class="form-check-input">
+        <span class="form-check-label"><%= t("settings.leaves.perm.ceo_can_force_approve") %></span>
+      </label>
+      <label class="form-check">
+        <input type="hidden" name="leaves[require_doc_for_sick]" value="0">
+        <input type="checkbox" name="leaves[require_doc_for_sick]" value="1" <%= 'checked' if @config.require_doc_for_sick? %> class="form-check-input">
+        <span class="form-check-label"><%= t("settings.leaves.perm.require_doc_for_sick") %></span>
+      </label>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <button type="submit" class="btn btn-primary"><%= t("common.save") %></button>
+    </div>
+  <% end %>
+</div>
+
+<%# Modals %>
+<%= render "rule_form_modal",
+           rule:        LeaveApprovalRule.new(company: Company.kept.first, priority: ((rules.maximum(:priority) || 0) + 10), active: true),
+           modal_id:    "newLeaveRuleModal",
+           modal_title: t("settings.leaves.rule.new"),
+           form_url:    settings_leave_approval_rules_path,
+           http_method: :post,
+           leave_types: leave_types,
+           departments: departments,
+           grades:      grades,
+           users:       users %>
+
+<% rules.each do |rule| %>
+  <%= render "rule_form_modal",
+             rule:        rule,
+             modal_id:    "editLeaveRuleModal#{rule.id}",
+             modal_title: t("settings.leaves.rule.edit"),
+             form_url:    settings_leave_approval_rule_path(rule),
+             http_method: :patch,
+             leave_types: leave_types,
+             departments: departments,
+             grades:      grades,
+             users:       users %>
+<% end %>

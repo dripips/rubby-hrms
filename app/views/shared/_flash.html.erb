@@ -1,0 +1,21 @@
+<% if flash.any? %>
+  <div class="flash-stack" data-controller="flash">
+    <% flash.each do |type, message| %>
+      <% next if message.blank? %>
+      <%
+        tone, icon = case type.to_s
+                     when "notice", "success" then ["success", "check"]
+                     when "alert", "error"    then ["danger",  "warn"]
+                     else                          ["info",    "info"]
+                     end
+      %>
+      <div class="flash flash--<%= tone %>" data-flash-target="item" data-controller="dismiss" data-dismiss-after-value="4500">
+        <span class="flash__icon flash__icon--<%= tone %>">
+          <%= render "shared/icons/#{icon}" %>
+        </span>
+        <span class="flash__body"><%= message %></span>
+        <button type="button" class="flash__close" data-action="click->dismiss#close" aria-label="<%= t('common.close', default: 'Закрыть') %>">×</button>
+      </div>
+    <% end %>
+  </div>
+<% end %>

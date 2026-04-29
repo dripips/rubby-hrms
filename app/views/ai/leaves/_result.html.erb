@@ -1,0 +1,64 @@
+<% payload = run.payload || {} %>
+<div id="ai-leaves-panel-<%= employee.id %>">
+  <% if !run.success %>
+    <div class="ai-leaves-result ai-leaves-result--error">
+      <strong>⚠ <%= t("ai.leaves.error_title") %></strong>
+      <p class="footnote m-0 mt-1"><%= run.error.presence || t("ai.error") %></p>
+    </div>
+  <% elsif run.kind == "suggest_leave_window" %>
+    <%= render "ai/leaves/window_body",  employee: employee, run: run, payload: payload %>
+  <% elsif run.kind == "kpi_brief" %>
+    <%= render "ai/leaves/kpi_body",     employee: employee, run: run, payload: payload %>
+  <% elsif run.kind == "meeting_agenda" %>
+    <%= render "ai/leaves/meeting_body", employee: employee, run: run, payload: payload %>
+  <% elsif run.kind == "compensation_review" %>
+    <%= render "ai/leaves/compensation_body", employee: employee, run: run, payload: payload %>
+  <% elsif run.kind == "exit_risk_brief" %>
+    <%= render "ai/leaves/exit_risk_body", employee: employee, run: run, payload: payload %>
+  <% else %>
+    <%= render "ai/leaves/burnout_body", employee: employee, run: run, payload: payload %>
+  <% end %>
+
+  <%# History: previous AI runs on this employee — each expandable inline %>
+  <% prev = (history || []).reject { |h| h.id == run.id }.first(5) %>
+  <% if prev.any? %>
+    <details class="ai-leaves-history mt-3">
+      <summary class="footnote text-secondary-apple"><%= t("ai.leaves.history_title", count: prev.size) %></summary>
+      <div class="ai-leaves-history__list">
+        <% prev.each do |h| %>
+          <%
+            h_payload = h.payload || {}
+            h_severity = h_payload.is_a?(Hash) ? h_payload["severity"] : nil
+            h_tone     = h_severity == 'high' ? 'danger' : (h_severity == 'medium' ? 'warning' : 'info')
+          %>
+          <details class="ai-leaves-history__item">
+            <summary>
+              <span class="text-mono"><%= l(h.created_at, format: :short) %></span>
+              · <%= t("ai.leaves.kinds.#{h.kind}", default: h.kind.humanize) %>
+              <% if h_severity %>
+                · <span class="pill pill--<%= h_tone %>"><%= t("ai.leaves.severity.#{h_severity}", default: h_severity) %></span>
+              <% end %>
+              <span class="text-tertiary footnote ms-auto"><%= h.cost_display %> · <%= h.total_tokens %> tok</span>
+            </summary>
+            <div class="ai-leaves-history__body">
+              <% if !h.success %>
+                <div class="ai-leaves-result ai-leaves-result--error">
+                  <strong>⚠ <%= t("ai.leaves.error_title") %></strong>
+                  <p class="footnote m-0 mt-1"><%= h.error.presence || t("ai.error") %></p>
+                </div>
+              <% elsif h.kind == "suggest_leave_window" %>
+                <%= render "ai/leaves/window_body",  employee: employee, run: h, payload: h_payload, show_refresh: false %>
+              <% elsif h.kind == "kpi_brief" %>
+                <%= render "ai/leaves/kpi_body",     employee: employee, run: h, payload: h_payload, show_refresh: false %>
+              <% elsif h.kind == "meeting_agenda" %>
+                <%= render "ai/leaves/meeting_body", employee: employee, run: h, payload: h_payload, show_refresh: false %>
+              <% else %>
+                <%= render "ai/leaves/burnout_body", employee: employee, run: h, payload: h_payload, show_refresh: false %>
+              <% end %>
+            </div>
+          </details>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+</div>

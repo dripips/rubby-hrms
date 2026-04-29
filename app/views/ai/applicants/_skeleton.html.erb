@@ -1,0 +1,30 @@
+<div class="card-apple ai-skeleton mt-3">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <span class="pill pill--info">AI · <%= t("ai.actions.#{kind}", default: kind.humanize) %></span>
+    <span class="footnote text-tertiary"><%= t("ai.processing", default: "обрабатывается на сервере...") %></span>
+    <div class="ai-skeleton__spinner" aria-label="loading">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="ai-skeleton__bar" style="width: 80%;"></div>
+  <div class="ai-skeleton__bar" style="width: 95%;"></div>
+  <div class="ai-skeleton__bar" style="width: 60%;"></div>
+  <div class="row g-3 mt-2">
+    <div class="col-md-6">
+      <div class="ai-skeleton__bar" style="width: 40%; height: 8px;"></div>
+      <div class="ai-skeleton__bar" style="width: 90%;"></div>
+      <div class="ai-skeleton__bar" style="width: 70%;"></div>
+      <div class="ai-skeleton__bar" style="width: 80%;"></div>
+    </div>
+    <div class="col-md-6">
+      <div class="ai-skeleton__bar" style="width: 40%; height: 8px;"></div>
+      <div class="ai-skeleton__bar" style="width: 75%;"></div>
+      <div class="ai-skeleton__bar" style="width: 85%;"></div>
+    </div>
+  </div>
+
+  <p class="footnote text-secondary-apple mt-3 mb-0">
+    <%= t("ai.processing_hint", default: "Можно закрыть страницу — результат придёт уведомлением и появится здесь автоматически.") %>
+  </p>
+</div>

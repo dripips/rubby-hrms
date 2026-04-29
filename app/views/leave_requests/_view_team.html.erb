@@ -1,0 +1,77 @@
+<div class="row g-3">
+  <%# ── Pending approvals ────────────────────────────────────────────── %>
+  <div class="col-12 col-xl-7">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0">
+            <%= t("leaves.team.pending_title") %>
+            <% if team_pending.any? %>
+              <span class="pill pill--warning ms-2"><%= team_pending.size %></span>
+            <% end %>
+          </h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.team.pending_subtitle") %></p>
+        </div>
+      </div>
+
+      <% if team_pending.any? %>
+        <div class="d-flex flex-column gap-2 mt-3">
+          <% team_pending.each do |req| %>
+            <%= link_to leave_request_path(req), class: "leave-row" do %>
+              <span class="avatar-apple"><%= req.employee.initials %></span>
+              <div class="leave-row__body">
+                <div class="leave-row__title"><%= req.employee.full_name %></div>
+                <div class="footnote text-secondary-apple">
+                  <span class="leave-row__type-dot" style="background: <%= req.leave_type.color || '#0A84FF' %>;"></span>
+                  <%= req.leave_type.name %>
+                  · <%= l(req.started_on, format: :short) %> – <%= l(req.ended_on, format: :short) %>
+                  · <%= t("leaves.days_count", count: req.days.to_i) %>
+                </div>
+              </div>
+              <span class="pill pill--<%= leave_state_tone(req.state) %>"><%= t("leaves.states.#{req.state}") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-state mt-3" style="padding: var(--ds-space-5);">
+          <div class="empty-state__title"><%= t("leaves.team.pending_empty") %></div>
+          <p class="footnote"><%= t("leaves.team.pending_empty_hint") %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Currently on leave ──────────────────────────────────────────── %>
+  <div class="col-12 col-xl-5">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title m-0"><%= t("leaves.team.on_leave_title") %></h3>
+          <p class="card-apple__subtitle m-0"><%= t("leaves.team.on_leave_subtitle") %></p>
+        </div>
+      </div>
+
+      <% if team_on_leave.any? %>
+        <div class="d-flex flex-column gap-2 mt-3">
+          <% team_on_leave.each do |req| %>
+            <%= link_to leave_request_path(req), class: "leave-row" do %>
+              <span class="avatar-apple"><%= req.employee.initials %></span>
+              <div class="leave-row__body">
+                <div class="leave-row__title"><%= req.employee.full_name %></div>
+                <div class="footnote text-secondary-apple">
+                  <%= l(req.started_on, format: :short) %> – <%= l(req.ended_on, format: :short) %>
+                  · <%= req.leave_type.name %>
+                </div>
+              </div>
+              <span class="pill pill--info"><%= t("leaves.states.#{req.state}") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="empty-state mt-3" style="padding: var(--ds-space-5);">
+          <div class="empty-state__title"><%= t("leaves.team.on_leave_empty") %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

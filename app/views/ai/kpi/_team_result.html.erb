@@ -1,0 +1,93 @@
+<%
+  payload = run.payload || {}
+  health  = (payload["team_health"].presence || "steady").to_s
+  health_tone = case health
+                when "thriving" then "success"
+                when "steady"   then "info"
+                when "stressed" then "warning"
+                when "at_risk"  then "danger"
+                else                 "neutral"
+                end
+  hiring  = (payload["hiring_signal"].presence || "no_need").to_s
+  hiring_tone = case hiring
+                when "urgent_hire" then "danger"
+                when "monitor"     then "warning"
+                else                    "info"
+                end
+%>
+<div id="ai-kpi-team-panel">
+  <% if !run.success %>
+    <div class="ai-leaves-result ai-leaves-result--error">
+      <strong>⚠ <%= t("ai.leaves.error_title") %></strong>
+      <p class="footnote m-0 mt-1"><%= run.error.presence || t("ai.error") %></p>
+    </div>
+  <% else %>
+    <div class="ai-leaves-result">
+      <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+        <div class="d-flex align-items-center gap-2">
+          <span class="ai-spark">✨</span>
+          <strong><%= t("ai.kpi.team_brief_title") %></strong>
+        </div>
+        <div class="d-flex gap-2 flex-wrap justify-content-end">
+          <span class="pill pill--<%= health_tone %>"><%= t("ai.kpi.health.#{health}", default: health.humanize) %></span>
+          <% if hiring != "no_need" %>
+            <span class="pill pill--<%= hiring_tone %>"><%= t("ai.kpi.hiring.#{hiring}", default: hiring.humanize) %></span>
+          <% end %>
+        </div>
+      </div>
+
+      <% if payload["headline"].present? %>
+        <p class="m-0 mb-2"><strong><%= payload["headline"] %></strong></p>
+      <% end %>
+
+      <% if Array(payload["highlights"]).any? %>
+        <div class="ai-leaves-result__section">
+          <div class="ai-leaves-result__section-title">📊 <%= t("ai.kpi.highlights") %></div>
+          <ul class="ai-leaves-result__list">
+            <% Array(payload["highlights"]).each do |item| %><li><%= item %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if Array(payload["people"]).any? %>
+        <div class="ai-leaves-result__section">
+          <div class="ai-leaves-result__section-title">👥 <%= t("ai.kpi.people") %></div>
+          <ul class="ai-leaves-result__list">
+            <% Array(payload["people"]).each do |p| %>
+              <% v = p["verdict"].to_s %>
+              <% v_tone = case v
+                          when "top_performer" then "success"
+                          when "watch"         then "warning"
+                          when "at_risk"       then "danger"
+                          else                      "info"
+                          end %>
+              <li>
+                <span class="pill pill--<%= v_tone %>"><%= t("ai.kpi.verdict.#{v}", default: v.humanize) %></span>
+                <strong class="ms-1"><%= p["name"] %></strong>
+                — <%= p["comment"] %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if Array(payload["recommendations"]).any? %>
+        <div class="ai-leaves-result__rec">
+          <strong>✅ <%= t("ai.leaves.next_actions") %>:</strong>
+          <ul class="m-0 mt-1" style="padding-left: 18px;">
+            <% Array(payload["recommendations"]).each do |a| %><li><%= a %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <span class="footnote text-tertiary"><%= run.cost_display %> · <%= run.total_tokens %> tok · <%= run.model %></span>
+        <%= button_to t("ai.leaves.refresh"),
+                      ai_team_brief_kpi_path,
+                      method: :post,
+                      class: "btn btn-soft btn-sm",
+                      form: { class: "d-inline" } %>
+      </div>
+    </div>
+  <% end %>
+</div>
