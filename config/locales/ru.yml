@@ -1,762 +1,1725 @@
+---
 ru:
   app:
-    name: "HRMS"
-    tagline: "Управление персоналом"
-
+    name: HRMS
+    tagline: Управление персоналом
   navigation:
-    workspace: "Рабочее место"
-    org: "Организация"
-    admin: "Администрирование"
-    dashboard: "Дашборд"
-    employees: "Сотрудники"
-    departments: "Отделы"
-    positions: "Должности"
-    leaves: "Отпуска"
-    timesheet: "Табель"
-    kpi: "KPI"
-    documents: "Документы"
-    dictionaries: "Справочники"
-    audit: "Журнал событий"
-    settings: "Настройки"
-    profile: "Профиль"
-    sign_out: "Выйти"
-    recruitment: "Найм"
-    recruitment_kanban: "Канбан найма"
-    job_openings: "Вакансии"
-    job_applicants: "Кандидаты"
-    interview_rounds: "Все интервью"
-    recruitment_calendar: "Календарь интервью"
-    recruitment_analytics: "Аналитика найма"
-    onboarding: "Онбординг"
-    offboarding: "Офбординг"
-
+    workspace: Рабочее место
+    org: Организация
+    admin: Администрирование
+    dashboard: Дашборд
+    employees: Сотрудники
+    departments: Отделы
+    positions: Должности
+    leaves: Отпуска
+    timesheet: Табель
+    kpi: KPI
+    documents: Документы
+    dictionaries: Справочники
+    audit: Журнал событий
+    settings: Настройки
+    profile: Профиль
+    sign_out: Выйти
+    recruitment: Найм
+    recruitment_kanban: Канбан найма
+    job_openings: Вакансии
+    job_applicants: Кандидаты
+    interview_rounds: Все интервью
+    recruitment_calendar: Календарь интервью
+    recruitment_analytics: Аналитика найма
+    onboarding: Онбординг
+    offboarding: Офбординг
+    menu: Меню
   locale_names:
-    ru: "Русский"
-    en: "Английский"
-    de: "Немецкий"
-
+    ru: Русский
+    en: Английский
+    de: Немецкий
   common:
-    save: "Сохранить"
-    cancel: "Отмена"
-    close: "Закрыть"
-    delete: "Удалить"
-    edit: "Редактировать"
-    create: "Создать"
-    search: "Поиск"
-    filter: "Фильтр"
-    export: "Экспорт"
-    import: "Импорт"
-    "yes": "Да"
-    "no":  "Нет"
-    back: "Назад"
-    actions: "Действия"
-    all:    "Все"
-    name: "Название"
-    description: "Описание"
-    status: "Статус"
-    created_at: "Создано"
-    updated_at: "Обновлено"
-    ago: "назад"
-    view_all: "Все события"
-    toggle_theme: "Сменить тему"
+    save: Сохранить
+    cancel: Отмена
+    close: Закрыть
+    delete: Удалить
+    edit: Редактировать
+    create: Создать
+    search: Поиск
+    filter: Фильтр
+    export: Экспорт
+    import: Импорт
+    'yes': Да
+    'no': Нет
+    back: Назад
+    actions: Действия
+    all: Все
+    name: Название
+    description: Описание
+    status: Статус
+    created_at: Создано
+    updated_at: Обновлено
+    ago: назад
+    view_all: Все события
+    toggle_theme: Сменить тему
     filter_numeric_hint: ">3, =5, <10"
-    filter_numeric_help: "Числовые фильтры поддерживают операторы: > >= < <= = <>"
+    filter_numeric_help: 'Числовые фильтры поддерживают операторы: > >= < <= = <>'
     confirm:
-      title:    "Подтвердите действие"
-      default:  "Вы уверены, что хотите продолжить?"
-      ok:       "Подтвердить"
-      delete:   "Удалить"
-
+      title: Подтвердите действие
+      default: Вы уверены, что хотите продолжить?
+      ok: Подтвердить
+      delete: Удалить
+    confirm_delete: Удалить?
+    default: по умолчанию
+    inactive: выключен
+    no_template: Без шаблона
+    show_all: Все
+    unassigned: Не назначен
   auth:
-    sign_in: "Войти"
-    sign_up: "Регистрация"
-    sign_out: "Выйти"
-    email: "Email"
-    password: "Пароль"
-    password_confirmation: "Подтверждение пароля"
-    remember_me: "Запомнить меня"
-    forgot_password: "Забыли пароль?"
-    welcome_back: "С возвращением"
-    welcome_back_subtitle: "Войдите, чтобы продолжить."
-    create_account: "Создать аккаунт"
-    create_account_subtitle: "Зарегистрируйтесь, чтобы начать."
-    already_have_account: "Уже есть аккаунт? Войти"
+    sign_in: Войти
+    sign_up: Регистрация
+    sign_out: Выйти
+    email: Email
+    password: Пароль
+    password_confirmation: Подтверждение пароля
+    remember_me: Запомнить меня
+    forgot_password: Забыли пароль?
+    welcome_back: С возвращением
+    welcome_back_subtitle: Войдите, чтобы продолжить.
+    create_account: Создать аккаунт
+    create_account_subtitle: Зарегистрируйтесь, чтобы начать.
+    already_have_account: Уже есть аккаунт? Войти
     hero:
-      title:    "Платформа для команд, которые делают."
-      subtitle: "Один продукт. Каждый сотрудник. Ноль трения."
-      slogan_1: "Все процессы под контролем."
-      slogan_2: "От найма до KPI — в одном месте."
-      slogan_3: "Сотрудники счастливы. Бизнес растёт."
-      slogan_4: "Меньше Excel — больше результата."
-
+      title: Платформа для команд, которые делают.
+      subtitle: Один продукт. Каждый сотрудник. Ноль трения.
+      slogan_1: Все процессы под контролем.
+      slogan_2: От найма до KPI — в одном месте.
+      slogan_3: Сотрудники счастливы. Бизнес растёт.
+      slogan_4: Меньше Excel — больше результата.
   roles:
-    superadmin: "Суперадминистратор"
-    hr: "HR-специалист"
-    manager: "Руководитель"
-    employee: "Сотрудник"
-
+    superadmin: Суперадминистратор
+    hr: HR-специалист
+    manager: Руководитель
+    employee: Сотрудник
   dashboard:
-    subtitle: "Сводка по компании на сегодня"
+    subtitle: Сводка по компании на сегодня
     greetings:
-      morning: "Доброе утро"
-      afternoon: "Добрый день"
-      evening: "Добрый вечер"
-      night: "Доброй ночи"
+      morning: Доброе утро
+      afternoon: Добрый день
+      evening: Добрый вечер
+      night: Доброй ночи
     tiles:
-      active_employees: "Активных сотрудников"
-      on_leave_today:   "В отпуске сегодня"
-      open_positions:   "Открытых вакансий"
-      weekly_kpi_avg:   "Средний KPI за неделю"
+      active_employees: Активных сотрудников
+      on_leave_today: В отпуске сегодня
+      open_positions: Открытых вакансий
+      weekly_kpi_avg: Средний KPI за неделю
     actions:
-      new_employee: "Новый сотрудник"
+      new_employee: Новый сотрудник
     activity:
-      title: "Последние события"
-      subtitle: "Действия сотрудников за последние 24 часа"
-      who: "Кто"
-      what: "Что"
-      when: "Когда"
-      requested_leave:        "Запрос на отпуск"
-      completed_onboarding:   "Завершил онбординг"
-      kpi_updated:            "Обновил KPI"
-      document_uploaded:      "Загрузил документ"
+      title: Последние события
+      subtitle: Действия сотрудников за последние 24 часа
+      who: Кто
+      what: Что
+      when: Когда
+      requested_leave: Запрос на отпуск
+      completed_onboarding: Завершил онбординг
+      kpi_updated: Обновил KPI
+      document_uploaded: Загрузил документ
     upcoming:
-      title: "Ближайшие события"
-      subtitle: "На что обратить внимание на этой неделе"
-      birthday:     "День рождения"
-      review:       "Ревью результатов"
-      contract_end: "Истекает контракт"
-
+      title: Ближайшие события
+      subtitle: На что обратить внимание на этой неделе
+      birthday: День рождения
+      review: Ревью результатов
+      contract_end: Истекает контракт
+      empty: На ближайшие 14 дней ничего нет
+    onboarding:
+      title: Активные онбординги
+      subtitle: Адаптация новых сотрудников
+    offboarding:
+      title: Активные офбординги
+      subtitle: Передача знаний и доступов
   stub:
-    title: "Раздел в разработке"
-    subtitle: "Скоро здесь появится полноценный интерфейс."
-    body: "Этот раздел будет реализован на следующем этапе. Сейчас работает: авторизация, дашборд, локализация и переключение темы."
-
+    title: Раздел в разработке
+    subtitle: Скоро здесь появится полноценный интерфейс.
+    body: 'Этот раздел будет реализован на следующем этапе. Сейчас работает: авторизация, дашборд, локализация и переключение темы.'
   employees:
     active_count:
-      zero:  "Нет активных сотрудников"
-      one:   "%{count} активный сотрудник"
-      few:   "%{count} активных сотрудника"
-      many:  "%{count} активных сотрудников"
+      zero: Нет активных сотрудников
+      one: "%{count} активный сотрудник"
+      few: "%{count} активных сотрудника"
+      many: "%{count} активных сотрудников"
       other: "%{count} активных сотрудников"
-    search_placeholder: "ФИО или табельный №"
-    empty: "Сотрудники не найдены"
-    columns_button: "Колонки"
-    new: "Новый сотрудник"
-    edit: "Редактировать профиль"
-    quick_leave_action: "Отправить в отпуск"
-    quick_leave_title:  "Отправить сотрудника в отпуск"
-    quick_leave_hint:   "Утверждает заявку одним кликом для %{name} — шаги руководителя и HR подтверждаются автоматически."
-    quick_leave_submit: "Утвердить и создать"
-    save: "Сохранить"
-    cancel: "Отмена"
+    search_placeholder: ФИО или табельный №
+    empty: Сотрудники не найдены
+    columns_button: Колонки
+    new: Новый сотрудник
+    edit: Редактировать профиль
+    quick_leave_action: Отправить в отпуск
+    quick_leave_title: Отправить сотрудника в отпуск
+    quick_leave_hint: Утверждает заявку одним кликом для %{name} — шаги руководителя и HR подтверждаются автоматически.
+    quick_leave_submit: Утвердить и создать
+    save: Сохранить
+    cancel: Отмена
     fields:
-      personnel_number: "Таб. №"
-      full_name: "ФИО"
-      last_name: "Фамилия"
-      first_name: "Имя"
-      middle_name: "Отчество"
-      position: "Должность"
-      department: "Отдел"
-      grade: "Грейд"
-      manager: "Руководитель"
-      hired_at: "Принят"
-      birth_date: "Дата рождения"
-      phone: "Телефон"
-      personal_email: "Личный email"
-      employment_type: "Тип занятости"
-      state: "Статус"
-      gender: "Пол"
-      marital_status:      "Семейное положение"
-      emergency_contact:   "Контакт на экстренный случай"
-      hobbies:             "Хобби"
-      shirt_size:          "Размер футболки"
-      dietary_restrictions: "Особенности питания"
-      tax_id:              "ИНН"
-      insurance_id:        "СНИЛС"
-      passport:            "Паспорт"
-      education:           "Образование"
-      native_city:         "Родной город"
+      personnel_number: Таб. №
+      full_name: ФИО
+      last_name: Фамилия
+      first_name: Имя
+      middle_name: Отчество
+      position: Должность
+      department: Отдел
+      grade: Грейд
+      manager: Руководитель
+      hired_at: Принят
+      birth_date: Дата рождения
+      phone: Телефон
+      personal_email: Личный email
+      employment_type: Тип занятости
+      state: Статус
+      gender: Пол
+      marital_status: Семейное положение
+      emergency_contact: Контакт на экстренный случай
+      hobbies: Хобби
+      shirt_size: Размер футболки
+      dietary_restrictions: Особенности питания
+      tax_id: ИНН
+      insurance_id: СНИЛС
+      passport: Паспорт
+      education: Образование
+      native_city: Родной город
     employment_types:
-      full_time: "Полная"
-      part_time: "Частичная"
-      contract: "ГПХ"
-      intern: "Стажёр"
+      full_time: Полная
+      part_time: Частичная
+      contract: ГПХ
+      intern: Стажёр
     genders:
-      unspecified: "Не указан"
-      male: "Мужской"
-      female: "Женский"
+      unspecified: Не указан
+      male: Мужской
+      female: Женский
     states:
-      probation: "Испытательный"
-      active: "Активен"
-      on_leave: "В отпуске"
-      terminated: "Уволен"
-    profile: "Профиль"
-    work:    "Работа"
-    documents_card: "Документы (только для HR)"
+      probation: Испытательный
+      active: Активен
+      on_leave: В отпуске
+      terminated: Уволен
+    profile: Профиль
+    work: Работа
+    documents_card: Документы (только для HR)
     marital_statuses:
-      single:       "Не женат / не замужем"
-      married:      "Женат / замужем"
-      divorced:     "В разводе"
-      widowed:      "Вдовец / вдова"
-      partnership:  "В отношениях"
+      single: Не женат / не замужем
+      married: Женат / замужем
+      divorced: В разводе
+      widowed: Вдовец / вдова
+      partnership: В отношениях
     family:
-      title:        "Семья и личное"
-      edit_title:   "Редактировать «Семья и личное»"
-      subtitle:     "Помогает с подарками, праздниками и заботой"
-      no_children:  "Дети не указаны"
-      add_child:    "Добавить ребёнка"
-      child_notes:  "Заметки"
-      child_notes_placeholder: "Аллергии, любимые игрушки, школа"
-      relation:     "Отношение"
-      relation_placeholder: "супруга, отец, брат"
-      hobbies_placeholder:  "Велосипед, фотография, книги"
-      dietary_placeholder:  "Вегетарианец, без глютена, аллергии"
-      has_disability:       "Имеет инвалидность или особые потребности"
-      special_needs:        "Особые потребности / условия"
-      special_needs_placeholder: "По желанию. Видно только HR."
+      title: Семья и личное
+      edit_title: Редактировать «Семья и личное»
+      subtitle: Помогает с подарками, праздниками и заботой
+      no_children: Дети не указаны
+      add_child: Добавить ребёнка
+      child_notes: Заметки
+      child_notes_placeholder: Аллергии, любимые игрушки, школа
+      relation: Отношение
+      relation_placeholder: супруга, отец, брат
+      hobbies_placeholder: Велосипед, фотография, книги
+      dietary_placeholder: Вегетарианец, без глютена, аллергии
+      has_disability: Имеет инвалидность или особые потребности
+      special_needs: Особые потребности / условия
+      special_needs_placeholder: По желанию. Видно только HR.
       age_years:
-        one:   "%{count} год"
-        few:   "%{count} года"
-        many:  "%{count} лет"
+        one: "%{count} год"
+        few: "%{count} года"
+        many: "%{count} лет"
         other: "%{count} лет"
       children_count:
-        one:   "%{count} ребёнок"
-        few:   "%{count} ребёнка"
-        many:  "%{count} детей"
+        one: "%{count} ребёнок"
+        few: "%{count} ребёнка"
+        many: "%{count} детей"
         other: "%{count} детей"
     leaves:
-      title:           "Все отпуска"
-      subtitle:        "%{total} заявок в истории"
-      empty_subtitle:  "Заявок на отпуск пока нет"
-
+      title: Все отпуска
+      subtitle: "%{total} заявок в истории"
+      empty_subtitle: Заявок на отпуск пока нет
+    created: Сотрудник создан
+    updated: Сотрудник обновлён
+    deleted: Сотрудник удалён
+    columns_visible: Видимые столбцы
+    columns_help: Выбери, что показывать в таблице
+    columns_group_main: Основное
+    density_full: Подробный вид
   departments:
-    new: "Новый отдел"
-    expand_all: "Развернуть все"
-    collapse_all: "Свернуть все"
-    total_count: "Всего отделов: %{n}"
-    empty: "Нет отделов"
-    empty_hint: "Добавьте первый отдел, чтобы начать строить оргструктуру."
+    new: Новый отдел
+    expand_all: Развернуть все
+    collapse_all: Свернуть все
+    total_count: 'Всего отделов: %{n}'
+    empty: Нет отделов
+    empty_hint: Добавьте первый отдел, чтобы начать строить оргструктуру.
     no_parent: "— Корневой отдел —"
-    no_head: "Руководитель не назначен"
-    employees_in: "Сотрудники отдела"
+    no_head: Руководитель не назначен
+    employees_in: Сотрудники отдела
     employees_count:
-      zero:  "нет сотрудников"
-      one:   "%{count} чел."
-      few:   "%{count} чел."
-      many:  "%{count} чел."
+      zero: нет сотрудников
+      one: "%{count} чел."
+      few: "%{count} чел."
+      many: "%{count} чел."
       other: "%{count} чел."
-    subdepartments: "Подотделы"
-    no_subdepartments: "Нет подотделов"
-    no_employees: "В отделе нет сотрудников"
-    has_children: "Нельзя удалить отдел с подотделами"
-    has_employees: "Нельзя удалить отдел с сотрудниками"
-    created: "Отдел добавлен"
-    updated: "Отдел обновлён"
-    deleted: "Отдел удалён"
+    subdepartments: Подотделы
+    no_subdepartments: Нет подотделов
+    no_employees: В отделе нет сотрудников
+    has_children: Нельзя удалить отдел с подотделами
+    has_employees: Нельзя удалить отдел с сотрудниками
+    created: Отдел добавлен
+    updated: Отдел обновлён
+    deleted: Отдел удалён
     fields:
-      name: "Название"
-      code: "Код"
-      parent: "Родительский отдел"
-      head: "Руководитель"
-      sort_order: "Порядок"
-
+      name: Название
+      code: Код
+      parent: Родительский отдел
+      head: Руководитель
+      sort_order: Порядок
   leaves:
-    requires_doc_short: "док"
+    requires_doc_short: док
     tabs:
-      me:        "Мои"
-      team:      "Команда"
-      all:       "Все"
-      analytics: "Аналитика"
+      me: Мои
+      team: Команда
+      all: Все
+      analytics: Аналитика
     analytics:
-      tile_pending:           "На согласовании"
-      tile_pending_hint:      "Ждут решения"
-      tile_on_leave:          "В отпуске сегодня"
-      tile_on_leave_hint:     "По всей компании"
-      tile_avg_days:          "Среднее дн./сотрудник"
-      tile_avg_days_hint:     "Использовано в %{year}"
-      tile_not_taken:         "Не отгуляли"
-      tile_not_taken_hint:    "Ежегодный отпуск в этом году"
-      not_taken_title:        "Не отгуляли ежегодный отпуск"
-      not_taken_subtitle:     "Нет утверждённого ежегодного отпуска в %{year}"
-      not_taken_empty:        "Все хоть что-то отгуляли"
-      zero_days:              "0 дней"
-      top_users_title:        "Топ по использованию"
-      top_users_subtitle:     "Больше всего дней в %{year}"
-      top_users_empty:        "Никто не использовал отпуск в этом году"
-      type_breakdown_title:   "По типам отпуска"
-      type_breakdown_subtitle: "Всего дней в %{year}"
-      monthly_title:          "По месяцам"
-      monthly_subtitle:       "Дней использовано по месяцам в %{year}"
-      on_leave_now_title:     "Сейчас в отпуске"
-      on_leave_now_subtitle:  "Активные отпуска"
-      upcoming_title:         "Ближайшие утверждённые"
-      upcoming_subtitle:      "Утверждённые будущие отпуска"
-      upcoming_empty:         "Нет ближайших утверждённых отпусков"
-      burnout_title:          "Пора отдохнуть"
-      burnout_subtitle:       "Сотрудники с риском выгорания по данным KPI и времени без отпуска"
-      burnout_no_leave_days:  "%{n} дней без отпуска"
-      burnout_no_leave_ever:  "нет отпусков в истории"
+      tile_pending: На согласовании
+      tile_pending_hint: Ждут решения
+      tile_on_leave: В отпуске сегодня
+      tile_on_leave_hint: По всей компании
+      tile_avg_days: Среднее дн./сотрудник
+      tile_avg_days_hint: Использовано в %{year}
+      tile_not_taken: Не отгуляли
+      tile_not_taken_hint: Ежегодный отпуск в этом году
+      not_taken_title: Не отгуляли ежегодный отпуск
+      not_taken_subtitle: Нет утверждённого ежегодного отпуска в %{year}
+      not_taken_empty: Все хоть что-то отгуляли
+      zero_days: 0 дней
+      top_users_title: Топ по использованию
+      top_users_subtitle: Больше всего дней в %{year}
+      top_users_empty: Никто не использовал отпуск в этом году
+      type_breakdown_title: По типам отпуска
+      type_breakdown_subtitle: Всего дней в %{year}
+      monthly_title: По месяцам
+      monthly_subtitle: Дней использовано по месяцам в %{year}
+      on_leave_now_title: Сейчас в отпуске
+      on_leave_now_subtitle: Активные отпуска
+      upcoming_title: Ближайшие утверждённые
+      upcoming_subtitle: Утверждённые будущие отпуска
+      upcoming_empty: Нет ближайших утверждённых отпусков
+      burnout_title: Пора отдохнуть
+      burnout_subtitle: Сотрудники с риском выгорания по данным KPI и времени без отпуска
+      burnout_no_leave_days: "%{n} дней без отпуска"
+      burnout_no_leave_ever: нет отпусков в истории
       burnout_reason:
-        no_leave_long: "Без отпуска 6+ мес."
-        low_kpi:       "KPI ниже 60%"
-        both:          "Риск выгорания"
+        no_leave_long: Без отпуска 6+ мес.
+        low_kpi: KPI ниже 60%
+        both: И то и другое
+        no_leave: Без отпусков
+        high_kpi_drop: Падение KPI
     quota:
-      title:     "Квота · %{year}"
+      title: Квота · %{year}
     my_quota:
-      title:     "Моя квота · %{year}"
-      subtitle:  "Остаток дней по типам отпусков"
-      empty:     "Типы отпусков не настроены"
-      days_short: "дн."
+      title: Моя квота · %{year}
+      subtitle: Остаток дней по типам отпусков
+      empty: Типы отпусков не настроены
+      days_short: дн.
       pending:
-        one:   "%{count} день ждёт согласования"
-        few:   "%{count} дня ждут согласования"
-        many:  "%{count} дней ждут согласования"
+        one: "%{count} день ждёт согласования"
+        few: "%{count} дня ждут согласования"
+        many: "%{count} дней ждут согласования"
         other: "%{count} дней ждут согласования"
     my_quota_subtitle_year: "%{year}"
     my_requests:
-      title:      "Мои заявки"
-      subtitle:   "Последние 30 заявок"
-      empty:      "Заявок пока нет"
-      empty_hint: "Создай первую — и она появится здесь."
+      title: Мои заявки
+      subtitle: Последние 30 заявок
+      empty: Заявок пока нет
+      empty_hint: Создай первую — и она появится здесь.
     team:
-      pending_title:        "На моё согласование"
-      pending_subtitle:     "Ждут решения в твоей зоне ответственности"
-      pending_empty:        "Всё согласовано"
-      pending_empty_hint:   "Нет заявок, ожидающих твоего решения."
-      on_leave_title:       "В отпуске (14 дней)"
-      on_leave_subtitle:    "Активные и предстоящие отпуска"
-      on_leave_empty:       "Никого нет в отпуске"
+      pending_title: На моё согласование
+      pending_subtitle: Ждут решения в твоей зоне ответственности
+      pending_empty: Всё согласовано
+      pending_empty_hint: Нет заявок, ожидающих твоего решения.
+      on_leave_title: В отпуске (14 дней)
+      on_leave_subtitle: Активные и предстоящие отпуска
+      on_leave_empty: Никого нет в отпуске
     day_counter:
-      label: "Дней"
-      unit:  "вкл."
+      label: Дней
+      unit: вкл.
     presets:
       days_label:
-        one:   "%{count} день"
-        few:   "%{count} дня"
-        many:  "%{count} дней"
+        one: "%{count} день"
+        few: "%{count} дня"
+        many: "%{count} дней"
         other: "%{count} дней"
-    new: "Новая заявка"
-    new_subtitle: "Заполните даты и тип отпуска. После отправки заявка пойдёт на согласование."
-    show_title: "Заявка на отпуск"
-    summary: "На согласовании: %{p} · Активных: %{a} · Ближайшие: %{u}"
-    save_draft: "Сохранить черновик"
-    submit_now: "Отправить на согласование"
-    workflow_title: "Как работает согласование"
-    workflow_progress: "Согласование"
-    workflow_step_1: "Вы создаёте заявку и отправляете на согласование."
-    workflow_step_2: "Руководитель отдела одобряет или отклоняет."
-    workflow_step_3: "После руководителя — HR подтверждает оформление."
-    workflow_step_4: "В первый день отпуск активируется, табель проставляется автоматически."
-    actions_title: "Действия"
-    confirm_reject: "Отклонить заявку?"
-    history: "История согласований"
-    applicant: "Заявитель"
-    reason_placeholder: "По желанию"
+    new: Новая заявка
+    new_subtitle: Заполните даты и тип отпуска. После отправки заявка пойдёт на согласование.
+    show_title: Заявка на отпуск
+    summary: 'На согласовании: %{p} · Активных: %{a} · Ближайшие: %{u}'
+    save_draft: Сохранить черновик
+    submit_now: Отправить на согласование
+    workflow_title: Как работает согласование
+    workflow_progress: Согласование
+    workflow_step_1: Вы создаёте заявку и отправляете на согласование.
+    workflow_step_2: Руководитель отдела одобряет или отклоняет.
+    workflow_step_3: После руководителя — HR подтверждает оформление.
+    workflow_step_4: В первый день отпуск активируется, табель проставляется автоматически.
+    actions_title: Действия
+    confirm_reject: Отклонить заявку?
+    history: История согласований
+    applicant: Заявитель
+    reason_placeholder: По желанию
     days_count:
-      one:   "%{count} день"
-      few:   "%{count} дня"
-      many:  "%{count} дней"
+      one: "%{count} день"
+      few: "%{count} дня"
+      many: "%{count} дней"
       other: "%{count} дней"
-    created: "Заявка создана"
-    deleted: "Заявка удалена"
+    created: Заявка создана
+    deleted: Заявка удалена
     fields:
-      employee: "Сотрудник"
-      department: "Отдел"
-      type: "Тип отпуска"
-      started_on: "С"
-      ended_on: "По"
-      days: "Дней"
-      reason: "Причина / комментарий"
-      state: "Статус"
-      applied_at: "Подана"
+      employee: Сотрудник
+      department: Отдел
+      type: Тип отпуска
+      started_on: С
+      ended_on: По
+      days: Дней
+      reason: Причина / комментарий
+      state: Статус
+      applied_at: Подана
     states:
-      draft: "Черновик"
-      submitted: "На согласовании"
-      manager_approved: "Одобрено руководителем"
-      hr_approved: "Одобрено HR"
-      active: "В отпуске"
-      completed: "Завершён"
-      rejected: "Отклонён"
-      cancelled: "Отменён"
+      draft: Черновик
+      submitted: На согласовании
+      manager_approved: Одобрено руководителем
+      hr_approved: Одобрено HR
+      active: В отпуске
+      completed: Завершён
+      rejected: Отклонён
+      cancelled: Отменён
+      started: В отпуске
     transitions:
-      submitted: "Заявка отправлена на согласование"
-      manager_approved: "Руководитель одобрил"
-      hr_approved: "HR одобрил"
-      started: "Отпуск активирован"
-      completed: "Отпуск завершён"
-      rejected: "Заявка отклонена"
-      cancelled: "Заявка отменена"
+      submitted: Заявка отправлена на согласование
+      manager_approved: Руководитель одобрил
+      hr_approved: HR одобрил
+      started: Отпуск активирован
+      completed: Отпуск завершён
+      rejected: Заявка отклонена
+      cancelled: Заявка отменена
+      active: Активирован
     actions:
-      submit: "Отправить на согласование"
-      approve_manager: "Одобрить (руководитель)"
-      approve_hr: "Одобрить (HR)"
-      force_approve: "Утвердить за всех"
-      approve_step_for: "Утвердить как %{role}"
-      start: "Активировать"
-      complete: "Завершить"
-      reject: "Отклонить"
-      cancel: "Отменить"
-    confirm_force_approve: "Утвердить заявку одним шагом, минуя руководителя и HR?"
+      submit: Отправить на согласование
+      approve_manager: Одобрить (руководитель)
+      approve_hr: Одобрить (HR)
+      force_approve: Утвердить за всех
+      approve_step_for: Утвердить как %{role}
+      start: Активировать
+      complete: Завершить
+      reject: Отклонить
+      cancel: Отменить
+    confirm_force_approve: Утвердить заявку одним шагом, минуя руководителя и HR?
     quick:
-      created:        "Отпуск создан и утверждён"
-      auto_approval:  "Авто-утверждение через быстрое действие"
-    auto_approve_step: "Авто-утверждение по правилу"
-    approved_step:    "Шаг %{n} из %{total} утверждён"
-    no_next_step:     "Нет ожидающих шагов согласования"
-    not_your_step:    "Ты не назначен утверждающим на этом шаге"
-    history_title:    "Недавние отпуска"
-    history_subtitle: "Последние 8 заявок"
-    history_empty:    "История отпусков пуста"
+      created: Отпуск создан и утверждён
+      auto_approval: Авто-утверждение через быстрое действие
+    auto_approve_step: Авто-утверждение по правилу
+    approved_step: Шаг %{n} из %{total} утверждён
+    no_next_step: Нет ожидающих шагов согласования
+    not_your_step: Ты не назначен утверждающим на этом шаге
+    history_title: Недавние отпуска
+    history_subtitle: Последние 8 заявок
+    history_empty: История отпусков пуста
     approval_steps:
-      manager:         "Руководитель"
-      hr:              "HR"
-      ceo:             "Генеральный директор"
-      department_head: "Глава отдела"
+      manager: Руководитель
+      hr: HR
+      ceo: Генеральный директор
+      department_head: Глава отдела
+      any: Любой
+      auto: Авто
     steps:
-      manager: "Руководитель"
-      hr: "HR"
+      manager: Руководитель
+      hr: HR
     decisions:
-      pending: "Ожидает"
-      approved: "Одобрено"
-      rejected: "Отклонено"
-
+      pending: Ожидает
+      approved: Одобрено
+      rejected: Отклонено
   recruitment:
-    kanban_subtitle: "Перетаскивайте кандидатов между стадиями. Изменения сохраняются мгновенно."
-
+    kanban_subtitle: Перетаскивайте кандидатов между стадиями. Изменения сохраняются мгновенно.
   job_openings:
-    new: "Новая вакансия"
-    summary: "Открытых: %{open} · На паузе: %{hold} · Закрытых: %{closed}"
-    funnel: "Воронка кандидатов"
-    applicants_title: "Кандидаты на эту вакансию"
-    created: "Вакансия добавлена"
-    updated: "Вакансия обновлена"
-    deleted: "Вакансия удалена"
-    opened: "Вакансия открыта"
-    closed: "Вакансия закрыта"
-    held: "Вакансия поставлена на паузу"
+    new: Новая вакансия
+    summary: 'Открытых: %{open} · На паузе: %{hold} · Закрытых: %{closed}'
+    funnel: Воронка кандидатов
+    applicants_title: Кандидаты на эту вакансию
+    created: Вакансия добавлена
+    updated: Вакансия обновлена
+    deleted: Вакансия удалена
+    opened: Вакансия открыта
+    closed: Вакансия закрыта
+    held: Вакансия поставлена на паузу
     fields:
-      code: "Код"
-      title: "Название"
-      department: "Отдел"
-      position: "Должность"
-      grade: "Грейд"
-      owner: "Ответственный"
-      openings_count: "Кол-во"
-      applicants_count: "Откликов"
-      state: "Статус"
-      description: "Описание"
-      requirements: "Требования"
-      nice_to_have: "Приятно бы иметь"
-      salary_from: "Зарплата от"
-      salary_to: "Зарплата до"
-      currency: "Валюта"
-      employment_type: "Тип занятости"
-      published_at: "Опубликовано"
-      closes_at: "Закрытие"
+      code: Код
+      title: Название
+      department: Отдел
+      position: Должность
+      grade: Грейд
+      owner: Ответственный
+      openings_count: Кол-во
+      applicants_count: Откликов
+      state: Статус
+      description: Описание
+      requirements: Требования
+      nice_to_have: Приятно бы иметь
+      salary_from: Зарплата от
+      salary_to: Зарплата до
+      currency: Валюта
+      employment_type: Тип занятости
+      published_at: Опубликовано
+      closes_at: Закрытие
     states:
-      draft: "Черновик"
-      open: "Открыта"
-      on_hold: "На паузе"
-      closed: "Закрыта"
+      draft: Черновик
+      open: Открыта
+      on_hold: На паузе
+      closed: Закрыта
     actions:
-      open: "Опубликовать"
-      close: "Закрыть"
-      hold: "На паузу"
-
+      open: Опубликовать
+      close: Закрыть
+      hold: На паузу
+    employment_types:
+      full_time: Полная занятость
+      part_time: Частичная занятость
+      contract: Контракт
+      intern: Стажировка
   job_applicants:
-    new: "Новый кандидат"
-    empty: "Кандидатов пока нет"
-    empty_hint: "Добавьте первого кандидата вручную или дождитесь откликов с careers-страницы."
-    summary: "Всего: %{n} · Активных: %{a}"
+    new: Новый кандидат
+    empty: Кандидатов пока нет
+    empty_hint: Добавьте первого кандидата вручную или дождитесь откликов с careers-страницы.
+    summary: 'Всего: %{n} · Активных: %{a}'
     talent_pool: "— Talent Pool —"
-    stage: "Стадия"
-    days_short: "дн."
-    years: "лет"
-    links: "Ссылки"
-    download: "Скачать"
-    no_resume: "Резюме не загружено"
-    no_portfolio: "Портфолио не приложено"
-    no_history: "Пока без изменений стадии"
-    created: "Кандидат добавлен"
-    updated: "Кандидат обновлён"
-    deleted: "Кандидат удалён"
-    stage_moved: "Стадия обновлена"
+    stage: Стадия
+    days_short: дн.
+    years: лет
+    links: Ссылки
+    download: Скачать
+    no_resume: Резюме не загружено
+    no_portfolio: Портфолио не приложено
+    no_history: Пока без изменений стадии
+    created: Кандидат добавлен
+    updated: Кандидат обновлён
+    deleted: Кандидат удалён
+    stage_moved: Стадия обновлена
     fields:
-      first_name: "Имя"
-      last_name: "Фамилия"
-      phone: "Телефон"
-      location: "Город"
-      current_company: "Текущая компания"
-      current_position: "Текущая должность"
-      years_of_experience: "Опыт"
-      expected_salary: "Ожидаемая ЗП"
-      portfolio_url: "Портфолио URL"
-      portfolio_files: "Файлы портфолио"
-      resume: "Резюме (PDF)"
-      summary: "Краткая характеристика"
-      source: "Источник"
-      opening: "Вакансия"
-      owner: "Ответственный рекрутер"
+      first_name: Имя
+      last_name: Фамилия
+      phone: Телефон
+      location: Город
+      current_company: Текущая компания
+      current_position: Текущая должность
+      years_of_experience: Опыт
+      expected_salary: Ожидаемая ЗП
+      portfolio_url: Портфолио URL
+      portfolio_files: Файлы портфолио
+      resume: Резюме (PDF)
+      summary: Краткая характеристика
+      source: Источник
+      opening: Вакансия
+      owner: Ответственный рекрутер
+      candidate: Кандидат
+      photo: Фото
     sources:
-      manual: "Вручную"
-      careers_page: "Сайт"
-      hh: "HeadHunter"
-      linkedin: "LinkedIn"
-      referral: "Реферал"
-      email: "Email"
+      manual: Ручной ввод
+      careers_page: Сайт
+      hh: HeadHunter
+      linkedin: LinkedIn
+      referral: По рекомендации
+      email: Email
+      website: Сайт компании
+      recruiter: Рекрутёр
+      api: API
     stages:
-      applied: "Отклик"
-      screening: "Скрининг"
-      interview: "Интервью"
-      offered: "Оффер"
-      hired: "Принят"
-      rejected: "Отказ"
-      withdrawn: "Отозвался"
+      applied: Отклик
+      screening: Скрининг
+      interview: Интервью
+      offered: Оффер
+      hired: Принят
+      rejected: Отказ
+      withdrawn: Отозвался
+      test_assignment: Тестовое задание
     tabs:
-      profile: "Профиль"
-      resume: "Резюме"
-      portfolio: "Портфолио"
-      assignments: "Тестовые"
-      interviews: "Интервью"
-      ai: "AI"
-      notes: "Заметки"
-      history: "История"
-
+      profile: Профиль
+      resume: Резюме
+      portfolio: Портфолио
+      assignments: Тестовые
+      interviews: Интервью
+      ai: AI
+      notes: Заметки
+      history: История
+    edit: Редактировать кандидата
+    confirm_stage_change: Перевести кандидата на этот этап?
   employee_notes:
-    title:       "Заметки"
-    add:         "Добавить"
-    placeholder: "Наблюдение, план, напоминание..."
-    hr_only:     "Только HR"
-    hr_only_label: "Только HR"
-    pinned:      "Закрепить"
-    created:     "Заметка добавлена"
-    deleted:     "Заметка удалена"
-    empty:       "Заметок пока нет — добавь первую"
-
+    title: Заметки
+    add: Добавить
+    placeholder: Наблюдение, план, напоминание...
+    hr_only: Только HR
+    hr_only_label: Только HR
+    pinned: Закрепить
+    created: Заметка добавлена
+    deleted: Заметка удалена
+    empty: Заметок пока нет — добавь первую
   employee_children:
-    created: "Ребёнок добавлен"
-    updated: "Информация обновлена"
-    deleted: "Запись удалена"
-
+    created: Ребёнок добавлен
+    updated: Информация обновлена
+    deleted: Запись удалена
   applicant_notes:
-    placeholder: "Поделитесь впечатлениями о кандидате..."
-    add: "Добавить заметку"
-    added: "Заметка добавлена"
-    deleted: "Заметка удалена"
-    empty: "Пока нет заметок"
-
+    placeholder: Поделитесь впечатлениями о кандидате...
+    add: Добавить заметку
+    added: Заметка добавлена
+    deleted: Заметка удалена
+    empty: Пока нет заметок
   notifications:
-    title: "Уведомления"
-    subtitle: "Все события системы — AI, интервью, статусы"
-    mark_all_read: "Прочесть все"
-    mark_read: "Прочитано"
-    view_all: "Все уведомления"
-    empty: "Пока ничего нового"
-    empty_hint: "Тут будут события: завершение AI-задач, ближайшие интервью, статусы кандидатов."
-    deleted: "Удалено"
+    title: Уведомления
+    subtitle: Все события системы — AI, интервью, статусы
+    mark_all_read: Прочесть все
+    mark_read: Прочитано
+    view_all: Все уведомления
+    empty: Пока ничего нового
+    empty_hint: 'Тут будут события: завершение AI-задач, ближайшие интервью, статусы кандидатов.'
+    deleted: Удалено
     ai_run:
-      success:          "AI закончил «%{kind}» по кандидату %{name}"
-      failed:           "AI «%{kind}» по %{name} завершился с ошибкой"
-      success_employee: "AI закончил «%{kind}» по сотруднику %{name}"
-      failed_employee:  "AI «%{kind}» по сотруднику %{name} завершился с ошибкой"
-    interview_soon:     "Через 30 мин: %{kind}-интервью с %{name} в %{time}"
-    interview_tomorrow: "Сегодня: %{kind}-интервью с %{name} в %{time}"
-
+      success: AI закончил «%{kind}» по кандидату %{name}
+      failed: AI «%{kind}» по %{name} завершился с ошибкой
+      success_employee: AI закончил «%{kind}» по сотруднику %{name}
+      failed_employee: AI «%{kind}» по сотруднику %{name} завершился с ошибкой
+    interview_soon: 'Через 30 мин: %{kind}-интервью с %{name} в %{time}'
+    interview_tomorrow: 'Сегодня: %{kind}-интервью с %{name} в %{time}'
   ai:
-    run: "Запустить"
-    error: "AI не вернул структурированный ответ"
-    disabled: "AI отключён или не настроен"
-    questions_for_round: "AI: вопросы для раунда"
-    processing: "обрабатывается на сервере..."
-    processing_hint: "Можно закрыть страницу — результат придёт уведомлением и появится здесь автоматически."
-    busy: "AI работает..."
-    busy_hint: "Задача уже выполняется. Дождитесь результата — он появится автоматически."
+    run: Запустить
+    error: AI не вернул структурированный ответ
+    disabled: AI отключён или не настроен
+    questions_for_round: 'AI: вопросы для раунда'
+    processing: обрабатывается на сервере...
+    processing_hint: Можно закрыть страницу — результат придёт уведомлением и появится здесь автоматически.
+    busy: AI работает...
+    busy_hint: Задача уже выполняется. Дождитесь результата — он появится автоматически.
     brief:
-      title:    "Бриф для AI: тестовое задание"
-      subtitle: "Несколько параметров — и AI составит задание точно под условия. Все поля опциональны (пусто = AI решит сам)."
-      submit:   "Сгенерировать"
-      payment_hint: "AI учтёт это в постановке (упомянет вознаграждение в тексте)"
-      focus_placeholder: "Напр.: чистый код важнее перформанса, проверить умение писать тесты, дать кейс с edge-cases в БД"
+      title: 'Бриф для AI: тестовое задание'
+      subtitle: Несколько параметров — и AI составит задание точно под условия. Все поля опциональны (пусто = AI решит сам).
+      submit: Сгенерировать
+      payment_hint: AI учтёт это в постановке (упомянет вознаграждение в тексте)
+      focus_placeholder: 'Напр.: чистый код важнее перформанса, проверить умение писать тесты, дать кейс с edge-cases в БД'
       fields:
-        difficulty:     "Сложность"
-        hours:          "Часов на выполнение"
-        deadline_days:  "Дедлайн, дней"
-        paid:           "Оплачиваемое тестовое"
-        payment_amount: "Сумма, RUB"
-        focus:          "На что AI обратить особое внимание (опционально)"
-        delivery:       "Формат сдачи"
+        difficulty: Сложность
+        hours: Часов на выполнение
+        deadline_days: Дедлайн, дней
+        paid: Оплачиваемое тестовое
+        payment_amount: Сумма, RUB
+        focus: На что AI обратить особое внимание (опционально)
+        delivery: Формат сдачи
       difficulty:
-        auto:   "AI решит сам"
-        junior: "Junior"
-        middle: "Middle"
-        senior: "Senior"
+        auto: AI решит сам
+        junior: Junior
+        middle: Middle
+        senior: Senior
       hours:
-        auto: "AI решит сам"
+        auto: AI решит сам
       deadline:
-        auto: "AI решит сам"
+        auto: AI решит сам
       delivery:
-        auto:   "AI решит сам"
-        github: "GitHub-репозиторий"
-        archive: "Архив (zip)"
-        pr:     "Pull request в наш репо"
-        doc:    "Документ (Notion/Google Docs)"
-    history: "История запусков"
-    no_recommendation: "Нет рекомендации"
-    raw_response: "Сырой ответ модели"
-    run_details: "Детали запуска"
-    run_kind: "Тип"
-    run_model: "Модель"
-    run_when: "Когда / кто"
-    run_tokens: "Токены"
-    run_cost: "Стоимость"
-    run_raw_payload: "Полный JSON-ответ"
-    questions_count: "вопросов"
-    assignment_created:        "Тестовое задание создано из AI-черновика"
-    assignment_created_sent:   "Тестовое задание создано и отправлено кандидату на почту"
-    materialize_assignment:    "Создать как тестовое задание"
-    materialize_and_send:      "Создать и отправить кандидату"
-    materialize_confirm:       "Создать тестовое задание из этого черновика? (без отправки на почту)"
-    materialize_send_confirm:  "Создать задание и отправить кандидату на почту?"
+        auto: AI решит сам
+        github: GitHub-репозиторий
+        archive: Архив (zip)
+        pr: Pull request в наш репо
+        doc: Документ (Notion/Google Docs)
+    history: История запусков
+    no_recommendation: Нет рекомендации
+    raw_response: Сырой ответ модели
+    run_details: Детали запуска
+    run_kind: Тип
+    run_model: Модель
+    run_when: Когда / кто
+    run_tokens: Токены
+    run_cost: Стоимость
+    run_raw_payload: Полный JSON-ответ
+    questions_count: вопросов
+    assignment_created: Тестовое задание создано из AI-черновика
+    assignment_created_sent: Тестовое задание создано и отправлено кандидату на почту
+    materialize_assignment: Создать как тестовое задание
+    materialize_and_send: Создать и отправить кандидату
+    materialize_confirm: Создать тестовое задание из этого черновика? (без отправки на почту)
+    materialize_send_confirm: Создать задание и отправить кандидату на почту?
     leaves:
-      section_title:        "AI-ассистент"
-      section_subtitle:     "Brief по выгоранию и рекомендации от AI"
-      run_burnout:          "Brief о выгорании"
-      run_kpi_brief:        "Brief по эффективности"
-      run_meeting_agenda:   "Повестка 1:1"
-      run_bulk:             "Запустить AI по выбранным"
-      processing:           "AI обрабатывает"
-      empty_hint:           "Выбери AI-ассистента выше — получишь brief, оценку эффективности или план 1:1."
-      kpi_brief_title:      "Brief по эффективности"
-      meeting_agenda_title: "Повестка 1:1"
-      strengths:            "Сильные стороны"
-      risks:                "Риски"
-      metric_breakdown:     "По метрикам"
-      next_actions:         "Рекомендуемые действия"
-      recognition:          "Заслуживает признания"
+      section_title: AI-ассистент
+      section_subtitle: Brief по выгоранию и рекомендации от AI
+      run_burnout: Brief о выгорании
+      run_kpi_brief: Brief по эффективности
+      run_meeting_agenda: Повестка 1:1
+      run_bulk: Запустить AI по выбранным
+      processing: AI обрабатывает
+      empty_hint: Выбери AI-ассистента выше — получишь brief, оценку эффективности или план 1:1.
+      kpi_brief_title: Brief по эффективности
+      meeting_agenda_title: Повестка 1:1
+      strengths: Сильные стороны
+      risks: Риски
+      metric_breakdown: По метрикам
+      next_actions: Рекомендуемые действия
+      recognition: Заслуживает признания
       promotion:
-        ready:        "Готов к повышению"
-        approaching:  "Близок к повышению"
-        no_signal:    ""
+        ready: Готов к повышению
+        approaching: Близок к повышению
+        no_signal: ''
       trend:
-        rising:  "Растёт"
-        flat:    "Стабильно"
-        falling: "Падает"
-        mixed:   "Смешанно"
+        rising: Растёт
+        flat: Стабильно
+        falling: Падает
+        mixed: Смешанно
       tone:
-        supportive:  "Поддерживающий"
-        celebratory: "Праздничный"
-        corrective:  "Корректирующий"
-        neutral:     "Нейтральный"
-      talking_points:       "Темы для обсуждения"
-      open_questions:       "Открытые вопросы"
-      watch_outs:           "Чувствительные темы"
-      after_meeting:        "Действие после встречи"
+        supportive: Поддерживающий
+        celebratory: Праздничный
+        corrective: Корректирующий
+        neutral: Нейтральный
+        warm: Тёплый
+        formal: Формальный
+      talking_points: Темы для обсуждения
+      open_questions: Открытые вопросы
+      watch_outs: Чувствительные темы
+      after_meeting: Действие после встречи
       bulk_enqueued:
-        one:   "AI анализирует %{count} сотрудника — результаты появятся через несколько секунд"
-        few:   "AI анализирует %{count} сотрудников — результаты появятся через несколько секунд"
-        many:  "AI анализирует %{count} сотрудников — результаты появятся через несколько секунд"
-        other: "AI анализирует %{count} сотрудников — результаты появятся через несколько секунд"
-      burnout_brief_title:  "Brief о выгорании"
-      suggest_window_title: "Рекомендованный период"
-      recommendation:       "Рекомендация"
-      data_observed:        "Что увидел AI"
-      reasoning:            "Ход рассуждения"
-      option:               "Вариант"
-      warnings:             "Внимание"
-      refresh:              "Обновить"
-      retry:                "Повторить"
-      error_title:          "AI-запрос не удался"
+        one: AI анализирует %{count} сотрудника — результаты появятся через несколько секунд
+        few: AI анализирует %{count} сотрудников — результаты появятся через несколько секунд
+        many: AI анализирует %{count} сотрудников — результаты появятся через несколько секунд
+        other: AI анализирует %{count} сотрудников — результаты появятся через несколько секунд
+      burnout_brief_title: Brief о выгорании
+      suggest_window_title: Рекомендованный период
+      recommendation: Рекомендация
+      data_observed: Что увидел AI
+      reasoning: Ход рассуждения
+      option: Вариант
+      warnings: Внимание
+      refresh: Обновить
+      retry: Повторить
+      error_title: AI-запрос не удался
       history_title:
-        one:   "Предыдущий AI-запуск"
-        few:   "Предыдущие AI-запуски (%{count})"
-        many:  "Предыдущие AI-запуски (%{count})"
-        other: "Предыдущие AI-запуски (%{count})"
+        one: Предыдущий AI-запуск
+        few: Предыдущие AI-запуски (%{count})
+        many: Предыдущие AI-запуски (%{count})
+        other: Предыдущие AI-запуски (%{count})
       kinds:
-        burnout_brief:        "Brief о выгорании"
-        suggest_leave_window: "Рекомендация периода"
-        kpi_brief:            "Brief по эффективности"
-        meeting_agenda:       "Повестка 1:1"
-        kpi_team_brief:       "Эффективность команды"
+        burnout_brief: Анализ выгорания
+        suggest_leave_window: Окно отпуска
+        kpi_brief: Сводка KPI
+        meeting_agenda: Повестка 1:1
+        kpi_team_brief: Эффективность команды
+        compensation_review: Обзор компенсации
+        exit_risk_brief: Риск ухода
       severity:
-        high:   "Высокий риск"
-        medium: "Средний риск"
-        low:    "Низкий риск"
+        high: Высокий риск
+        medium: Средний риск
+        low: Низкий риск
       confidence:
-        high:   "Уверенность: высокая"
-        medium: "Уверенность: средняя"
-        low:    "Уверенность: низкая"
+        high: 'Уверенность: высокая'
+        medium: 'Уверенность: средняя'
+        low: 'Уверенность: низкая'
       agreement:
-        agree:    "Согласен с системой"
-        partial:  "Частичное согласие"
-        disagree: "Не согласен с системой"
-        no_tag:   ""
+        agree: Согласен
+        partial: Частично
+        disagree: Не согласен
+        no_tag: Без оценки
+      run_compensation_review: Обзор компенсации
+      run_exit_risk: Риск ухода
+      compensation_review_title: Обзор компенсации
+      exit_risk_brief_title: Риск ухода
+      suggested_change: Рекомендация
+      next_review_in: следующий пересмотр через
+      months_short: мес
+      signals: Сигналы
+      retention_actions: Действия по удержанию
+      verdicts:
+        raise: Повысить
+        hold: Оставить
+        review_band: Пересмотреть грейд
+        too_high: Завышена
+      risk_levels:
+        high: Высокий
+        medium: Средний
+        low: Низкий
+      urgency:
+        this_week: На этой неделе
+        this_month: В этом месяце
+        monitor: Наблюдать
     kpi:
-      section_title:    "AI-ассистент"
-      section_subtitle: "Стратегический обзор команды от AI"
-      run_team_brief:   "Проанализировать команду"
-      team_brief_title: "Brief по команде"
-      empty_hint:       "Нажми кнопку — получишь обзор команды от AI."
-      highlights:       "Ключевые наблюдения"
-      people:           "По людям"
+      section_title: AI-ассистент
+      section_subtitle: Стратегический обзор команды от AI
+      run_team_brief: Проанализировать команду
+      team_brief_title: Brief по команде
+      empty_hint: Нажми кнопку — получишь обзор команды от AI.
+      highlights: Ключевые наблюдения
+      people: По людям
       health:
-        thriving: "В отличной форме"
-        steady:   "Стабильно"
-        stressed: "Под давлением"
-        at_risk:  "В зоне риска"
+        thriving: В отличной форме
+        steady: Стабильно
+        stressed: Под давлением
+        at_risk: Под риском
+        strong: Сильная
+        stable: Стабильная
+        critical: Критическая
       hiring:
-        no_need:     ""
-        monitor:     "Следить за нагрузкой"
-        urgent_hire: "Срочно нанять"
+        no_need: ''
+        monitor: Следить за нагрузкой
+        urgent_hire: Срочно нанять
+        hire: Нанимать
+        hold: Подождать
+        pause: Пауза
       verdict:
-        top_performer: "Топ"
-        steady:        "Стабильно"
-        watch:         "Наблюдать"
-        at_risk:       "В риске"
+        top_performer: Топ
+        steady: Стабильно
+        watch: Наблюдать
+        at_risk: В риске
+        improving: Улучшается
+        stable: Стабильно
+        concerning: Тревожно
+        critical: Критично
     cards:
-      analyze_resume:       "Разбор резюме"
-      analyze_resume_hint:  "AI достанет навыки, опыт, сильные стороны и красные флаги"
-      recommend:            "Рекомендация по найму"
-      recommend_hint:       "AI оценит профиль + scorecards и предложит strong_yes / yes / maybe / no / strong_no"
-      generate_assignment:  "Тестовое задание"
-      generate_assignment_hint: "AI сгенерирует точное задание под уровень и стек кандидата с учётом риски/сильных сторон"
+      analyze_resume: Разбор резюме
+      analyze_resume_hint: AI достанет навыки, опыт, сильные стороны и красные флаги
+      recommend: Рекомендация по найму
+      recommend_hint: AI оценит профиль + scorecards и предложит strong_yes / yes / maybe / no / strong_no
+      generate_assignment: Тестовое задание
+      generate_assignment_hint: AI сгенерирует точное задание под уровень и стек кандидата с учётом риски/сильных сторон
     actions:
-      analyze_resume: "Разбор резюме"
-      recommend: "Рекомендация"
-      questions: "Вопросы для раунда"
-      questions_for: "Вопросы для раунда"
-      generate_assignment: "Тестовое задание"
-      summarize_interview: "Резюме раунда"
-      compare_candidates: "Сравнение кандидатов"
-      burnout_brief: "Анализ выгорания"
-      suggest_leave_window: "Подбор окна отпуска"
-      kpi_brief: "Сводка по эффективности"
-      meeting_agenda: "Повестка 1:1"
-      kpi_team_brief: "Стратегический обзор команды"
-      onboarding_plan: "План онбординга"
-      welcome_letter: "Welcome-письмо"
-      mentor_match: "Подбор наставника"
-      probation_review: "Probation review"
-      offer_letter: "Оффер-письмо"
-      compensation_review: "Обзор компенсации"
-      exit_risk_brief: "Риск ухода"
-      knowledge_transfer_plan: "План передачи знаний"
-      exit_interview_brief: "Брифинг exit-interview"
-      replacement_brief: "ТЗ на замену"
-    summarize_round: "AI: резюме раунда"
+      analyze_resume: Разбор резюме
+      recommend: Рекомендация
+      questions: Вопросы для раунда
+      questions_for: Вопросы для раунда
+      generate_assignment: Тестовое задание
+      summarize_interview: Резюме раунда
+      compare_candidates: Сравнение кандидатов
+      burnout_brief: Анализ выгорания
+      suggest_leave_window: Подбор окна отпуска
+      kpi_brief: Сводка по эффективности
+      meeting_agenda: Повестка 1:1
+      kpi_team_brief: Стратегический обзор команды
+      onboarding_plan: План онбординга
+      welcome_letter: Welcome-письмо
+      mentor_match: Подбор наставника
+      probation_review: Probation review
+      offer_letter: Оффер-письмо
+      compensation_review: Обзор компенсации
+      exit_risk_brief: Риск ухода
+      knowledge_transfer_plan: План передачи знаний
+      exit_interview_brief: Брифинг exit-interview
+      replacement_brief: ТЗ на замену
+      ping: Ping
+    summarize_round: 'AI: резюме раунда'
     fields:
-      highlights:        "Что особенно понравилось"
-      concerns:          "Риски / красные флаги"
-      skills:            "Навыки"
-      strengths:         "Сильные стороны"
-      next_steps:        "Что делать дальше"
-      agreement:         "Согласие с интервьюером"
-      experience_years:  "Опыт по оценке AI"
+      highlights: Что особенно понравилось
+      concerns: Риски / красные флаги
+      skills: Навыки
+      strengths: Сильные стороны
+      next_steps: Что делать дальше
+      agreement: Согласие с интервьюером
+      experience_years: Опыт по оценке AI
     agreement:
-      high:   "Высокое"
-      medium: "Среднее"
-      low:    "Низкое"
+      high: Высокое
+      medium: Среднее
+      low: Низкое
     question_categories:
-      validation:  "Валидация сильных сторон"
-      risk_probe:  "Прощупать риск"
-      tech_stack:  "Тех. стек"
-      culture:     "Культура"
+      validation: Валидация сильных сторон
+      risk_probe: Прощупать риск
+      tech_stack: Тех. стек
+      culture: Культура
+    onboarding:
+      title: AI-ассистент онбординга
+      run_plan: Дополнить план
+      run_welcome: Welcome-письмо
+      run_mentor: Подобрать наставника
+      run_review: Probation review
+      plan_title: План онбординга от AI
+      mentor_match_title: Кандидаты в наставники
+      probation_review_title: Probation review
+      materialize: Добавить в задачи
+      set_as_mentor: Назначить наставником
+      tasks_added: Задачи AI добавлены
+      strengths: Сильные стороны
+      concerns: Зоны риска
+      manager_questions: Вопросы для руководителя
+      recommended_actions: Рекомендуемые действия
+      probation_verdicts:
+        hire: Принять
+        extend: Продлить
+        let_go: Расстаться
+        undecided: Нет решения
+    offboarding:
+      title: AI-ассистент офбординга
+      run_kt: План передачи знаний
+      run_exit: Брифинг exit-interview
+      run_replace: ТЗ на замену
+      kt_title: Передача знаний
+      exit_brief_title: Exit interview
+      replacement_title: ТЗ на замену
+      areas: Области передачи
+      session_plan: План сессий
+      docs_to_leave: Документы оставить
+      questions: Вопросы
+      must_capture: Обязательно зафиксировать
+      responsibilities: Обязанности
+      must_have: Обязательно
+      nice_to_have: Будет плюсом
+      create_opening: Создать вакансию
+      opening_created: Создана черновая вакансия из AI-брифа
+    compare:
+      title: Сравнение кандидатов
+      subtitle: Сравни 2+ кандидатов по навыкам, скоркам и опыту
+      cta: Сравнить кандидатов
+      run: Сравнить
+      modal_title: Кого сравниваем?
+      modal_hint: Чем больше данных по каждому (скоркарды, summary), тем точнее AI. Минимум 2.
+      too_few: Выбери минимум 2 кандидатов
+      too_few_title: Недостаточно кандидатов
+      too_few_hint: Меньше двух — добавь ещё, чтобы сравнить
+      years_short: л
+      facts:
+        experience: Опыт
+        salary: Ожидания
+        location: Локация
+        rounds: Раунды
+        skills: Стек
+      compared_count:
+        zero: кандидатов
+        one: кандидат
+        few: кандидата
+        many: кандидатов
+        other: кандидатов
+  flash:
+    created: Создано
+    updated: Обновлено
+    deleted: Удалено
+  careers:
+    public:
+      site_name: Карьера
+      hero_title: Присоединяйся к команде
+      hero_lead: Открытые вакансии и наши ценности
+      form_title: Отправить отклик
+      form_submit: Отправить
+    flash:
+      received: Спасибо! Заявка получена
+      consents_required: Нужно согласиться с обязательными пунктами
+    layout:
+      title: Карьера
+      meta_description: Открытые вакансии и форма отклика
+      dashboard: Дашборд
+    show:
+      read_more: Подробнее
+  onboarding:
+    title: Онбординг
+    subtitle: 'Адаптация новых сотрудников: от первого дня до конца испытательного срока'
+    new: Новый онбординг
+    new_hint: Выберите сотрудника и шаблон — задачи материализуются автоматически
+    start: Запустить онбординг
+    start_short: Онбординг
+    continue: Онбординг идёт
+    tasks_title: Задачи
+    tasks_empty: Задач пока нет
+    confirm_complete: Завершить онбординг сотрудника?
+    confirm_cancel: Точно отменить?
+    ai_generated: Сгенерировано AI
+    actions:
+      activate: Активировать
+      complete_process: Завершить процесс
+      cancel_process: Отменить
+      complete: Отметить готово
+      reopen: Переоткрыть
+      skip: Пропустить
+    fields:
+      employee: Сотрудник
+      template: Шаблон
+      mentor: Наставник
+      started: Старт
+      target: План завершения
+    section:
+      active: Активные процессы
+      drafts: Черновики
+      recent_completed: Недавно завершённые
+    stats:
+      active: Активные
+      drafts: Черновики
+      completed: Завершено
+    progress:
+      tasks_done: задач завершено
+      overdue:
+        one: "%{count} просрочена"
+        few: "%{count} просрочено"
+        many: "%{count} просрочено"
+        other: "%{count} просрочено"
+    empty:
+      title: Процессов онбординга пока нет
+      hint: Запустите онбординг с карточки сотрудника или из главного дашборда
+    stages:
+      day_zero: Первый день
+      first_week: Первая неделя
+      first_month: Первый месяц
+      probation: Испытательный срок
+      later: Позже
+    states:
+      draft: Черновик
+      active: Активен
+      completed: Завершён
+      cancelled: Отменён
+  offboarding:
+    title: Офбординг
+    subtitle: Передача знаний, отзыв доступов, exit-interview
+    new: Новый офбординг
+    new_hint: Выберите сотрудника, причину и дату последнего дня — задачи материализуются автоматически
+    start: Запустить офбординг
+    start_short: Офбординг
+    continue: Офбординг идёт
+    tasks_title: Задачи
+    tasks_empty: Задач пока нет
+    confirm_complete: Завершить офбординг? Сотрудник будет переведён в статус «уволен».
+    confirm_cancel: Точно отменить?
+    last_day: Последний день
+    exit_risk: Риск ухода
+    exit_risk_short: риск
+    exit_risk_hint: 'Оценка от AI: тренд KPI, частота отпусков, последние записи'
+    actions:
+      activate: Активировать
+      complete_process: Завершить
+      cancel_process: Отменить
+      skip: Пропустить
+    fields:
+      employee: Сотрудник
+      template: Шаблон
+      reason: Причина
+      last_day: Последний день
+    section:
+      active: Активные
+      drafts: Черновики
+      completed: Завершенные
+    stats:
+      active: Активные
+      drafts: Черновики
+      completed: Завершено
+    progress:
+      tasks_done: задач завершено
+      overdue:
+        one: "%{count} просрочена"
+        few: "%{count} просрочено"
+        many: "%{count} просрочено"
+        other: "%{count} просрочено"
+    empty:
+      title: Процессов офбординга пока нет
+      hint: Запустите офбординг с карточки сотрудника
+    stages:
+      far: Заранее
+      next_week: Ближайшая неделя
+      final_days: Последние дни
+      after: После ухода
+    states:
+      draft: Черновик
+      active: В процессе
+      completed: Завершён
+      cancelled: Отменён
+    reasons:
+      voluntary: По собственному
+      involuntary: По инициативе работодателя
+      retirement: Выход на пенсию
+      contract_end: Истечение контракта
+  settings:
+    tabs:
+      languages: Языки
+      smtp: SMTP / Email
+      ai: AI ассистент
+      notifications: Уведомления
+      communications: Коммуникации
+      careers: Страница найма
+      leaves: Отпуска
+      genders: Гендеры
+      process_templates: Шаблоны процессов
+    languages:
+      title: Языки интерфейса
+      subtitle: Управляй активными локалями системы
+      add: Добавить язык
+      created: Язык добавлен
+      updated: Язык обновлён
+      removed: Язык удалён
+      enable: Включить
+      disable: Выключить
+      enabled: Включён
+      disabled: Выключен
+      default: По умолчанию
+      set_default: Сделать основным
+      default_set: Язык по умолчанию изменён
+      cannot_remove_default: Нельзя удалить язык по умолчанию
+      is_default_locked: Это язык по умолчанию — изменить нельзя
+      fields:
+        code: Код
+        native_name: Родное название
+        english_name: Английское название
+        flag: Флаг
+        position: Порядок
+        enabled: Включён
+        state: Статус
+    smtp:
+      title: Настройки SMTP / Email
+      subtitle: Сервер исходящей почты для уведомлений
+      updated: Настройки SMTP сохранены
+      test: Отправить тестовое письмо
+      test_sent: Тестовое письмо отправлено
+      test_failed: Тест не пройден
+      test_ok_title: Тест успешен
+      test_ok_meta: Письмо отправлено · сервер ответил OK
+      test_fail_title: Тест не удался
+      tips_title: Подсказки
+      quick_presets: Быстрые пресеты
+      preset_hint_short: Кликни — заполню типичные настройки
+      security_hint: Используй TLS для портов 465 / 587
+      password_hint: Пароль приложения, а не от ящика
+      password_saved_placeholder: "•••••••• (пароль сохранён)"
+      fields:
+        host: Хост
+        port: Порт
+        username: Логин
+        password: Пароль
+        from_address: Адрес отправителя
+        authentication: Аутентификация
+        tls: TLS / STARTTLS
+    ai:
+      title: AI ассистент
+      subtitle: Подключение к OpenAI и стоимости задач
+      updated: Настройки AI сохранены
+      enabled: AI включён
+      no_key: API-ключ не задан
+      test: Проверить подключение
+      test_ok: Соединение успешно
+      test_ok_title: AI готов к работе
+      test_ok_meta: Ответ от OpenAI получен
+      test_fail: Ошибка подключения
+      test_fail_title: Подключение не удалось
+      api_key_hint: Создаётся в OpenAI, начинается на sk-
+      api_key_saved_placeholder: "•••••••• (ключ сохранён)"
+      proxy_hint: Опционально, например socks5://127.0.0.1:1080
+      reasoning_hint: Глубина «размышлений» модели для reasoning-моделей (o1/gpt-5)
+      max_tokens_hint: Жёсткий лимит на токены вывода. Большие значения дороже.
+      budget_hint: Месячный бюджет в USD. Превышение лога только показывает предупреждение.
+      use_global_model: Использовать глобальную модель
+      cost_per_run: Стоимость на запуск
+      cost_per_task: Стоимость по задачам
+      runs_per_budget: Запусков в рамках бюджета
+      task: Задача
+      task_tokens_title: Лимиты токенов по задачам
+      per_task_title: Настройки по задачам
+      per_task_hint: Можно переопределить модель на задачу
+      prompts_title: Системные промпты
+      prompts_hint: Перезапиши дефолтный промпт для нужной задачи
+      default_prompt: Дефолтный промпт
+      custom_prompt: Свой промпт
+      prompt_reset_hint: Очисти поле — вернётся системный по умолчанию
+      calc_title: Калькулятор бюджета
+      calc_for: На задачу
+      calc_per_month: Запусков в месяц
+      calc_budget: Бюджет
+      advanced: Дополнительно
+      usage_title: Использование
+      fields:
+        api_key: API-ключ
+        model: Модель
+        proxy: Proxy
+        reasoning: Глубина reasoning
+        max_tokens: Лимит токенов
+        budget: Месячный бюджет, USD
+      tasks:
+        analyze_resume: Разбор резюме
+        recommend: Рекомендация
+        questions_for: Вопросы для раунда
+        generate_assignment: Тестовое задание
+      usage:
+        empty: Запусков ещё не было
+        runs: запусков
+        tokens: токенов
+        cost: стоимость
+        all_time: Всё время
+        budget_used: Использовано бюджета
+        budget_of: из
+        this_month_runs: Запусков в этом месяце
+        this_month_cost: Стоимость в этом месяце
+        total_runs: Всего запусков
+        total_tokens: Всего токенов
+        total_cost: Всего потрачено
+    notifications:
+      title: Уведомления
+      subtitle: Каналы и события доставки уведомлений
+      updated: Настройки уведомлений сохранены
+      event: Событие
+      about_title: О настройках
+      about_text: Включай или отключай каналы для каждого типа события — изменения применяются для всех получателей.
+      channels:
+        in_app: В приложении
+        email: Email
+    communications:
+      title: Коммуникации
+      subtitle: Шаблоны сообщений для кандидатов и сотрудников
+      updated: Настройки коммуникаций сохранены
+      event: Событие
+      coming_soon: В разработке
+      about_title: О разделе
+      about_text: Здесь будут шаблоны писем и сообщений для разных каналов.
+    careers:
+      title: Страница найма
+      subtitle: Публичная страница вакансий, бренд, доступы
+      updated: Настройки страницы найма сохранены
+      preview: Открыть превью
+      manage_languages: Управление языками
+      open_translations: Перейти к переводам
+      regenerate_api_key: Сгенерировать новый ключ
+      api_key_copy: Скопировать
+      api_key_hint: Используй ключ в заголовке X-API-Key для приватных endpoint'ов
+      edit_text: Редактировать
+      tab_general: Основное
+      tab_branding: Брендинг
+      tab_layout: Раскладка
+      tab_pages: Страницы
+      tab_texts: Тексты
+      tab_consents: Согласия
+      tab_cookies: Cookies
+      tab_api: API
+      tab_analytics: Аналитика
+      section_general: Общее
+      section_branding: Брендинг
+      section_layout: Раскладка
+      section_pages: Страницы
+      section_pages_hint: Тексты страниц «Спасибо», «Privacy», «Terms»
+      section_texts: Тексты страницы
+      section_texts_hint: Заголовки и подписи на публичной странице вакансий
+      section_consents: Согласия и тексты
+      section_consents_hint: Чекбоксы и тексты согласий перед отправкой формы
+      section_cookies: Cookies
+      section_cookie_categories: Категории cookies
+      section_cookie_categories_hint: Названия и описания категорий в баннере cookies
+      section_api: Публичный API
+      section_api_hint: Параметры доступа для встраивания вакансий на внешний сайт
+      section_analytics: Аналитика и метрики
+      section_analytics_hint: Подключение Yandex.Metrika / Google Analytics на публичную страницу
+      section_security: Безопасность
+      api_docs: Документация API
+      api_docs_intro: API даёт доступ к публичному списку вакансий и форме отклика.
+      api_docs_purpose: Назначение
+      api_docs_auth: Авторизация
+      api_docs_response: Ответ
+      api_docs_params_title: Параметры запроса
+      api_docs_params_list: Параметры списка
+      api_docs_params_apply: Параметры формы отклика
+      api_docs_progress_title: Прогресс заявки
+      api_docs_list_title: Список вакансий
+      api_docs_list_purpose: Получить активные вакансии для встраивания
+      api_docs_show_purpose: Получить детали одной вакансии по коду
+      api_docs_apply_title: Подать отклик
+      api_docs_apply_intro: Multipart-форма с резюме и портфолио
+      api_docs_apply_purpose: Создать заявку с резюме и портфолио кандидата
+      api_docs_config_purpose: Получить конфиг публичной страницы (брендинг, layout)
+      api_docs_files_title: Файлы
+      api_docs_files_subtitle: Резюме и портфолио — multipart-поля
+      layouts:
+        grid_2: Сетка 2 колонки
+        grid_3: Сетка 3 колонки
+        list: Список
+      dropzone:
+        upload: Перетащи файл или нажми, чтобы выбрать
+      fields:
+        enabled: Страница включена
+        layout: Раскладка
+        per_page: Вакансий на странице
+        contact_email: Контактный email
+        link_kind: Тип ссылки
+        link_target: Где открывать
+        page_body: Содержимое страницы
+        logo: Логотип
+        remove_logo: Удалить логотип
+        hero_image: Hero-изображение
+        remove_hero_image: Удалить hero-изображение
+        color_primary: Основной цвет
+        color_hero_bg: Цвет фона hero-блока
+        color_hero_bg_hint: Подложка под заголовок страницы
+        show_admin_link: Показывать ссылку на админку
+        show_department: Показывать отдел
+        show_employment_type: Показывать тип занятости
+        show_salary: Показывать зарплату
+        cookie_banner_enabled: Cookie-баннер включён
+        cat_preview: Предпросмотр категорий
+        consent_preview: Предпросмотр согласий
+        api_require_key_apply: Требовать API-ключ для отклика
+        api_key: API-ключ
+        cors_origins: CORS origins
+        cors_origins_hint: Список через запятую — домены, которым разрешён доступ
+        allowed_ips: Разрешённые IP
+        allowed_ips_hint: Список через запятую — IP, с которых разрешены запросы
+    leaves:
+      title: Отпуска
+      subtitle: Правила согласования и общие настройки модуля отпусков
+      updated: Настройки отпусков сохранены
+      flags_title: Общие флаги
+      flags_subtitle: Глобальные настройки модуля
+      perm:
+        manager_can_quick: Менеджер может быстро согласовать отпуск своего сотрудника
+        ceo_can_force_approve: Гендиректор может принудительно одобрить любой отпуск
+        require_doc_for_sick: Требовать документ для больничного
+      rule:
+        list_title: Правила согласования
+        list_subtitle: Какой отпуск кому показать на согласование
+        new: Новое правило
+        edit: Редактировать правило
+        empty: Правил пока нет
+        empty_hint: Создай первое правило, чтобы система знала, кому показывать заявку
+        created: Правило создано
+        updated: Правило обновлено
+        deleted: Правило удалено
+        active: Активно
+        inactive: Выключено
+        name: Название
+        name_placeholder: 'Например: «Долгий отпуск 14+ дней»'
+        priority: Приоритет
+        description: Описание
+        leave_type: Тип отпуска
+        department: Отдел
+        any: Любое
+        cond_any: Любая ситуация
+        cond_type: Тип отпуска
+        cond_dept: Отдел
+        cond_min_days: Мин. дней
+        cond_max_days: Макс. дней
+        cond_min_grade: Мин. грейд
+        min_days: Мин. дней
+        max_days: Макс. дней
+        min_grade: Мин. грейд
+        conditions: Условия
+        section_conditions: Условия применения правила
+        section_conditions_hint: Когда это правило срабатывает
+        chain: Цепочка согласования
+        section_chain: Цепочка согласующих
+        section_chain_hint: Кто и в каком порядке согласует заявку
+        add_user: Добавить конкретного пользователя
+        auto_approve: Авто-согласование без цепочки
+        auto_approve_label: Одобрять автоматически
+    genders:
+      title: Гендеры
+      subtitle: Справочник гендерных идентичностей
+      empty: Нет записей
+      empty_hint: Добавь первую запись
+      new: Новый гендер
+      edit: Редактировать гендер
+      created: Запись создана
+      updated: Запись обновлена
+      deleted: Запись удалена
+      deactivated: Запись выключена
+      active: Активна
+      inactive: Выключена
+      fields:
+        name: Название
+        name_placeholder: Мужской
+        code: Код
+        pronouns: Местоимения
+        sort_order: Порядок
+        avatar_seed: Seed для аватара
+        avatar_seed_hint: 'Подсказка для DiceBear: пол повлияет на сгенерированную картинку'
+    translations:
+      title: Переводы
+      subtitle: Переопредели любую строку без правки YAML
+      empty: Переопределений нет
+      key: Ключ
+      value: Значение
+      locale: Локаль
+      yaml: Из YAML
+      saved: Перевод сохранён
+      updated: Перевод обновлён
+      limit_hit: Достигнут лимит длины
+    process_templates:
+      title: Шаблоны процессов
+      subtitle: Чек-листы для онбординга и офбординга — материализуются в задачи при запуске
+      new: "+ Новый шаблон"
+      empty: Шаблонов пока нет
+      no_description: Без описания
+      tasks_count:
+        one: "%{count} задача"
+        few: "%{count} задачи"
+        many: "%{count} задач"
+        other: "%{count} задач"
+      fields:
+        name: Название
+        kind: Тип
+        active: Активен
+        description: Описание
+      items:
+        title: Задачи шаблона
+        add: Добавить задачу
+        title_placeholder: Название задачи
+        description_placeholder: Описание (опционально)
+        days_short: дн
+      kinds:
+        onboarding: Онбординг
+        offboarding: Офбординг
+      task_kinds:
+        paperwork: Документы
+        equipment: Оборудование
+        access: Доступы
+        training: Обучение
+        intro: Знакомство
+        checkin: Check-in
+        kt_session: Сессия передачи знаний
+        access_revoke: Отзыв доступов
+        equipment_return: Возврат оборудования
+        exit_interview: Exit interview
+        farewell: Прощание
+        general: Общее
+  pundit:
+    not_authorized: Недостаточно прав для этого действия
+  user_menu:
+    profile: Профиль
+    settings: Настройки
+    theme: Тема
+    theme_light: Светлая
+    theme_dark: Тёмная
+    theme_auto: Системная
+    language: Язык
+  password_reset:
+    title: Сброс пароля
+    subtitle: Введи email — отправим ссылку для восстановления
+    submit: Отправить ссылку
+    back_to_sign_in: Вернуться к входу
+  errors:
+    company_missing: Компания не определена
+    not_found:
+      title: Не найдено
+      headline: Здесь ничего нет
+      hint: Запись могла быть удалена или ссылка устарела
+      back: Вернуться на дашборд
+  audit:
+    title: Журнал событий
+    subtitle: История действий в системе
+    empty: Пока нет событий
+    empty_hint: События появятся, когда кто-то выполнит действие
+    last_24h: За последние 24 часа
+    revert: Откатить
+    revert_confirm: Точно откатить это действие?
+    reverted: Действие откатано
+    reverted_ok: Откат успешно применён
+    revert_failed: Не удалось откатить
+    revert_not_allowed: Это действие нельзя откатить
+    revert_target_missing: Целевая запись отсутствует
+    already_reverted: Это действие уже было откатано
+    fields:
+      who: Кто
+      when: Когда
+      event: Событие
+      model: Объект
+      changes: Изменения
+    filters:
+      user: Пользователь
+      event: Событие
+      model: Объект
+      period: Период
+      reset: Сбросить
+    pagination:
+      prev: Назад
+      next: Вперёд
+      page_of: Страница %{page} из %{total}
+    models:
+      system: Система
+      company: Компания
+      department: Отдел
+      employee: Сотрудник
+      leave_request: Заявка на отпуск
+      job_opening: Вакансия
+      job_applicant: Кандидат
+      test_assignment: Тестовое задание
+      interview_round: Раунд интервью
+      kpi_metric: Метрика KPI
+      kpi_assignment: Назначение KPI
+      kpi_evaluation: Оценка KPI
+      document: Документ
+      document_type: Тип документа
+      dictionary: Справочник
+      dictionary_entry: Запись справочника
+      app_setting: Настройка
+    periods:
+      1d: За день
+      7d: За 7 дней
+      30d: За 30 дней
+      90d: За 90 дней
+      all: Всё время
+  kpi:
+    dashboard:
+      title: KPI дашборд
+      subtitle: Эффективность сотрудников по неделям
+      tiles:
+        company_avg: Средний KPI компании
+        team_avg: Средний KPI команды
+        my_avg: Мой средний KPI
+        team_size: Размер команды
+        my_assignments_count: Моих метрик активно
+        across_all_metrics: по всем метрикам
+      trend:
+        title: Тренд по неделям
+        subtitle: Средний балл за каждую неделю
+      distribution:
+        title: Распределение оценок
+        subtitle: Сколько сотрудников в каждом диапазоне
+      leaderboard:
+        title: Лидерборд
+        subtitle: Топ и аутсайдеры за период
+        top: Топ
+        bottom: Аутсайдеры
+        empty: Нет данных
+      recent:
+        title: Последние оценки
+        subtitle: Свежие результаты команды
+      my_section:
+        title: Мои метрики
+        subtitle: Что у меня в фокусе
+        empty: Метрик не назначено
+        empty_hint: Попроси руководителя назначить тебе KPI на этот период
+    metrics:
+      title: Метрики KPI
+      subtitle: Что измеряем — справочник метрик
+      new: Новая метрика
+      edit: Редактировать метрику
+      created: Метрика создана
+      updated: Метрика обновлена
+      deleted: Метрика удалена
+      deactivated_with_history: Метрика выключена (с историей)
+      empty: Метрик пока нет
+      empty_hint: Создай первую — например «Скорость доставки задач»
+      target_direction_hint: 'Куда мы хотим двигать метрику: больше = лучше или наоборот'
+      placeholders:
+        name: 'Например: NPS, среднее время ответа, конверсия'
+        unit: "%, дни, количество"
+      fields:
+        name: Название
+        code: Код
+        unit: Единица
+        target_direction: Направление цели
+        weight_default: Вес по умолчанию
+        active: Активна
+      statuses:
+        active: Активна
+        inactive: Выключена
+      target_directions:
+        higher_is_better: Больше — лучше
+        lower_is_better: Меньше — лучше
+    assignments:
+      title: Назначения метрик
+      subtitle: Кому какую метрику и в каком периоде измеряем
+      new: Новое назначение
+      edit: Редактировать назначение
+      created: Назначение создано
+      updated: Назначение обновлено
+      deleted: Назначение удалено
+      empty: Назначений пока нет
+      empty_hint: Создай первое — выбери сотрудника, метрику и период
+      no_score: Без оценки
+      choose_employee: Выбери сотрудника
+      choose_metric: Выбери метрику
+      target_placeholder: Например 90 (если %)
+      description_placeholder: 'Контекст: что считается успехом'
+      fields:
+        employee: Сотрудник
+        metric: Метрика
+        period: Период
+        period_start: Начало периода
+        period_end: Конец периода
+        target: Цель
+        weight: Вес
+        score: Оценка
+        description: Описание
+      filters:
+        employee: Сотрудник
+        metric: Метрика
+        period: Период
+        reset: Сбросить
+      periods:
+        current: Текущий период
+        next: Следующий
+        previous: Предыдущий
+        all: Все периоды
+      quick:
+        current: Текущая неделя
+        next: Следующая
+        this_week: На этой неделе
+        last_week: Прошлая неделя
+    evaluations:
+      title: Оценки KPI
+      subtitle: Еженедельные результаты по назначениям
+      empty: Оценок пока нет
+      empty_hint: Запиши первую оценку для активного назначения
+      score: Оценка
+      target: Цель
+      actual_value: Фактическое значение
+      not_scored: Без оценки
+      last_evaluated: Последняя оценка
+      history: История
+      save_score: Сохранить оценку
+      saved: Оценка сохранена
+      notes_placeholder: 'Комментарий: что повлияло на результат'
+  recruitment_calendar:
+    subtitle: Все запланированные раунды на одном таймлайне
+    filters:
+      interviewer: Интервьюер
+      kind: Тип интервью
+      state: Статус
+      reset: Сбросить
+    popover:
+      kind: Тип
+      when: Когда
+      interviewer: Интервьюер
+      location: Место
+      score: Балл
+    agenda:
+      title: Расписание
+      hint: Hover на событии — детали; клик — карточка кандидата
+      candidate: Кандидат
+      kind: Тип
+      state: Статус
+      when: Когда
+      interviewer: Интервьюер
+  recruitment_analytics:
+    subtitle: Воронка найма, метрики и нагрузка рекрутёров
+    candidates: Кандидаты
+    days_short: дн
+    empty: Данных пока нет
+    empty_hint: Аналитика появится после первых интервью и наймов
+    no_hires_yet: Пока никого не наняли
+    kpi:
+      active: Активных вакансий
+      active_hint: Открыты прямо сейчас
+      hired: Нанято за период
+      hired_hint: Сколько кандидатов вышли на работу
+      hire_rate: Конверсия в найм
+      hire_rate_hint: Доля от applied до hired
+      time_to_hire: Время до найма, дн
+      time_to_hire_hint: Среднее от applied до hired
+    funnel:
+      title: Воронка найма
+      subtitle: Сколько кандидатов прошло по этапам
+      from_prev: от предыдущего
+    distribution:
+      title: Распределение по статусам
+    sources:
+      title: Источники кандидатов
+    recruiters:
+      title: Рекрутёры
+      name: Рекрутёр
+      candidates: Кандидаты
+      interviews: Интервью
+      hired: Нанято
+    periods:
+      7d: 7 дней
+      30d: 30 дней
+      90d: 90 дней
+      180d: 180 дней
+      all: Всё время
+  interview_rounds:
+    subtitle: Все раунды интервью
+    new: Новый раунд
+    schedule: Запланировать
+    summary: Итог
+    period: Период
+    scorecard: Scorecard
+    empty: Раундов пока нет
+    empty_hint: Создай первый раунд — выбери кандидата, тип и время
+    created: Раунд создан
+    updated: Раунд обновлён
+    deleted: Раунд удалён
+    minutes_short: мин
+    location_placeholder: 'Например: Zoom, Офис, г. Москва'
+    notes_placeholder: Заметки интервьюера
+    decision_placeholder: Комментарий к рекомендации
+    confirm:
+      stage_change: Изменить этап кандидата?
+    fields:
+      kind: Тип интервью
+      scheduled_at: Запланировано на
+      duration_minutes: Длительность, мин
+      interviewer: Интервьюер
+      location: Место
+      meeting_url: Ссылка на встречу
+      notes: Заметки
+      recommendation: Рекомендация
+      decision_comment: Комментарий к решению
+    actions:
+      start: Начать
+      complete: Завершить
+      cancel: Отменить
+      no_show: Не пришёл
+      reopen: Переоткрыть
+      fill_scorecard: Заполнить scorecard
+    kinds:
+      hr: HR
+      tech: Тех.
+      cultural: Культурное
+      final: Финальное
+    states:
+      scheduled: Запланировано
+      in_progress: В процессе
+      completed: Завершено
+      cancelled: Отменено
+      no_show: Не пришёл
+    recommendations:
+      strong_no: Категорически нет
+      'no': Нет
+      maybe: Возможно
+      'yes': Да
+      strong_yes: Уверенное да
+    competencies:
+      communication: Коммуникация
+      motivation: Мотивация
+      culture_fit: Соответствие культуре
+      reliability: Надёжность
+      technical_depth: Глубина знаний
+      problem_solving: Решение задач
+      system_design: Системный дизайн
+      code_quality: Качество кода
+      teamwork: Командная работа
+      ownership: Ответственность
+      growth_mindset: Готовность к росту
+      feedback: Работа с feedback
+      overall_impression: Общее впечатление
+      risk_assessment: Оценка рисков
+      compensation_fit: Соответствие компенсации
+    transitioned:
+      start: Раунд начат
+      complete: Раунд завершён
+      cancel: Раунд отменён
+      no_show: Кандидат не пришёл
+      reopen: Раунд переоткрыт
+    periods:
+      today: Сегодня
+      week: Неделя
+      month: Месяц
+      all: Всё время
+  test_assignments:
+    new: Новое тестовое
+    empty: Тестовых заданий пока нет
+    deleted: Задание удалено
+    notified: Кандидат уведомлён
+    notify_failed: Не удалось отправить email
+    overdue: Просрочено
+    submission: Сдано
+    submission_text: Текст сдачи
+    submission_text_placeholder: Описание решения, ссылки, комментарии
+    review_notes: Заметки ревьюера
+    confirm_send_email: Отправить email кандидату с заданием?
+    send_now: Отправить кандидату
+    created_by: Создал
+    fields:
+      title: Название
+      description: Описание
+      requirements: Требования
+      deadline: Дедлайн
+      brief_files: Файлы брифа
+      submission_files: Файлы сдачи
+      score: Балл
+      reviewer_notes: Заметки ревьюера
+    actions:
+      start: Начать
+      submit_work: Сдать работу
+      review: Ревью
+      cancel: Отменить
+      reopen: Переоткрыть
+      send_email: Отправить кандидату
+    states:
+      draft: Черновик
+      sent: Отправлено
+      in_progress: В работе
+      submitted: Сдано
+      reviewed: Проверено
+      cancelled: Отменено
