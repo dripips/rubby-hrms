@@ -31,11 +31,20 @@ module TabulatorFilterable
     [ op, num ]
   end
 
-  # Применяет numeric-compare фильтр к полю scope.
+  # Имя колонки должно быть простым identifier — защита от SQL injection.
+  # `op` уже из whitelist (NUMERIC_OPERATORS), `num` параметризован через `?`.
+  COLUMN_NAME_RE = /\A[a-z_][a-z0-9_]*\z/i.freeze
+
   def apply_numeric_compare(scope, column, raw)
     op, num = parse_numeric_filter(raw)
     return scope unless op
-    scope.where("#{column} #{op} ?", num)
+    return scope unless column.to_s =~ COLUMN_NAME_RE
+
+    # column провалидирован regex'ом, op — whitelisted в NUMERIC_OPERATORS,
+    # num параметризован через `?`. Arel.sql сообщает Brakeman, что мы знаем
+    # что делаем — значение не из user input.
+    quoted = scope.connection.quote_column_name(column)
+    scope.where(Arel.sql("#{quoted} #{op} ?"), num)
   end
 
   # Удобный метод: собрать values: { id_string => label } из ActiveRecord-relation.

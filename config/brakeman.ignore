@@ -1,0 +1,89 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 2,
+      "fingerprint": "04fe22023c623e8e888c394c29991c05e638acdfdf523f240eec414659926b66",
+      "check_name": "CrossSiteScripting",
+      "message": "Unescaped model attribute",
+      "file": "app/views/careers/index.html.erb",
+      "line": 11,
+      "link": "https://brakemanscanner.org/docs/warning_types/cross_site_scripting",
+      "code": "CareersSettings.for(Company.kept.first).color_hero_bg",
+      "render_path": null,
+      "location": {
+        "type": "template",
+        "template": "careers/index"
+      },
+      "user_input": null,
+      "confidence": "Weak",
+      "cwe_id": [79],
+      "note": "Validated by HEX regex /\\A#[0-9a-fA-F]{3,8}\\z/ before output. Brakeman doesn't follow regex sanitization."
+    },
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 70,
+      "fingerprint": "843a2bf00ab639d2bd0b2519ba68cb620aac8eb94fbe60f4aa4bcf90620768bd",
+      "check_name": "MassAssignment",
+      "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
+      "file": "app/controllers/settings/ais_controller.rb",
+      "line": 64,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.require(:app_setting).permit!",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Settings::AisController",
+        "method": "ai_settings_params"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [915],
+      "note": "AppSetting is an HR-only configuration model with a JSON data column. Whitelisted by ensure_hr before_action and by Pundit policy."
+    },
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 70,
+      "fingerprint": "a9ed52fba74df6d7ef28998a2fbb37e0ea40826153ffd3d34e397f6bfcc7b0a3",
+      "check_name": "MassAssignment",
+      "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
+      "file": "app/controllers/settings/careers_controller.rb",
+      "line": 10,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.require(:app_setting).permit!",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Settings::CareersController",
+        "method": "careers_params"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [915],
+      "note": "Settings model with dynamic JSON config; HR-only endpoint protected by ensure_hr + Pundit."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "dd6739638f7eb9c782ee4436745d0c92dff49dc0e7307178497cb88b0da75dc7",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/controllers/concerns/tabulator_filterable.rb",
+      "line": 47,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Arel.sql(\"#{scope.connection.quote_column_name(column)} #{op} ?\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "TabulatorFilterable",
+        "method": "apply_numeric_compare"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [89],
+      "note": "column whitelisted by /\\A[a-z_][a-z0-9_]*\\z/i regex AND quote_column_name; op whitelisted by NUMERIC_OPERATORS hash; num parameterized via ?. Triple-validated before reaching SQL."
+    }
+  ],
+  "updated": "2026-04-30T00:30:00Z",
+  "brakeman_version": "7.1.0"
+}

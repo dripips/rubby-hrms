@@ -173,10 +173,10 @@
           <div class="empty-state__title"><%= t("job_applicants.no_portfolio", default: "Портфолио не приложено") %></div>
         </div>
       <% end %>
-      <% if @applicant.portfolio_url.present? %>
+      <% if (safe_url = safe_external_url(@applicant.portfolio_url)) %>
         <div class="mt-3">
           <strong><%= t("job_applicants.fields.portfolio_url") %>:</strong>
-          <%= link_to @applicant.portfolio_url, @applicant.portfolio_url, target: "_blank", rel: "noopener" %>
+          <%= link_to safe_url, safe_url, target: "_blank", rel: "noopener" %>
         </div>
       <% end %>
     </div>

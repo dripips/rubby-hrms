@@ -51,7 +51,9 @@ class AuditController < ApplicationController
 
     case version.event
     when "create"
-      record = version.item_type.safe_constantize&.find_by(id: version.item_id)
+      # Whitelist моделей для отката — защита от unsafe reflection через item_type.
+      klass = revertable_class(version.item_type)
+      record = klass&.find_by(id: version.item_id)
       record&.destroy!
     when "update"
       reified = version.reify
@@ -73,6 +75,16 @@ class AuditController < ApplicationController
   end
 
   private
+
+  # Возвращает Ruby-class для имени модели только если оно в TRACKED_MODELS,
+  # иначе nil. Гарантия что нельзя константизировать произвольное имя класса
+  # из user-controlled item_type (защита от UnsafeReflection).
+  def revertable_class(item_type)
+    return nil unless TRACKED_MODELS.include?(item_type.to_s)
+    item_type.constantize
+  rescue NameError
+    nil
+  end
 
   def period_range
     today = Time.current

@@ -2,9 +2,13 @@
   hero_classes = ["careers-hero"]
   hero_classes << "careers-hero--with-image" if @careers.hero_image?
   hero_styles = []
-  hero_styles << "background: #{@careers.color_hero_bg};" if @careers.color_hero_bg && !@careers.hero_image?
+  # Whitelist: только HEX (#RGB, #RGBA, #RRGGBB, #RRGGBBAA) — защита от
+  # style-injection через свободный ввод в careers settings.
+  if @careers.color_hero_bg && !@careers.hero_image? && @careers.color_hero_bg =~ /\A#[0-9a-fA-F]{3,8}\z/
+    hero_styles << "background: #{@careers.color_hero_bg};"
+  end
 %>
-<section class="<%= hero_classes.join(' ') %>" <%= "style=\"#{hero_styles.join(' ')}\"".html_safe if hero_styles.any? %>>
+<section class="<%= hero_classes.join(' ') %>"<%= " style=\"#{hero_styles.join(' ')}\"".html_safe if hero_styles.any? %>>
   <% if @careers.hero_image? %>
     <img src="<%= rails_blob_path(@careers.hero_image) %>" alt="" class="careers-hero__bg">
   <% end %>
