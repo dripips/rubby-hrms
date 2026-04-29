@@ -33,7 +33,7 @@
         <span class="avatar-apple"><%= emp.initials %></span>
       <% end %>
       <div class="flex-fill min-w-0">
-        <div class="process-card__title text-truncate"><%= emp.full_name %></div>
+        <div class="process-card__title text-truncate" title="<%= emp.full_name %>"><%= emp.short_name.presence || emp.full_name %></div>
         <div class="process-card__subtitle text-truncate">
           <%= emp.position&.name %><% if emp.department %> · <%= emp.department.name %><% end %>
         </div>
@@ -46,7 +46,7 @@
       <% if process.started_on %>· 📅 <%= l(process.started_on, format: :short) %><% end %>
       <% if process.target_complete_on && process.state == "active" %>
         <% days_left = (process.target_complete_on - Date.current).to_i %>
-        · <%= days_left.positive? ? "#{days_left}d" : "просрочен" %>
+        · <%= days_left.positive? ? "#{days_left} дн" : t("onboarding.overdue_short", default: "просрочен") %>
       <% end %>
       <% if overdue.positive? %>
         · <span class="text-danger">⚠ <%= overdue %></span>

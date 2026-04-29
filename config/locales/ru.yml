@@ -1527,15 +1527,14 @@ ru:
         period: Период
         reset: Сбросить
       periods:
-        current: Текущий период
-        next: Следующий
-        previous: Предыдущий
-        all: Все периоды
+        current_week:    Текущая неделя
+        current_month:   Текущий месяц
+        current_quarter: Текущий квартал
+        all:             Все периоды
       quick:
-        current: Текущая неделя
-        next: Следующая
-        this_week: На этой неделе
-        last_week: Прошлая неделя
+        this_week:    На этой неделе
+        this_month:   В этом месяце
+        this_quarter: В этом квартале
     evaluations:
       title: Оценки KPI
       subtitle: Еженедельные результаты по назначениям
@@ -1602,11 +1601,11 @@ ru:
       interviews: Интервью
       hired: Нанято
     periods:
-      7d: 7 дней
-      30d: 30 дней
-      90d: 90 дней
-      180d: 180 дней
-      all: Всё время
+      "30":  30 дней
+      "90":  90 дней
+      "180": 180 дней
+      "365": Год
+      all:   Всё время
   interview_rounds:
     subtitle: Все раунды интервью
     new: Новый раунд
@@ -1682,10 +1681,11 @@ ru:
       no_show: Кандидат не пришёл
       reopen: Раунд переоткрыт
     periods:
-      today: Сегодня
-      week: Неделя
-      month: Месяц
-      all: Всё время
+      today:    Сегодня
+      week:     Неделя
+      upcoming: Предстоящие
+      past:     Прошедшие
+      all:      Всё время
   test_assignments:
     new: Новое тестовое
     empty: Тестовых заданий пока нет
