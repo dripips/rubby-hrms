@@ -41,12 +41,14 @@ gem "rails-i18n"            # built-in translations for ru/en
 gem "i18n-active_record", "~> 1.4", require: "i18n/backend/active_record"
 gem "kaminari"              # pagination
 
-# ── Documents (PDF / Excel) ─────────────────────────────────────────────────
+# ── Documents (PDF / Excel / OCR) ───────────────────────────────────────────
 gem "prawn"
 gem "prawn-table"
 gem "caxlsx"
 gem "caxlsx_rails"
 gem "roo"                   # Excel import
+gem "pdf-reader"            # extract text from PDFs (pure Ruby, no binaries)
+gem "rtesseract"            # OCR for scanned PDFs / images (требует tesseract бинарник)
 
 # ── Deploy ──────────────────────────────────────────────────────────────────
 gem "kamal", require: false
