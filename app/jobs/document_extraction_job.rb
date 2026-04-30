@@ -12,7 +12,8 @@ class DocumentExtractionJob < ApplicationJob
 
   retry_on StandardError, wait: 5.seconds, attempts: 2
 
-  def perform(document_id)
+  def perform(document_id, lock_scope: nil)
+    @lock_scope = lock_scope
     document = Document.kept.find_by(id: document_id) or return
     return unless document.file.attached?
 
@@ -40,6 +41,11 @@ class DocumentExtractionJob < ApplicationJob
     )
 
     Rails.logger.info("[DocumentExtractionJob] #{document_id} #{extractor_kind}: #{fields.keys.size} fields")
+  ensure
+    if @lock_scope.present?
+      AiLock.unlock!(@lock_scope)
+      AiLock.broadcast_controls(@lock_scope)
+    end
   end
 
   private

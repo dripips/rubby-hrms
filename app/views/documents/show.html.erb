@@ -88,59 +88,11 @@
       <% end %>
     </div>
 
-    <% if @document.summary.present? %>
-      <div class="card-apple mt-3">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="ai-spark">✨</span>
-          <h3 class="title-3 m-0"><%= t("documents.summary_title", default: "AI-сводка") %></h3>
-          <span class="footnote text-tertiary ms-auto"><%= t("documents.summary_meta", default: "Сгенерировано из текста документа") %></span>
-        </div>
-        <div class="callout"><%= simple_format(@document.summary) %></div>
-      </div>
-    <% end %>
-
-    <% if @document.extracted_data.is_a?(Hash) && @document.extracted_data.any? %>
-      <div class="card-apple mt-3">
-        <h3 class="title-3 mb-3">
-          <%= t("documents.extracted_title", default: "Извлечённые данные") %>
-          <% if @document.extraction_method.present? %>
-            <span class="pill pill--neutral"><%= @document.extraction_method %></span>
-          <% end %>
-        </h3>
-        <dl class="row g-2 m-0">
-          <% @document.extracted_data.each do |key, value| %>
-            <dt class="col-md-4 footnote text-tertiary"><%= t("documents.extracted_keys.#{key}", default: key.to_s.humanize) %></dt>
-            <dd class="col-md-8 m-0"><%= value.is_a?(Array) ? value.join(", ") : value.to_s %></dd>
-          <% end %>
-        </dl>
-      </div>
-    <% end %>
   </div>
 
   <div class="col-lg-5">
-    <div class="card-apple">
-      <h3 class="title-3 mb-3"><%= t("documents.actions_title", default: "Действия") %></h3>
-
-      <div class="d-flex flex-column gap-2">
-        <%= button_to "🔍 #{t('documents.run_extraction', default: 'Запустить разбор (gem)')}",
-                      extract_document_path(@document),
-                      method: :post,
-                      class: "btn btn-soft btn-sm w-100",
-                      form: { class: "d-block" } %>
-
-        <%= button_to "✨ #{t('documents.run_summary', default: 'AI-сводка')}",
-                      summarize_document_path(@document),
-                      method: :post,
-                      class: "btn btn-soft btn-sm w-100",
-                      form: { class: "d-block" } %>
-      </div>
-
-      <% if @document.extracted_at %>
-        <p class="footnote text-tertiary mt-2 mb-0">
-          <%= t("documents.last_extracted", default: "Последний разбор") %>: <%= l(@document.extracted_at, format: :long) %>
-        </p>
-      <% end %>
-    </div>
+    <%= turbo_stream_from @document, "extraction" %>
+    <%= render "extraction_panel", document: @document %>
 
     <div class="card-apple mt-3">
       <h3 class="title-3 mb-2"><%= t("documents.file_title", default: "Файл") %></h3>

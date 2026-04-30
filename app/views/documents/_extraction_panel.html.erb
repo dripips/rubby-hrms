@@ -1,0 +1,98 @@
+<%
+  scope = AiLock.for_document(document)
+  busy  = AiLock.running?(scope)
+%>
+<div id="document-extraction-<%= document.id %>" class="d-flex flex-column gap-3">
+
+  <%# ── Действия ─────────────────────────────────────────────────────────── %>
+  <div class="card-apple">
+    <h3 class="title-3 mb-3"><%= t("documents.actions_title", default: "Действия") %></h3>
+
+    <div class="d-flex flex-column gap-2">
+      <% if busy %>
+        <button type="button" class="btn btn-soft btn-sm w-100" disabled>
+          <span class="spinner-dot me-2"></span><%= t("documents.extracting", default: "Идёт разбор…") %>
+        </button>
+      <% else %>
+        <%= button_to "🔍 #{t('documents.run_extraction', default: 'Запустить разбор (gem)')}",
+                      extract_document_path(document),
+                      method: :post,
+                      class: "btn btn-soft btn-sm w-100",
+                      form: { class: "d-block", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+      <% end %>
+
+      <% if busy %>
+        <button type="button" class="btn btn-soft btn-sm w-100" disabled>
+          <span class="spinner-dot me-2"></span>✨ <%= t("documents.busy_short", default: "AI работает…") %>
+        </button>
+      <% else %>
+        <%= button_to "✨ #{t('documents.run_summary', default: 'AI-сводка')}",
+                      summarize_document_path(document),
+                      method: :post,
+                      class: "btn btn-soft btn-sm w-100",
+                      form: { class: "d-block", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+      <% end %>
+    </div>
+
+    <% if document.extracted_at %>
+      <p class="footnote text-tertiary mt-2 mb-0">
+        <%= t("documents.last_extracted", default: "Последний разбор") %>: <%= l(document.extracted_at, format: :long) %>
+        <% if document.extraction_method.present? %>
+          · <span class="pill pill--neutral"><%= document.extraction_method %></span>
+        <% end %>
+      </p>
+    <% end %>
+  </div>
+
+  <%# ── Результат разбора ───────────────────────────────────────────────── %>
+  <% if busy %>
+    <div class="card-apple ai-leaves-result--loading">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="ai-spark ai-spark--pulse">🔍</span>
+        <strong><%= t("documents.extraction_running", default: "Разбираю документ…") %></strong>
+        <span class="footnote text-tertiary ms-auto"><%= t("documents.extracting_hint", default: "PDF/OCR + regex по типу") %></span>
+      </div>
+      <div class="ai-leaves-skeleton">
+        <div class="ai-leaves-skeleton__line" style="width: 90%;"></div>
+        <div class="ai-leaves-skeleton__line" style="width: 70%;"></div>
+        <div class="ai-leaves-skeleton__line" style="width: 85%;"></div>
+        <div class="ai-leaves-skeleton__line" style="width: 60%;"></div>
+      </div>
+      <p class="footnote text-tertiary mt-2 mb-0">
+        <%= t("documents.extracting_long_hint", default: "Можно закрыть страницу — результат появится автоматически когда задача завершится.") %>
+      </p>
+    </div>
+  <% elsif document.extracted_data.is_a?(Hash) && document.extracted_data.any? %>
+    <div class="card-apple">
+      <h3 class="title-3 mb-3">
+        <%= t("documents.extracted_title", default: "Извлечённые данные") %>
+        <% if document.extraction_method.present? %>
+          <span class="pill pill--<%= document.extraction_method == 'ai' ? 'purple' : 'success' %>"><%= document.extraction_method %></span>
+        <% end %>
+      </h3>
+      <dl class="row g-2 m-0">
+        <% document.extracted_data.each do |key, value| %>
+          <dt class="col-md-4 footnote text-tertiary"><%= t("documents.extracted_keys.#{key}", default: key.to_s.humanize) %></dt>
+          <dd class="col-md-8 m-0"><%= value.is_a?(Array) ? value.join(", ") : value.to_s %></dd>
+        <% end %>
+      </dl>
+    </div>
+  <% elsif document.extracted_at && document.extraction_method == "none" %>
+    <div class="card-apple ai-leaves-result--error">
+      <strong>⚠ <%= t("documents.extraction_failed_title", default: "Авто-разбор не дал результата") %></strong>
+      <p class="footnote m-0 mt-1"><%= t("documents.extraction_failed_hint", default: "Документ может быть сканом без OCR-слоя или нестандартного формата. Попробуй AI-сводку или заполни поля вручную.") %></p>
+    </div>
+  <% end %>
+
+  <%# ── AI summary ───────────────────────────────────────────────────────── %>
+  <% if document.summary.present? %>
+    <div class="card-apple">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="ai-spark">✨</span>
+        <h3 class="title-3 m-0"><%= t("documents.summary_title", default: "AI-сводка") %></h3>
+        <span class="footnote text-tertiary ms-auto"><%= t("documents.summary_meta", default: "Сгенерировано из текста документа") %></span>
+      </div>
+      <div class="callout"><%= simple_format(document.summary) %></div>
+    </div>
+  <% end %>
+</div>

@@ -32,6 +32,7 @@ class AiLock
     def for_employee(employee)    = "employee:#{id_for(employee)}"
     def for_onboarding(process)   = "onboarding:#{id_for(process)}"
     def for_offboarding(process)  = "offboarding:#{id_for(process)}"
+    def for_document(document)    = "document:#{id_for(document)}"
 
     def for_kpi_team(scope_type:, scope_id: nil)
       "kpi_team:#{scope_type}:#{scope_id.presence || 'all'}"
@@ -58,7 +59,8 @@ class AiLock
       "employee"    => :broadcast_employee_controls,
       "kpi_team"    => :broadcast_kpi_team_controls,
       "onboarding"  => :broadcast_onboarding_controls,
-      "offboarding" => :broadcast_offboarding_controls
+      "offboarding" => :broadcast_offboarding_controls,
+      "document"    => :broadcast_document_controls
     }.freeze
 
     def key(scope) = "ai:running:#{scope}"
@@ -122,6 +124,16 @@ class AiLock
         target:  "ai-controls-offboarding-#{process.id}",
         partial: "ai/offboarding/controls",
         locals:  { process: process }
+      )
+    end
+
+    def broadcast_document_controls(id, *)
+      document = Document.kept.find_by(id: id.to_i) or return
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ document, "extraction" ],
+        target:  "document-extraction-#{document.id}",
+        partial: "documents/extraction_panel",
+        locals:  { document: document }
       )
     end
 

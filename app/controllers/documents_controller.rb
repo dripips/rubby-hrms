@@ -70,13 +70,32 @@ class DocumentsController < ApplicationController
 
   def extract
     authorize @document, :extract?
-    enqueue_extraction(@document)
-    redirect_to document_path(@document), notice: t("documents.extraction_enqueued", default: "Разбор запущен")
+    scope = AiLock.for_document(@document)
+
+    unless AiLock.running?(scope)
+      AiLock.lock!(scope, kind: "document_extract")
+      enqueue_extraction(@document, lock_scope: scope)
+      AiLock.broadcast_controls(scope)
+    end
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "document-extraction-#{@document.id}",
+          partial: "documents/extraction_panel",
+          locals:  { document: @document }
+        )
+      end
+      format.html { redirect_to document_path(@document) }
+    end
   end
 
   def summarize
     authorize @document, :summarize?
-    # Will be implemented in Phase 4 (AI fallback)
+    scope = AiLock.for_document(@document)
+
+    # Phase 4 — AI summary будет реализован отдельным job'ом.
+    # Сейчас просто разблокируем и отправим UI обратно.
     redirect_to document_path(@document), notice: t("documents.summary_pending", default: "AI-сводка появится через минуту")
   end
 
@@ -132,10 +151,10 @@ class DocumentsController < ApplicationController
     }
   end
 
-  def enqueue_extraction(document)
+  def enqueue_extraction(document, lock_scope: nil)
     return unless document.file.attached?
     return if document.document_type&.extractor_kind == "free"
 
-    DocumentExtractionJob.perform_later(document.id)
+    DocumentExtractionJob.perform_later(document.id, lock_scope: lock_scope)
   end
 end
