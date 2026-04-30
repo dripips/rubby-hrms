@@ -14,6 +14,7 @@ load Rails.root.join("db", "seeds", "kpi.rb").to_s
 load Rails.root.join("db", "seeds", "leave_approval_rules.rb").to_s
 load Rails.root.join("db", "seeds", "process_templates.rb").to_s
 load Rails.root.join("db", "seeds", "processes.rb").to_s
+load Rails.root.join("db", "seeds", "document_types.rb").to_s
 
 users = [
   { email: "admin@hrms.local",   password: "password123", role: :superadmin },

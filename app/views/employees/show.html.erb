@@ -241,6 +241,43 @@
           <dd class="col-sm-8"><%= @employee.native_city.presence || "—" %></dd>
         </dl>
       </div>
+
+      <%
+        emp_docs = @employee.documents.kept.includes(:document_type).order(created_at: :desc).limit(20)
+        expiring_docs = emp_docs.select { |d| d.expires_at && d.state == "active" && d.expires_at <= Date.current + 30.days }
+      %>
+      <div class="card-apple" id="documents">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h3 class="card-apple__title m-0">
+            📁 <%= t("documents.section_title", default: "Документы сотрудника") %>
+            <span class="footnote text-tertiary"><%= emp_docs.size %></span>
+          </h3>
+          <%= link_to "+ #{t('documents.upload', default: 'Загрузить')}",
+                      new_document_path(employee_id: @employee.id),
+                      class: "btn btn-soft btn-sm" %>
+        </div>
+
+        <% if expiring_docs.any? %>
+          <div class="callout callout--warning mb-3">
+            <strong>⚠ <%= t("documents.employee_expiring", count: expiring_docs.size, default: "Истекают: %{count}") %></strong>
+            <ul class="m-0 mt-1">
+              <% expiring_docs.each do |doc| %>
+                <li><%= link_to doc.display_title, document_path(doc), class: "link-plain" %> — до <%= l(doc.expires_at, format: :short) %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <% if emp_docs.empty? %>
+          <p class="footnote text-tertiary m-0"><%= t("documents.employee_empty", default: "Документов нет. Загрузите первый — паспорт, договор, диплом.") %></p>
+        <% else %>
+          <ul class="list-apple">
+            <% emp_docs.each do |doc| %>
+              <%= render "documents/row", document: doc, variant: :compact %>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
     <% end %>
   </div>
 

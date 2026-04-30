@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_29_190006) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -218,31 +218,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_190006) do
     t.string "code", limit: 32, null: false
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
+    t.integer "default_validity_months"
+    t.text "description"
     t.datetime "discarded_at"
+    t.string "extractor_kind"
+    t.string "icon"
     t.string "name", null: false
     t.boolean "required", default: false, null: false
     t.integer "sort_order", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["company_id", "code"], name: "index_document_types_on_company_id_and_code", unique: true
     t.index ["company_id"], name: "index_document_types_on_company_id"
+    t.index ["extractor_kind"], name: "index_document_types_on_extractor_kind"
   end
 
   create_table "documents", force: :cascade do |t|
+    t.string "confidentiality", default: "internal", null: false
     t.datetime "created_at", null: false
+    t.bigint "created_by_id"
     t.datetime "discarded_at"
     t.bigint "document_type_id", null: false
     t.bigint "documentable_id", null: false
     t.string "documentable_type", null: false
     t.date "expires_at"
+    t.datetime "extracted_at"
+    t.jsonb "extracted_data", default: {}
+    t.string "extraction_method"
     t.date "issued_at"
     t.string "issuer"
     t.text "notes"
     t.string "number"
+    t.string "state", default: "active", null: false
+    t.text "summary"
+    t.string "title"
     t.datetime "updated_at", null: false
+    t.index ["confidentiality"], name: "index_documents_on_confidentiality"
+    t.index ["created_by_id"], name: "index_documents_on_created_by_id"
     t.index ["discarded_at"], name: "index_documents_on_discarded_at"
     t.index ["document_type_id"], name: "index_documents_on_document_type_id"
     t.index ["documentable_type", "documentable_id"], name: "index_documents_on_documentable"
     t.index ["expires_at"], name: "index_documents_on_expires_at"
+    t.index ["state"], name: "index_documents_on_state"
   end
 
   create_table "employee_children", force: :cascade do |t|
@@ -900,6 +916,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_29_190006) do
   add_foreign_key "dictionary_entries", "dictionaries"
   add_foreign_key "document_types", "companies"
   add_foreign_key "documents", "document_types"
+  add_foreign_key "documents", "users", column: "created_by_id"
   add_foreign_key "employee_children", "employees"
   add_foreign_key "employee_children", "genders", column: "gender_ref_id"
   add_foreign_key "employee_notes", "employees"

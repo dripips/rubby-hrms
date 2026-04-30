@@ -1,0 +1,107 @@
+<% content_for(:page_title) { t("documents.title", default: "Документы") } %>
+
+<header class="page-header">
+  <div>
+    <h1 class="title-1 m-0">📁 <%= t("documents.title", default: "Документы") %></h1>
+    <p class="footnote text-secondary-apple m-0">
+      <%= t("documents.subtitle", default: "Личные документы сотрудников: паспорта, договоры, дипломы, медкнижки. Только для HR.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("documents.new", default: "+ Загрузить документ"), new_document_path, class: "btn btn-primary" %>
+  </div>
+</header>
+
+<section class="row g-3 mb-3 stagger">
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("documents.stats.total", default: "Всего") %></div>
+      <div class="stat-card__value"><%= @stats[:total] %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("documents.stats.active", default: "Активные") %></div>
+      <div class="stat-card__value"><%= @stats[:active] %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("documents.stats.expiring", default: "Истекают за 30 дней") %></div>
+      <div class="stat-card__value"><%= @stats[:expiring] %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("documents.stats.expired", default: "Просрочены") %></div>
+      <div class="stat-card__value"><%= @stats[:expired] %></div>
+    </div>
+  </div>
+</section>
+
+<%= form_with url: documents_path, method: :get, local: true, class: "card-apple mb-3" do %>
+  <div class="row g-2 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label"><%= t("documents.filters.type", default: "Тип") %></label>
+      <select name="document_type_id" class="form-select" onchange="this.form.submit()" data-controller="apple-select">
+        <option value=""><%= t("common.all") %></option>
+        <% @document_types.each do |t| %>
+          <option value="<%= t.id %>" <%= 'selected' if params[:document_type_id].to_i == t.id %>><%= t.icon %> <%= t.name %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label"><%= t("documents.filters.state", default: "Статус") %></label>
+      <select name="state" class="form-select" onchange="this.form.submit()">
+        <option value=""><%= t("common.all") %></option>
+        <% Document::STATES.each do |s| %>
+          <option value="<%= s %>" <%= 'selected' if params[:state] == s %>><%= t("documents.states.#{s}", default: s.humanize) %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label"><%= t("documents.filters.search", default: "Поиск (название, номер, орган)") %></label>
+      <input type="text" name="q" value="<%= params[:q] %>" class="form-control" placeholder="<%= t("documents.filters.search_placeholder", default: "Серия 4520...") %>">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-soft w-100"><%= t("common.search", default: "Найти") %></button>
+    </div>
+  </div>
+<% end %>
+
+<% if @expiring_soon.any? %>
+  <section class="card-apple mb-3 callout callout--warning">
+    <h3 class="title-3 m-0 mb-2">⚠ <%= t("documents.expiring_title", default: "Истекают в ближайшие 30 дней") %></h3>
+    <ul class="list-apple">
+      <% @expiring_soon.each do |doc| %>
+        <%= render "row", document: doc, variant: :compact %>
+      <% end %>
+    </ul>
+  </section>
+<% end %>
+
+<section class="card-apple">
+  <h2 class="title-3 mb-3"><%= t("documents.section.all", default: "Все документы") %></h2>
+  <% if @documents.empty? %>
+    <p class="footnote text-tertiary"><%= t("documents.empty", default: "Документов не найдено") %></p>
+  <% else %>
+    <div class="process-grid">
+      <% @documents.each do |doc| %>
+        <%= render "row", document: doc %>
+      <% end %>
+    </div>
+
+    <% pages = (@total.to_f / @per).ceil %>
+    <% if pages > 1 %>
+      <nav class="d-flex gap-2 mt-3 align-items-center justify-content-center">
+        <% if @page > 1 %>
+          <%= link_to "← #{t('audit.pagination.prev')}", documents_path(request.params.merge(page: @page - 1)), class: "btn btn-ghost btn-sm" %>
+        <% end %>
+        <span class="footnote text-tertiary"><%= t("audit.pagination.page_of", page: @page, total: pages) %></span>
+        <% if @page < pages %>
+          <%= link_to "#{t('audit.pagination.next')} →", documents_path(request.params.merge(page: @page + 1)), class: "btn btn-ghost btn-sm" %>
+        <% end %>
+      </nav>
+    <% end %>
+  <% end %>
+</section>

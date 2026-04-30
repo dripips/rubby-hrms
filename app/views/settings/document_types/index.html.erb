@@ -1,0 +1,46 @@
+<% content_for(:page_title) { t("settings.document_types.title", default: "Типы документов") } %>
+
+<header class="page-header">
+  <div>
+    <h1 class="title-1 m-0"><%= t("settings.document_types.title", default: "Типы документов") %></h1>
+    <p class="footnote text-secondary-apple m-0"><%= t("settings.document_types.subtitle", default: "Справочник типов документов сотрудников: паспорт, СНИЛС, договор и т.п.") %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("settings.document_types.new", default: "+ Новый тип"), new_settings_document_type_path, class: "btn btn-primary" %>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" if lookup_context.exists?("shared/settings_tabs", [], true) %>
+
+<section class="card-apple">
+  <% if @types.empty? %>
+    <p class="footnote text-tertiary"><%= t("settings.document_types.empty", default: "Типов пока нет") %></p>
+  <% else %>
+    <ul class="list-apple">
+      <% @types.each do |t| %>
+        <li class="list-apple__item">
+          <span class="document-icon"><%= t.icon || "📄" %></span>
+          <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+            <div class="d-flex align-items-center gap-2">
+              <strong><%= t.name %></strong>
+              <span class="footnote text-tertiary"><%= t.code %></span>
+              <% if t.required %><span class="pill pill--info"><%= I18n.t("settings.document_types.required", default: "обязательный") %></span><% end %>
+              <% unless t.active %><span class="pill pill--neutral"><%= I18n.t("common.inactive", default: "выключен") %></span><% end %>
+            </div>
+            <span class="footnote text-secondary-apple"><%= t.description.presence || I18n.t("settings.document_types.no_description", default: "Без описания") %></span>
+            <span class="footnote text-tertiary">
+              <%= I18n.t("settings.document_types.extractor", default: "Разбор") %>: <code><%= t.extractor_kind || "free" %></code>
+              <% if t.default_validity_months %>· <%= I18n.t("settings.document_types.validity_months", default: "срок") %>: <%= t.default_validity_months %> мес<% end %>
+            </span>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <%= link_to I18n.t("common.edit"), edit_settings_document_type_path(t), class: "btn btn-ghost btn-sm" %>
+            <%= button_to I18n.t("common.delete"), settings_document_type_path(t), method: :delete,
+                          class: "btn btn-ghost btn-sm", data: { turbo_confirm: I18n.t("common.confirm.delete") },
+                          form: { class: "d-inline" } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

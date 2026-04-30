@@ -1,0 +1,164 @@
+<% content_for(:page_title) { @document.display_title } %>
+<%
+  doc_type  = @document.document_type
+  owner     = @document.documentable
+  is_emp    = owner.is_a?(Employee)
+  state     = @document.state
+  overdue   = @document.expires_at && @document.expires_at < Date.current
+  days_left = @document.expiring_in_days
+%>
+
+<header class="process-hero">
+  <span class="document-icon document-icon--xl"><%= doc_type&.icon || "📄" %></span>
+  <div class="process-hero__body">
+    <div class="process-hero__title-row">
+      <span class="footnote text-tertiary"><%= doc_type&.name %></span>
+      <span class="status-pill status-pill--<%= state %>"><%= t("documents.states.#{state}", default: state.humanize) %></span>
+      <% if @document.confidentiality == "confidential" %>
+        <span class="pill pill--danger">🔒 <%= t("documents.confidentialities.confidential", default: "Конфиденциально") %></span>
+      <% end %>
+    </div>
+    <h1 class="process-hero__title m-0"><%= @document.display_title %></h1>
+    <div class="process-hero__subtitle">
+      <% if is_emp %>
+        <%= link_to owner.full_name, employee_path(owner), class: "link-plain" %>
+        <% if owner.position %>· <%= owner.position.name %><% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="process-hero__actions">
+    <% if @document.file.attached? %>
+      <%= link_to "📥 #{t('documents.download', default: 'Скачать')}", rails_blob_path(@document.file), class: "btn btn-soft", target: "_blank", rel: "noopener" %>
+    <% end %>
+    <%= link_to t("common.edit"), edit_document_path(@document), class: "btn btn-soft" %>
+    <% if @document.may_revoke? %>
+      <%= button_to t("documents.revoke", default: "Отозвать"), revoke_document_path(@document),
+                    method: :post, class: "btn btn-ghost", form: { class: "d-inline" },
+                    data: { turbo_confirm: t("documents.revoke_confirm", default: "Точно отозвать документ?") } %>
+    <% end %>
+    <% if @document.may_reactivate? %>
+      <%= button_to t("documents.reactivate", default: "Активировать"), reactivate_document_path(@document),
+                    method: :post, class: "btn btn-ghost", form: { class: "d-inline" } %>
+    <% end %>
+    <%= button_to t("common.delete"), document_path(@document), method: :delete, class: "btn btn-danger",
+                  form: { class: "d-inline" }, data: { turbo_confirm: t("common.confirm.delete") } %>
+  </div>
+</header>
+
+<section class="row g-3 mt-3">
+  <div class="col-lg-7">
+    <div class="card-apple">
+      <h2 class="title-3 mb-3"><%= t("documents.fields_section", default: "Реквизиты") %></h2>
+      <div class="process-facts">
+        <div class="process-facts__cell">
+          <span class="process-facts__label"><%= t("documents.fields.number") %></span>
+          <span class="process-facts__value"><%= @document.number.presence || "—" %></span>
+        </div>
+        <div class="process-facts__cell">
+          <span class="process-facts__label"><%= t("documents.fields.issuer") %></span>
+          <span class="process-facts__value"><%= @document.issuer.presence || "—" %></span>
+        </div>
+        <div class="process-facts__cell">
+          <span class="process-facts__label"><%= t("documents.fields.issued_at") %></span>
+          <span class="process-facts__value"><%= @document.issued_at ? l(@document.issued_at, format: :long) : "—" %></span>
+        </div>
+        <div class="process-facts__cell">
+          <span class="process-facts__label"><%= t("documents.fields.expires_at") %></span>
+          <span class="process-facts__value">
+            <% if @document.expires_at %>
+              <%= l(@document.expires_at, format: :long) %>
+              <% if overdue %>
+                <span class="pill pill--danger">⚠ <%= t("documents.expired_short", default: "просрочен") %></span>
+              <% elsif days_left && days_left <= 30 %>
+                <span class="pill pill--<%= days_left <= 7 ? 'danger' : 'warning' %>"><%= days_left %> дн</span>
+              <% end %>
+            <% else %>
+              —
+            <% end %>
+          </span>
+        </div>
+      </div>
+
+      <% if @document.notes.present? %>
+        <div class="callout mt-3">
+          <strong><%= t("documents.fields.notes") %>:</strong>
+          <p class="m-0 mt-1"><%= simple_format(@document.notes) %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @document.summary.present? %>
+      <div class="card-apple mt-3">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="ai-spark">✨</span>
+          <h3 class="title-3 m-0"><%= t("documents.summary_title", default: "AI-сводка") %></h3>
+          <span class="footnote text-tertiary ms-auto"><%= t("documents.summary_meta", default: "Сгенерировано из текста документа") %></span>
+        </div>
+        <div class="callout"><%= simple_format(@document.summary) %></div>
+      </div>
+    <% end %>
+
+    <% if @document.extracted_data.is_a?(Hash) && @document.extracted_data.any? %>
+      <div class="card-apple mt-3">
+        <h3 class="title-3 mb-3">
+          <%= t("documents.extracted_title", default: "Извлечённые данные") %>
+          <% if @document.extraction_method.present? %>
+            <span class="pill pill--neutral"><%= @document.extraction_method %></span>
+          <% end %>
+        </h3>
+        <dl class="row g-2 m-0">
+          <% @document.extracted_data.each do |key, value| %>
+            <dt class="col-md-4 footnote text-tertiary"><%= t("documents.extracted_keys.#{key}", default: key.to_s.humanize) %></dt>
+            <dd class="col-md-8 m-0"><%= value.is_a?(Array) ? value.join(", ") : value.to_s %></dd>
+          <% end %>
+        </dl>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card-apple">
+      <h3 class="title-3 mb-3"><%= t("documents.actions_title", default: "Действия") %></h3>
+
+      <div class="d-flex flex-column gap-2">
+        <%= button_to "🔍 #{t('documents.run_extraction', default: 'Запустить разбор (gem)')}",
+                      extract_document_path(@document),
+                      method: :post,
+                      class: "btn btn-soft btn-sm w-100",
+                      form: { class: "d-block" } %>
+
+        <%= button_to "✨ #{t('documents.run_summary', default: 'AI-сводка')}",
+                      summarize_document_path(@document),
+                      method: :post,
+                      class: "btn btn-soft btn-sm w-100",
+                      form: { class: "d-block" } %>
+      </div>
+
+      <% if @document.extracted_at %>
+        <p class="footnote text-tertiary mt-2 mb-0">
+          <%= t("documents.last_extracted", default: "Последний разбор") %>: <%= l(@document.extracted_at, format: :long) %>
+        </p>
+      <% end %>
+    </div>
+
+    <div class="card-apple mt-3">
+      <h3 class="title-3 mb-2"><%= t("documents.file_title", default: "Файл") %></h3>
+      <% if @document.file.attached? %>
+        <p class="footnote text-secondary-apple m-0">
+          📎 <%= @document.file.filename.to_s %>
+          (<%= number_to_human_size(@document.file.byte_size) %>, <%= @document.file.content_type %>)
+        </p>
+        <% if @document.file.image? %>
+          <%= image_tag rails_blob_path(@document.file), class: "img-fluid mt-2", style: "max-height: 400px; border-radius: var(--ds-radius-md);" %>
+        <% elsif @document.file.content_type == "application/pdf" %>
+          <object data="<%= rails_blob_path(@document.file) %>" type="application/pdf" width="100%" height="500" class="mt-2" style="border-radius: var(--ds-radius-md);">
+            <p><%= link_to t("documents.preview_unavailable", default: "Открыть PDF"), rails_blob_path(@document.file), target: "_blank" %></p>
+          </object>
+        <% end %>
+      <% else %>
+        <p class="footnote text-tertiary m-0"><%= t("documents.no_file", default: "Файл не приложен") %></p>
+      <% end %>
+    </div>
+  </div>
+</section>

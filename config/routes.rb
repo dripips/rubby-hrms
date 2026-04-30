@@ -171,7 +171,14 @@ Rails.application.routes.draw do
       resources :evaluations, only: %i[index create]
     end
     get "kpi", to: redirect { |_, req| "/#{req.params[:locale]}/kpi/dashboard".sub("//", "/") }, as: :kpi
-    get "documents",    to: "stub#show", as: :documents,    defaults: { section: "documents" }
+    resources :documents do
+      member do
+        post :extract     # запустить авто-разбор (gem)
+        post :summarize   # AI-краткое содержание
+        post :revoke
+        post :reactivate
+      end
+    end
     get "dictionaries", to: "stub#show", as: :dictionaries, defaults: { section: "dictionaries" }
     get  "audit",            to: "audit#index",  as: :audit
     post "audit/:id/revert", to: "audit#revert", as: :revert_audit
@@ -196,6 +203,7 @@ Rails.application.routes.draw do
       resources :leave_approval_rules, except: [ :show ]
       resources :genders, except: [ :show ]
       resources :process_templates, except: [ :show ]
+      resources :document_types,    except: [ :show ]
     end
   end
 
