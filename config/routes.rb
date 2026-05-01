@@ -177,9 +177,9 @@ Rails.application.routes.draw do
 
     # Self-service портал — сотрудник правит свои поля.
     resource :profile, only: %i[show edit update], controller: "profile" do
-      get  :security
-      patch :update_security,   path: "security"
-      get  :notifications
+      get :security
+      patch :update_security, path: "security"
+      get :notifications
       patch :update_notifications, path: "notifications"
     end
 

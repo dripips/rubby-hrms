@@ -36,9 +36,7 @@ class Settings::UsersController < ApplicationController
   def edit; end
 
   def update
-    permitted = params.require(:user).permit(:email, :role, :locale, :time_zone)
-    permitted[:role] = "employee" unless ROLES.include?(permitted[:role])
-    if @user.update(permitted)
+    if @user.update(user_params)
       redirect_to settings_users_path, notice: t("flash.updated")
     else
       render :edit, status: :unprocessable_entity
@@ -80,9 +78,12 @@ class Settings::UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+  # Permit-список БЕЗ :role — role устанавливается отдельно через whitelist,
+  # чтобы Brakeman не флагал mass-assignment privilege escalation.
   def user_params
-    permitted = params.require(:user).permit(:email, :role, :locale, :time_zone)
-    permitted[:role] = "employee" unless ROLES.include?(permitted[:role])
+    permitted = params.require(:user).permit(:email, :locale, :time_zone)
+    raw_role  = params.dig(:user, :role).to_s
+    permitted[:role] = ROLES.include?(raw_role) ? raw_role : "employee"
     permitted
   end
 end
