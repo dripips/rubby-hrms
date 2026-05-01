@@ -1,0 +1,21 @@
+<%
+  active_offboarding = OffboardingProcess.kept.where(state: "active").includes(:employee).order(:last_day).limit(5)
+%>
+<% if active_offboarding.any? %>
+  <section class="mb-3" data-widget="offboarding">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title">👋 <%= t("dashboard.offboarding.title", default: "Активные офбординги") %></h3>
+          <p class="card-apple__subtitle"><%= t("dashboard.offboarding.subtitle", default: "Передача знаний и доступов") %></p>
+        </div>
+        <%= link_to t("common.show_all", default: "Все"), offboarding_processes_path, class: "btn btn-ghost btn-sm" %>
+      </div>
+      <ul class="list-apple">
+        <% active_offboarding.each do |p| %>
+          <%= render "offboarding_processes/row", process: p %>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+<% end %>

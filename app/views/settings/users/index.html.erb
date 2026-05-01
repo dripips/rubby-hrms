@@ -1,0 +1,111 @@
+<% content_for(:page_title) { t("settings.users.title", default: "Пользователи системы") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">👥 <%= t("settings.title", default: "Настройки") %></div>
+    <h1 class="page-header__title m-0"><%= t("settings.users.title", default: "Пользователи системы") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("settings.users.subtitle", default: "Кто имеет доступ к системе. Только superadmin может добавлять/блокировать.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"),                settings_root_path,         class: "btn btn-ghost" %>
+    <%= link_to t("settings.users.new",
+                  default: "+ Новый пользователь"), new_settings_user_path,  class: "btn btn-primary" %>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" if lookup_context.exists?("shared/settings_tabs", [], true) %>
+
+<section class="row g-3 mb-3 stagger">
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("settings.users.stats.total", default: "Всего") %></div>
+      <div class="stat-card__value"><%= @stats[:total] %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("settings.users.stats.active", default: "Активные") %></div>
+      <div class="stat-card__value"><%= @stats[:active] %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("settings.users.stats.locked", default: "Заблокированные") %></div>
+      <div class="stat-card__value"><%= @stats[:locked] %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("settings.users.stats.with_employee", default: "С карточкой") %></div>
+      <div class="stat-card__value"><%= @stats[:with_employee] %></div>
+    </div>
+  </div>
+</section>
+
+<section class="card-apple">
+  <table class="table-apple m-0">
+    <thead>
+      <tr>
+        <th><%= t("settings.users.fields.email", default: "Email") %></th>
+        <th><%= t("settings.users.fields.role", default: "Роль") %></th>
+        <th><%= t("settings.users.fields.employee", default: "Карточка") %></th>
+        <th><%= t("settings.users.fields.last_seen", default: "Последний вход") %></th>
+        <th><%= t("settings.users.fields.state", default: "Статус") %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |u| %>
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <span class="avatar-apple"><%= u.email[0,2].upcase %></span>
+              <strong><%= u.email %></strong>
+            </div>
+          </td>
+          <td>
+            <span class="pill pill--<%= u.role_superadmin? ? 'purple' : (u.role_hr? ? 'info' : (u.role_manager? ? 'warning' : 'neutral')) %>">
+              <%= t("roles.#{u.role}", default: u.role.humanize) %>
+            </span>
+          </td>
+          <td>
+            <% if u.employee %>
+              <%= link_to u.employee.full_name, employee_path(u.employee), class: "link-plain" %>
+            <% else %>
+              <span class="footnote text-tertiary">—</span>
+            <% end %>
+          </td>
+          <td class="footnote text-tertiary">
+            <%= u.last_sign_in_at ? l(u.last_sign_in_at, format: :short) : "—" %>
+          </td>
+          <td>
+            <% if u.discarded_at %>
+              <span class="pill pill--danger">🔒 <%= t("settings.users.locked_badge", default: "заблокирован") %></span>
+            <% else %>
+              <span class="pill pill--success"><%= t("common.active", default: "Активно") %></span>
+            <% end %>
+          </td>
+          <td class="text-end">
+            <%= link_to t("common.edit"), edit_settings_user_path(u), class: "btn btn-ghost btn-sm" %>
+            <%= button_to t("settings.users.reset_password", default: "Сброс пароля"),
+                          send_reset_settings_user_path(u), method: :post,
+                          class: "btn btn-ghost btn-sm", form: { class: "d-inline" },
+                          data: { turbo_confirm: t("settings.users.reset_confirm", default: "Отправить ссылку для сброса на %{e}?", e: u.email) } %>
+            <% if u.discarded_at %>
+              <%= button_to t("settings.users.unlock", default: "Разблокировать"),
+                            reactivate_settings_user_path(u), method: :post,
+                            class: "btn btn-soft btn-sm", form: { class: "d-inline" } %>
+            <% else %>
+              <%= button_to t("settings.users.lock", default: "Заблокировать"),
+                            settings_user_path(u), method: :delete,
+                            class: "btn btn-ghost btn-sm", form: { class: "d-inline" },
+                            data: { turbo_confirm: t("settings.users.lock_confirm", default: "Заблокировать %{e}? Не сможет логиниться.", e: u.email) } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</section>

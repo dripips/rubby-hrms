@@ -1,0 +1,35 @@
+<section class="mb-3" data-widget="recent_activity">
+  <div class="card-apple card-apple--flush">
+    <div class="card-apple__header" style="padding: var(--ds-space-4) var(--ds-space-5) 0;">
+      <div>
+        <h3 class="card-apple__title"><%= t("dashboard.activity.title") %></h3>
+        <p class="card-apple__subtitle"><%= t("dashboard.activity.subtitle") %></p>
+      </div>
+      <%= link_to t("common.view_all", default: "Все события"), audit_path, class: "btn btn-ghost btn-sm" %>
+    </div>
+
+    <table class="table-apple" style="margin-top: var(--ds-space-3);">
+      <thead>
+        <tr>
+          <th><%= t("dashboard.activity.who") %></th>
+          <th><%= t("dashboard.activity.what") %></th>
+          <th><%= t("dashboard.activity.when") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% (@recent_activity || []).each do |row| %>
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="avatar-apple"><%= row[:initials] %></div>
+                <span><%= row[:who] %></span>
+              </div>
+            </td>
+            <td><span class="pill pill--<%= row[:tone] == 'orange' ? 'warning' : (row[:tone] == 'green' ? 'success' : (row[:tone] == 'purple' ? 'purple' : 'info')) %>"><%= row[:what] %></span></td>
+            <td class="text-secondary-apple"><%= time_ago_in_words(row[:when_at]) %> <%= t("common.ago", default: "назад") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>

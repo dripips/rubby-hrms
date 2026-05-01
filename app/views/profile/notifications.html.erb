@@ -1,0 +1,58 @@
+<% content_for(:page_title) { t("profile.notifications.title", default: "Уведомления") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🔔 <%= t("profile.eyebrow", default: "Мой профиль") %></div>
+    <h1 class="page-header__title m-0"><%= t("profile.notifications.title", default: "Уведомления") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("profile.notifications.hint", default: "Какие события и куда тебе доставлять. Уведомление не отправится если оба канала выключены.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), profile_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "profile/tabs" %>
+
+<%= form_with url: update_notifications_profile_path, method: :patch, local: true,
+              html: { class: "card-apple form-apple" } do %>
+  <table class="table-apple m-0">
+    <thead>
+      <tr>
+        <th><%= t("settings.notifications.event", default: "Событие") %></th>
+        <th class="text-center" style="width: 120px;"><%= t("settings.notifications.channels.in_app", default: "В приложении") %></th>
+        <th class="text-center" style="width: 120px;"><%= t("settings.notifications.channels.email", default: "Email") %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @kinds.each do |kind, defaults| %>
+        <% pref = (@prefs[kind] || {}) %>
+        <% in_app = pref.key?("in_app") ? !!pref["in_app"] : !!defaults[:in_app] %>
+        <% email  = pref.key?("email")  ? !!pref["email"]  : !!defaults[:email]  %>
+        <tr>
+          <td>
+            <strong><%= t("settings.users.notification_kinds.#{kind}", default: t("ai.actions.#{kind}", default: kind.humanize)) %></strong>
+          </td>
+          <td class="text-center">
+            <input type="hidden" name="preferences[<%= kind %>][in_app]" value="0">
+            <input type="checkbox" name="preferences[<%= kind %>][in_app]" value="1"
+                   id="pref-<%= kind %>-in_app" <%= 'checked' if in_app %>
+                   class="form-check-input">
+          </td>
+          <td class="text-center">
+            <input type="hidden" name="preferences[<%= kind %>][email]" value="0">
+            <input type="checkbox" name="preferences[<%= kind %>][email]" value="1"
+                   id="pref-<%= kind %>-email" <%= 'checked' if email %>
+                   class="form-check-input">
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-primary"><%= t("common.save") %></button>
+    <%= link_to t("common.cancel"), profile_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

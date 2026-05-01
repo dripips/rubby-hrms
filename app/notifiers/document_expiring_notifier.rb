@@ -29,10 +29,10 @@ class DocumentExpiringNotifier < ApplicationNotifier
 
       days = params[:days_left].to_i
       key  = if days < 0       then "notifications.document_expiring.expired"
-             elsif days == 0   then "notifications.document_expiring.today"
-             elsif days <= 7   then "notifications.document_expiring.week"
-             else                   "notifications.document_expiring.month"
-             end
+      elsif days == 0   then "notifications.document_expiring.today"
+      elsif days <= 7   then "notifications.document_expiring.week"
+      else                   "notifications.document_expiring.month"
+      end
 
       I18n.t(key,
              title:  d.display_title,

@@ -1,0 +1,61 @@
+<% content_for(:page_title) { t("profile.security.title", default: "Безопасность") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🔐 <%= t("profile.eyebrow", default: "Мой профиль") %></div>
+    <h1 class="page-header__title m-0"><%= t("profile.security.title", default: "Безопасность") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("profile.security.hint", default: "Смена email, пароля и локали интерфейса. Чтобы изменить email или пароль — введи текущий пароль для подтверждения.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), profile_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "profile/tabs" %>
+
+<%= form_with model: current_user, url: update_security_profile_path, method: :patch,
+              local: true, html: { class: "card-apple form-apple d-flex flex-column gap-3" } do |f| %>
+  <% if current_user.errors.any? %>
+    <div class="alert alert-danger"><%= current_user.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div>
+    <h3 class="title-3 mb-3"><%= t("profile.security.account_section", default: "Аккаунт") %></h3>
+    <div class="row g-3">
+      <div class="col-md-8">
+        <%= f.label :email, t("settings.users.fields.email", default: "Email"), class: "form-label" %>
+        <%= f.email_field :email, class: "form-control", required: true %>
+      </div>
+      <div class="col-md-4">
+        <%= f.label :locale, t("settings.users.fields.locale", default: "Локаль"), class: "form-label" %>
+        <%= f.select :locale, %w[ru en de].map { |l| [ l, l ] }, {}, class: "form-select" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="title-3 mb-3"><%= t("profile.security.password_section", default: "Сменить пароль") %></h3>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <%= label_tag :current_password, t("profile.security.current_password", default: "Текущий пароль"), class: "form-label" %>
+        <%= password_field_tag "user[current_password]", nil, class: "form-control", autocomplete: "current-password" %>
+        <p class="form-text"><%= t("profile.security.current_password_hint", default: "Нужен для подтверждения изменения email или пароля") %></p>
+      </div>
+      <div class="col-md-3">
+        <%= label_tag :password, t("profile.security.new_password", default: "Новый пароль"), class: "form-label" %>
+        <%= password_field_tag "user[password]", nil, class: "form-control", autocomplete: "new-password" %>
+      </div>
+      <div class="col-md-3">
+        <%= label_tag :password_confirmation, t("profile.security.confirm_password", default: "Повторить"), class: "form-label" %>
+        <%= password_field_tag "user[password_confirmation]", nil, class: "form-control", autocomplete: "new-password" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= f.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), profile_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

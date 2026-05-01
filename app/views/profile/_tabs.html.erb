@@ -1,0 +1,13 @@
+<nav class="section-tabs mb-3" aria-label="<%= t("profile.eyebrow") %>">
+  <% [
+       [t("profile.tabs.personal", default: "Личное"),       profile_path,                "user"],
+       [t("profile.tabs.security", default: "Безопасность"), security_profile_path,       "shield"],
+       [t("profile.tabs.notifications", default: "Уведомления"), notifications_profile_path, "calendar"]
+     ].each do |label, path, icon| %>
+    <% active = current_page?(path) %>
+    <%= link_to path, class: "section-tabs__item #{'is-active' if active}" do %>
+      <%= render "shared/icons/#{icon}" if lookup_context.exists?("shared/icons/#{icon}", [], true) %>
+      <span><%= label %></span>
+    <% end %>
+  <% end %>
+</nav>

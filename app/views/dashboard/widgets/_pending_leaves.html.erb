@@ -1,0 +1,52 @@
+<%
+  # Заявки которые ждут согласования текущим юзером (manager) или
+  # от его сотрудников (HR/superadmin).
+  pending = LeaveRequest.kept
+  pending = if current_user&.role_superadmin? || current_user&.role_hr?
+              pending.where(state: %w[submitted manager_approved])
+            elsif current_user&.role_manager? && current_user.employee
+              report_ids = current_user.employee.reports.kept.pluck(:id)
+              pending.where(state: "submitted", employee_id: report_ids)
+            else
+              pending.none
+            end
+  pending = pending.includes(:employee, :leave_type).order(:started_on).limit(6)
+%>
+<section class="mb-3" data-widget="pending_leaves">
+  <div class="card-apple">
+    <div class="card-apple__header">
+      <div>
+        <h3 class="card-apple__title">📅 <%= t("dashboard.pending_leaves.title", default: "Заявки ждут согласования") %></h3>
+        <p class="card-apple__subtitle"><%= t("dashboard.pending_leaves.subtitle", default: "Те, по которым нужно твоё решение") %></p>
+      </div>
+      <%= link_to t("common.show_all", default: "Все"), leave_requests_path, class: "btn btn-ghost btn-sm" %>
+    </div>
+
+    <% if pending.empty? %>
+      <p class="footnote text-tertiary m-0">
+        <%= t("dashboard.pending_leaves.empty", default: "Нет заявок на согласование. Всё под контролем.") %>
+      </p>
+    <% else %>
+      <ul class="list-apple m-0">
+        <% pending.each do |lr| %>
+          <li class="list-apple__item">
+            <% if lr.employee&.avatar_url.present? %>
+              <span class="avatar-apple avatar-apple--photo me-2" style="background-image: url(<%= lr.employee.avatar_url %>);"></span>
+            <% else %>
+              <span class="avatar-apple me-2"><%= lr.employee&.initials || "?" %></span>
+            <% end %>
+            <div class="d-flex flex-column flex-fill min-w-0">
+              <%= link_to lr.employee&.full_name || "—", leave_request_path(lr), class: "link-plain" %>
+              <span class="footnote text-tertiary">
+                <%= lr.leave_type&.name %>
+                · <%= l(lr.started_on, format: :short) %> – <%= l(lr.ended_on, format: :short) %>
+                · <%= lr.days %> <%= t("dashboard.pending_leaves.days", default: "дн") %>
+              </span>
+            </div>
+            <span class="pill pill--warning"><%= t("leaves.states.#{lr.state}", default: lr.state.humanize) %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</section>

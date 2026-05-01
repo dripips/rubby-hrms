@@ -21,6 +21,25 @@ ru:
     hr_note: Должность, отдел, зарплату и личный номер меняет только HR. Если что-то некорректно — напиши им.
     dietary_placeholder: Аллергии или диета — пригодится для корпоративов и рабочих обедов
     special_needs_placeholder: 'Например: адаптированное рабочее место, удалёнка два дня в неделю, ассистент для встреч'
+    tabs:
+      personal: Личное
+      security: Безопасность
+      notifications: Уведомления
+    security:
+      title: Безопасность
+      hint: Смена email, пароля и локали интерфейса. Чтобы изменить email или пароль — введи текущий пароль для подтверждения.
+      account_section: Аккаунт
+      password_section: Сменить пароль
+      current_password: Текущий пароль
+      current_password_hint: Нужен для подтверждения изменения email или пароля
+      new_password: Новый пароль
+      confirm_password: Повторить
+      wrong_password: Текущий пароль неверный
+      updated: Безопасность обновлена
+    notifications:
+      title: Уведомления
+      hint: Какие события и куда тебе доставлять. Уведомление не отправится если оба канала выключены.
+      updated: Настройки уведомлений сохранены
   navigation:
     workspace: Рабочее место
     org: Организация
@@ -164,6 +183,48 @@ ru:
       expired_title: Уже просрочены
       expired_days_ago: просрочен %{n} дн
       days_left: "%{n} дн"
+    customize: "⚙ Настроить"
+    customize_title: Настройка дашборда
+    customize_hint: Перетащи виджеты чтобы изменить порядок. Сними галочку чтобы скрыть. Доступные виджеты зависят от твоей роли.
+    preferences_saved: Дашборд настроен
+    preferences_reset: Сброшено к дефолту
+    reset_to_default: Сбросить
+    reset_confirm: Сбросить настройки виджетов к дефолту?
+    drag_to_reorder: Тащи чтобы изменить порядок
+    role_only: только %{roles}
+    widgets:
+      kpi_tiles: KPI-карточки
+      recent_activity: Последняя активность
+      upcoming_events: Ближайшие события
+      my_kpi: Мой KPI
+      pending_leaves: Заявки на согласование
+      documents_expiring: Истекающие документы
+      burnout_alerts: Кто под угрозой
+      ai_activity: Активность AI
+      onboarding: Активные онбординги
+      offboarding: Активные офбординги
+    ai_activity:
+      title: Активность AI
+      summary: 'Сегодня запусков: %{today} · этот месяц: $%{cost}'
+      empty: AI-задач пока не было
+    pending_leaves:
+      title: Заявки ждут согласования
+      subtitle: Те, по которым нужно твоё решение
+      empty: Нет заявок на согласование. Всё под контролем.
+      days: дн
+    burnout_alerts:
+      title: Кто под угрозой
+      subtitle: Высокий exit-risk + burnout по AI-анализу
+      empty: Никто под угрозой по последним AI-проверкам.
+      exit_risk: Exit-risk
+      burnout_high: Burnout high
+    my_kpi:
+      title: Мой KPI
+      subtitle: Активные метрики и средний балл за месяц
+      no_assignments: Активных KPI-назначений нет.
+      month_avg: ср. за месяц
+      target: цель
+      last: последний
   stub:
     title: Раздел в разработке
     subtitle: Скоро здесь появится полноценный интерфейс.
@@ -1392,6 +1453,7 @@ ru:
       positions: Должности
       leave_types: Типы отпусков
       dictionaries: Справочники
+      users: Пользователи
     dictionaries:
       title: Справочники
       subtitle: 'Списки и доп.поля для модулей: документы, сотрудники, отпуска. Все справочники привязаны к компании.'
@@ -1902,6 +1964,46 @@ ru:
         exit_interview: Exit interview
         farewell: Прощание
         general: Общее
+    users:
+      title: Пользователи системы
+      subtitle: Кто имеет доступ к системе. Только superadmin может добавлять/блокировать.
+      new: "+ Новый пользователь"
+      created: 'Пользователь создан. Пароль: %{p}'
+      locked: Пользователь заблокирован
+      locked_badge: заблокирован
+      lock: Заблокировать
+      lock_confirm: Заблокировать %{e}? Не сможет логиниться.
+      unlock: Разблокировать
+      reactivated: Пользователь разблокирован
+      cannot_lock_self: Нельзя залочить самого себя.
+      reset_password: Сброс пароля
+      reset_confirm: Отправить ссылку для сброса на %{e}?
+      reset_sent: Письмо для сброса пароля отправлено на %{e}
+      reset_failed: Не удалось отправить письмо.
+      password_placeholder: Оставь пустым — система сгенерирует
+      password_hint: Если пустое — сгенерируем случайный 16-символьный пароль и покажем один раз.
+      stats:
+        total: Всего
+        active: Активные
+        locked: Заблокированные
+        with_employee: С карточкой
+      fields:
+        email: Email
+        role: Роль
+        locale: Локаль
+        time_zone: Часовой пояс
+        password: Пароль (опционально)
+        employee: Карточка
+        last_seen: Последний вход
+        state: Статус
+      notification_kinds:
+        ai_run_completed: AI-задача завершилась
+        interview_soon: Скоро интервью
+        interview_tomorrow: Интервью завтра
+        interview_scheduled: Интервью назначено
+        interview_cancelled: Интервью отменено
+        applicant_stage_change: Смена этапа кандидата
+        document_expiring: Документ скоро истекает
   pundit:
     not_authorized: Недостаточно прав для этого действия
   user_menu:

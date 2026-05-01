@@ -98,29 +98,29 @@ module CustomFieldsHelper
     col_class  = (entry.field_type == "textarea" ? "col-md-12" : "col-md-6")
 
     input = case entry.field_type
-            when "string"
+    when "string"
               text_field_tag(base_name, value.to_s, class: "form-control", required: required)
-            when "textarea"
+    when "textarea"
               text_area_tag(base_name, value.to_s, class: "form-control", rows: 3, required: required)
-            when "integer"
+    when "integer"
               number_field_tag(base_name, value, class: "form-control", required: required, step: 1)
-            when "decimal"
+    when "decimal"
               number_field_tag(base_name, value, class: "form-control", required: required, step: "0.01")
-            when "date"
+    when "date"
               date_field_tag(base_name, value.to_s, class: "form-control", required: required)
-            when "boolean"
+    when "boolean"
               hidden = hidden_field_tag(base_name, "false")
               check  = check_box_tag(base_name, "true",
                                       ActiveModel::Type::Boolean.new.cast(value),
                                       class: "form-check-input")
               hidden + content_tag(:div, check + " " + label_tag(base_name, label, class: "form-check-label"),
                                    class: "form-check")
-            when "select"
+    when "select"
               opts = options_for_select(entry.field_options.map { |o| [ o, o ] }, value)
               select_tag(base_name, opts, class: "form-select", include_blank: !required, required: required)
-            else
+    else
               text_field_tag(base_name, value.to_s, class: "form-control")
-            end
+    end
 
     label_html = entry.field_type == "boolean" ? "" : label_tag(base_name, label, class: "form-label")
     hint_html  = hint ? content_tag(:p, hint, class: "form-text") : ""

@@ -1,0 +1,13 @@
+<% content_for(:page_title) { t("settings.users.new", default: "Новый пользователь") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">👥 <%= t("settings.users.title", default: "Пользователи") %></div>
+    <h1 class="page-header__title m-0"><%= t("settings.users.new", default: "Новый пользователь") %></h1>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_users_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "form", user: @user %>

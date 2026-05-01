@@ -1,4 +1,6 @@
 class DashboardController < ApplicationController
+  before_action :authenticate_user!
+
   def show
     @greeting = greeting_by_hour
     @company  = Company.kept.first
@@ -6,6 +8,24 @@ class DashboardController < ApplicationController
     @kpi_tiles       = build_kpi_tiles
     @recent_activity = recent_activity
     @upcoming        = upcoming_events
+  end
+
+  # Страница настройки виджетов: drag-drop reorder + hide/show.
+  def customize
+    @widgets = DashboardWidgets.catalog_for_user(current_user)
+  end
+
+  # POST: { order: [...], hidden: [...] }
+  def update_widgets
+    DashboardWidgets.save_preferences!(current_user,
+                                       order:  params[:order],
+                                       hidden: params[:hidden])
+    redirect_to dashboard_path, notice: t("dashboard.preferences_saved", default: "Дашборд настроен")
+  end
+
+  def reset_widgets
+    DashboardWidgets.reset!(current_user)
+    redirect_to customize_dashboard_path, notice: t("dashboard.preferences_reset", default: "Сброшено к дефолту")
   end
 
   private

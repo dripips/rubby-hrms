@@ -1,0 +1,14 @@
+<section class="row g-3 mb-4 stagger" data-widget="kpi_tiles">
+  <% (@kpi_tiles || []).each do |tile| %>
+    <div class="col-12 col-md-6 col-xl-3">
+      <div class="stat-card card-apple--hover">
+        <div class="icon-tile icon-tile--<%= tile[:tone] %>"><%= render "shared/icons/trending" %></div>
+        <div class="stat-card__label"><%= tile[:label] %></div>
+        <div class="stat-card__value"><%= tile[:value] %></div>
+        <span class="stat-card__delta stat-card__delta--<%= tile[:up] ? 'up' : 'down' %>">
+          <%= tile[:delta] %>
+        </span>
+      </div>
+    </div>
+  <% end %>
+</section>

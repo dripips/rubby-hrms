@@ -35,7 +35,10 @@ Rails.application.routes.draw do
 
   scope "(:locale)", locale: locale_regex do
     root "dashboard#show"
-    get "dashboard", to: "dashboard#show", as: :dashboard
+    get  "dashboard",                 to: "dashboard#show",            as: :dashboard
+    get  "dashboard/customize",       to: "dashboard#customize",       as: :customize_dashboard
+    post "dashboard/widgets",         to: "dashboard#update_widgets",  as: :update_dashboard_widgets
+    post "dashboard/widgets/reset",   to: "dashboard#reset_widgets",   as: :reset_dashboard_widgets
 
     resources :employees, only: %i[index show create update destroy] do
       resources :notes,    only: %i[create destroy], controller: "employee_notes"
@@ -173,7 +176,12 @@ Rails.application.routes.draw do
     get "kpi", to: redirect { |_, req| "/#{req.params[:locale]}/kpi/dashboard".sub("//", "/") }, as: :kpi
 
     # Self-service портал — сотрудник правит свои поля.
-    resource :profile, only: %i[show edit update], controller: "profile"
+    resource :profile, only: %i[show edit update], controller: "profile" do
+      get  :security
+      patch :update_security,   path: "security"
+      get  :notifications
+      patch :update_notifications, path: "notifications"
+    end
 
     # AI Audit log — отдельный аудит для запусков AI-задач (HR/admin only).
     resources :ai_runs, only: %i[index show]
@@ -215,6 +223,12 @@ Rails.application.routes.draw do
       resources :process_templates, except: [ :show ]
       resources :document_types,    except: [ :show ]
       resources :positions,         except: [ :show ]
+      resources :users do
+        member do
+          post :reactivate
+          post :send_reset
+        end
+      end
       resources :leave_types,       except: [ :show ]
       resources :dictionaries do
         collection do

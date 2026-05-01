@@ -1,0 +1,48 @@
+<% content_for(:page_title) { t("dashboard.customize_title", default: "Настройка дашборда") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">⚙ <%= t("navigation.dashboard") %></div>
+    <h1 class="page-header__title m-0"><%= t("dashboard.customize_title", default: "Настройка дашборда") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("dashboard.customize_hint", default: "Перетащи виджеты чтобы изменить порядок. Сними галочку чтобы скрыть. Доступные виджеты зависят от твоей роли.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), dashboard_path, class: "btn btn-ghost" %>
+    <%= button_to t("dashboard.reset_to_default", default: "Сбросить"),
+                  reset_dashboard_widgets_path, method: :post, class: "btn btn-soft",
+                  form: { class: "d-inline" },
+                  data: { turbo_confirm: t("dashboard.reset_confirm", default: "Сбросить настройки виджетов к дефолту?") } %>
+  </div>
+</header>
+
+<%= form_with url: update_dashboard_widgets_path, method: :post, local: true,
+              data: { controller: "dashboard-customize", action: "submit->dashboard-customize#prepareSubmit" } do %>
+  <div class="card-apple">
+    <ul class="list-apple m-0" data-dashboard-customize-target="list">
+      <% @widgets.each do |w| %>
+        <li class="list-apple__item dashboard-widget-row" draggable="true" data-widget-key="<%= w[:key] %>">
+          <span class="dashboard-widget-row__handle" title="<%= t("dashboard.drag_to_reorder", default: "Тащи чтобы изменить порядок") %>">⠿</span>
+          <div class="form-check m-0">
+            <input type="checkbox" class="form-check-input" data-customize="visible"
+                   id="cb-<%= w[:key] %>" <%= 'checked' unless w[:hidden] %>>
+            <label class="form-check-label" for="cb-<%= w[:key] %>">
+              <strong><%= t(w[:label_key], default: w[:key].humanize) %></strong>
+              <% if w[:roles] %>
+                <span class="footnote text-tertiary">· <%= t("dashboard.role_only", default: "только %{roles}", roles: w[:roles].join(", ")) %></span>
+              <% end %>
+            </label>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+
+    <div data-dashboard-customize-target="hiddenContainer"></div>
+
+    <div class="d-flex gap-2 mt-3">
+      <button type="submit" class="btn btn-primary"><%= t("common.save") %></button>
+      <%= link_to t("common.cancel"), dashboard_path, class: "btn btn-ghost" %>
+    </div>
+  </div>
+<% end %>

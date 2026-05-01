@@ -11,10 +11,10 @@ class DocumentMailer < ApplicationMailer
 
     I18n.with_locale(@recipient&.locale.presence || I18n.default_locale) do
       subject_key = if @days_left < 0   then "document_mailer.expiring.subject_expired"
-                    elsif @days_left == 0 then "document_mailer.expiring.subject_today"
-                    elsif @days_left <= 7 then "document_mailer.expiring.subject_week"
-                    else                        "document_mailer.expiring.subject_month"
-                    end
+      elsif @days_left == 0 then "document_mailer.expiring.subject_today"
+      elsif @days_left <= 7 then "document_mailer.expiring.subject_week"
+      else                        "document_mailer.expiring.subject_month"
+      end
 
       mail to: @recipient.email,
            subject: t(subject_key,

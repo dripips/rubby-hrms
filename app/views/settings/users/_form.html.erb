@@ -1,0 +1,42 @@
+<%= form_with model: user, url: user.persisted? ? settings_user_path(user) : settings_users_path,
+              local: true, class: "card-apple form-apple d-flex flex-column gap-3" do |f| %>
+  <% if user.errors.any? %>
+    <div class="alert alert-danger"><%= user.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="row g-3">
+    <div class="col-md-7">
+      <%= f.label :email, t("settings.users.fields.email", default: "Email"), class: "form-label" %>
+      <%= f.email_field :email, class: "form-control", required: true %>
+    </div>
+    <div class="col-md-5">
+      <%= f.label :role, t("settings.users.fields.role", default: "Роль"), class: "form-label" %>
+      <%= f.select :role,
+                   Settings::UsersController::ROLES.map { |r| [ t("roles.#{r}", default: r.humanize), r ] },
+                   {}, class: "form-select" %>
+    </div>
+    <div class="col-md-6">
+      <%= f.label :locale, t("settings.users.fields.locale", default: "Локаль"), class: "form-label" %>
+      <%= f.select :locale, %w[ru en de].map { |l| [ l, l ] }, {}, class: "form-select" %>
+    </div>
+    <div class="col-md-6">
+      <%= f.label :time_zone, t("settings.users.fields.time_zone", default: "Часовой пояс"), class: "form-label" %>
+      <%= f.time_zone_select :time_zone, ActiveSupport::TimeZone.us_zones + ActiveSupport::TimeZone.all.select { |tz| tz.name.include?("Moscow") || tz.name.include?("Berlin") || tz.name.include?("London") },
+                              { default: "Moscow" }, class: "form-select" %>
+    </div>
+    <% unless user.persisted? %>
+      <div class="col-md-12">
+        <%= f.label :password, t("settings.users.fields.password", default: "Пароль (опционально)"), class: "form-label" %>
+        <%= f.password_field :password, class: "form-control",
+                             autocomplete: "new-password",
+                             placeholder: t("settings.users.password_placeholder", default: "Оставь пустым — система сгенерирует") %>
+        <p class="form-text"><%= t("settings.users.password_hint", default: "Если пустое — сгенерируем случайный 16-символьный пароль и покажем один раз.") %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= f.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), settings_users_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

@@ -12,7 +12,10 @@
     { label: t("settings.tabs.positions",     default: "Должности"),     path: settings_positions_path,       icon: "people"   },
     { label: t("settings.tabs.leave_types",   default: "Типы отпусков"), path: settings_leave_types_path,     icon: "calendar" },
     { label: t("settings.tabs.dictionaries",  default: "Справочники"),   path: settings_dictionaries_path,    icon: "file"     },
-    { label: t("settings.tabs.careers",       default: "Страница найма"), path: settings_careers_path,         icon: "trending" }
+    { label: t("settings.tabs.careers",       default: "Страница найма"), path: settings_careers_path,         icon: "trending" },
+    *(current_user&.role_superadmin? ? [
+      { label: t("settings.tabs.users",       default: "Пользователи"),  path: settings_users_path,           icon: "people"   }
+    ] : [])
   ]
 %>
 

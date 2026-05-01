@@ -1,0 +1,21 @@
+<%
+  active_onboarding = OnboardingProcess.kept.where(state: "active").includes(:employee).order(created_at: :desc).limit(5)
+%>
+<% if active_onboarding.any? %>
+  <section class="mb-3" data-widget="onboarding">
+    <div class="card-apple">
+      <div class="card-apple__header">
+        <div>
+          <h3 class="card-apple__title">🌱 <%= t("dashboard.onboarding.title", default: "Активные онбординги") %></h3>
+          <p class="card-apple__subtitle"><%= t("dashboard.onboarding.subtitle", default: "Адаптация новых сотрудников") %></p>
+        </div>
+        <%= link_to t("common.show_all", default: "Все"), onboarding_processes_path, class: "btn btn-ghost btn-sm" %>
+      </div>
+      <ul class="list-apple">
+        <% active_onboarding.each do |p| %>
+          <%= render "onboarding_processes/row", process: p %>
+        <% end %>
+      </ul>
+    </div>
+  </section>
+<% end %>

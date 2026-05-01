@@ -1,0 +1,65 @@
+<%
+  emp = current_user.employee
+  if emp
+    week_start = Date.current.beginning_of_week
+    my_assignments = emp.kpi_assignments.where("period_end >= ?", 4.weeks.ago).includes(:kpi_metric).limit(5)
+    recent_evals   = KpiEvaluation.joins(:kpi_assignment)
+                                  .where(kpi_assignments: { employee_id: emp.id })
+                                  .where(evaluated_at: 4.weeks.ago..)
+                                  .order(evaluated_at: :desc)
+                                  .limit(8)
+    avg_score = recent_evals.any? ? (recent_evals.sum(&:score).to_f / recent_evals.size).round(1) : nil
+    trend_tone = case avg_score
+                 when nil       then "neutral"
+                 when 0..49     then "danger"
+                 when 50..74    then "warning"
+                 else                "success"
+                 end
+  end
+%>
+<section class="mb-3" data-widget="my_kpi">
+  <div class="card-apple">
+    <div class="card-apple__header">
+      <div>
+        <h3 class="card-apple__title">📊 <%= t("dashboard.my_kpi.title", default: "Мой KPI") %></h3>
+        <p class="card-apple__subtitle"><%= t("dashboard.my_kpi.subtitle", default: "Активные метрики и средний балл за месяц") %></p>
+      </div>
+      <%= link_to t("common.show_all", default: "Все"), kpi_dashboard_path, class: "btn btn-ghost btn-sm" %>
+    </div>
+
+    <% if emp.nil? %>
+      <p class="footnote text-tertiary m-0"><%= t("profile.no_employee", default: "К аккаунту не привязана карточка сотрудника. Обратись в HR.") %></p>
+    <% elsif my_assignments.empty? %>
+      <p class="footnote text-tertiary m-0">
+        <%= t("dashboard.my_kpi.no_assignments", default: "Активных KPI-назначений нет.") %>
+      </p>
+    <% else %>
+      <% if avg_score %>
+        <div class="d-flex align-items-baseline gap-2 mb-3">
+          <div class="title-1 m-0 tabular-nums"><%= avg_score %><span class="footnote text-tertiary">%</span></div>
+          <span class="pill pill--<%= trend_tone %>"><%= t("dashboard.my_kpi.month_avg", default: "ср. за месяц") %></span>
+        </div>
+      <% end %>
+      <ul class="list-apple m-0">
+        <% my_assignments.each do |a| %>
+          <% last_eval = a.kpi_evaluations.order(evaluated_at: :desc).first %>
+          <li class="list-apple__item">
+            <div class="d-flex flex-column flex-fill min-w-0">
+              <strong><%= a.kpi_metric&.name %></strong>
+              <span class="footnote text-tertiary">
+                <%= t("dashboard.my_kpi.target", default: "цель") %>: <%= a.target_value %>
+                <% if last_eval %>
+                  · <%= t("dashboard.my_kpi.last", default: "последний") %>: <%= last_eval.score %>%
+                <% end %>
+              </span>
+            </div>
+            <% if last_eval %>
+              <% s = last_eval.score.to_i %>
+              <span class="pill pill--<%= s >= 75 ? 'success' : (s >= 50 ? 'warning' : 'danger') %>"><%= s %>%</span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</section>

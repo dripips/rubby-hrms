@@ -1,0 +1,31 @@
+<section class="mb-3" data-widget="upcoming_events">
+  <div class="card-apple">
+    <div class="card-apple__header">
+      <div>
+        <h3 class="card-apple__title"><%= t("dashboard.upcoming.title") %></h3>
+        <p class="card-apple__subtitle"><%= t("dashboard.upcoming.subtitle") %></p>
+      </div>
+    </div>
+
+    <div class="d-flex flex-column gap-3">
+      <% if (@upcoming || []).empty? %>
+        <div class="empty-state" style="padding: var(--ds-space-5);">
+          <div class="empty-state__title"><%= t("dashboard.upcoming.empty", default: "Ничего на ближайшие 14 дней") %></div>
+        </div>
+      <% else %>
+        <% @upcoming.each do |evt| %>
+          <div class="d-flex align-items-center gap-3">
+            <div class="surface-grouped text-center" style="padding:6px 10px; min-width:48px;">
+              <div class="caption-2"><%= I18n.l(evt[:date], format: "%b").upcase %></div>
+              <div class="title-3 text-primary-apple" style="margin:0;"><%= evt[:date].day %></div>
+            </div>
+            <div style="flex:1;">
+              <div class="headline" style="margin:0;"><%= evt[:name] %></div>
+              <div class="footnote"><%= evt[:tag] %></div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</section>

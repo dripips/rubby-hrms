@@ -21,6 +21,25 @@ en:
     hr_note: Position, department, salary and personnel number can only be changed by HR. If something's wrong, contact them.
     dietary_placeholder: Allergies or diet — useful for company events and work meals
     special_needs_placeholder: 'E.g.: adapted workplace, two remote days per week, assistant for meetings'
+    tabs:
+      personal: Personal
+      security: Security
+      notifications: Notifications
+    security:
+      title: Security
+      hint: Change email, password and interface locale. To change email or password — confirm with current password.
+      account_section: Account
+      password_section: Change password
+      current_password: Current password
+      current_password_hint: Required to confirm email or password change
+      new_password: New password
+      confirm_password: Confirm
+      wrong_password: Current password is wrong
+      updated: Security settings updated
+    notifications:
+      title: Notifications
+      hint: Which events delivered where. A notification is dropped if both channels are off.
+      updated: Notification preferences saved
   navigation:
     workspace: Workspace
     org: Organization
@@ -164,6 +183,48 @@ en:
       expired_title: Already expired
       expired_days_ago: expired %{n} days ago
       days_left: "%{n} days"
+    customize: "⚙ Customize"
+    customize_title: Customize dashboard
+    customize_hint: Drag widgets to reorder. Uncheck to hide. Available widgets depend on your role.
+    preferences_saved: Dashboard customized
+    preferences_reset: Reset to default
+    reset_to_default: Reset
+    reset_confirm: Reset widget settings to default?
+    drag_to_reorder: Drag to reorder
+    role_only: "%{roles} only"
+    widgets:
+      kpi_tiles: KPI tiles
+      recent_activity: Recent activity
+      upcoming_events: Upcoming events
+      my_kpi: My KPI
+      pending_leaves: Leave approvals
+      documents_expiring: Expiring documents
+      burnout_alerts: At risk
+      ai_activity: AI activity
+      onboarding: Active onboardings
+      offboarding: Active offboardings
+    ai_activity:
+      title: AI activity
+      summary: 'Today: %{today} runs · this month: $%{cost}'
+      empty: No AI tasks yet
+    pending_leaves:
+      title: Leave requests pending approval
+      subtitle: Those waiting on your decision
+      empty: No requests pending. All clear.
+      days: d
+    burnout_alerts:
+      title: People at risk
+      subtitle: High exit-risk + burnout per AI analysis
+      empty: No one at risk per recent AI checks.
+      exit_risk: Exit risk
+      burnout_high: Burnout high
+    my_kpi:
+      title: My KPI
+      subtitle: Active metrics and monthly average
+      no_assignments: No active KPI assignments.
+      month_avg: monthly avg
+      target: target
+      last: latest
   stub:
     title: Section under construction
     subtitle: A full UI will land here soon.
@@ -1838,6 +1899,7 @@ en:
       positions: Positions
       leave_types: Leave types
       dictionaries: Dictionaries
+      users: Users
     dictionaries:
       title: Dictionaries
       subtitle: 'Lookup lists and custom fields for modules: documents, employees, leaves. All dictionaries are company-scoped.'
@@ -2348,6 +2410,46 @@ en:
       tips_title: Tips
       title: SMTP / Email settings
       updated: SMTP settings saved
+    users:
+      title: System users
+      subtitle: Who has access to the system. Only superadmin can add/lock.
+      new: "+ New user"
+      created: 'User created. Password: %{p}'
+      locked: User locked
+      locked_badge: locked
+      lock: Lock
+      lock_confirm: Lock %{e}? Cannot sign in.
+      unlock: Unlock
+      reactivated: User unlocked
+      cannot_lock_self: Cannot lock yourself.
+      reset_password: Reset password
+      reset_confirm: Send reset link to %{e}?
+      reset_sent: Password reset email sent to %{e}
+      reset_failed: Failed to send email.
+      password_placeholder: Leave empty — system generates
+      password_hint: If empty — we'll generate a random 16-char password shown once.
+      stats:
+        total: Total
+        active: Active
+        locked: Locked
+        with_employee: With profile
+      fields:
+        email: Email
+        role: Role
+        locale: Locale
+        time_zone: Time zone
+        password: Password (optional)
+        employee: Employee record
+        last_seen: Last sign-in
+        state: Status
+      notification_kinds:
+        ai_run_completed: AI task completed
+        interview_soon: Interview soon
+        interview_tomorrow: Interview tomorrow
+        interview_scheduled: Interview scheduled
+        interview_cancelled: Interview cancelled
+        applicant_stage_change: Applicant stage change
+        document_expiring: Document expiring
   ai_runs:
     title: AI Audit
     eyebrow: AI log

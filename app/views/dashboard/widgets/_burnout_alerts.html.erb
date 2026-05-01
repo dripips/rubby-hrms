@@ -1,0 +1,57 @@
+<%
+  # Сотрудники с высоким exit_risk_score или последние burnout-результаты с severity=high.
+  high_exit_risk = OffboardingProcess.kept.where("exit_risk_score >= ?", 70)
+                                     .includes(:employee).order(exit_risk_score: :desc).limit(3)
+  recent_burnout = AiRun.where(kind: "burnout_brief").successful.recent
+                        .includes(:employee).limit(8)
+                        .select { |r| r.payload.is_a?(Hash) && r.payload["severity"] == "high" }
+                        .first(3)
+%>
+<section class="mb-3" data-widget="burnout_alerts">
+  <div class="card-apple">
+    <div class="card-apple__header">
+      <div>
+        <h3 class="card-apple__title">⚠ <%= t("dashboard.burnout_alerts.title", default: "Кто под угрозой") %></h3>
+        <p class="card-apple__subtitle">
+          <%= t("dashboard.burnout_alerts.subtitle", default: "Высокий exit-risk + burnout по AI-анализу") %>
+        </p>
+      </div>
+    </div>
+
+    <% if high_exit_risk.empty? && recent_burnout.empty? %>
+      <p class="footnote text-tertiary m-0">
+        <%= t("dashboard.burnout_alerts.empty", default: "Никто под угрозой по последним AI-проверкам.") %>
+      </p>
+    <% else %>
+      <ul class="list-apple m-0">
+        <% high_exit_risk.each do |p| %>
+          <li class="list-apple__item">
+            <span class="avatar-apple me-2"><%= p.employee&.initials || "?" %></span>
+            <div class="d-flex flex-column flex-fill min-w-0">
+              <%= link_to p.employee&.full_name || "—", offboarding_process_path(p), class: "link-plain" %>
+              <span class="footnote text-tertiary">
+                <%= t("dashboard.burnout_alerts.exit_risk", default: "Exit-risk") %>: <%= p.exit_risk_score %>/100
+              </span>
+            </div>
+            <span class="pill pill--danger"><%= t("offboarding.states.#{p.state}", default: p.state) %></span>
+          </li>
+        <% end %>
+        <% recent_burnout.each do |r| %>
+          <li class="list-apple__item">
+            <span class="avatar-apple me-2"><%= r.employee&.initials || "?" %></span>
+            <div class="d-flex flex-column flex-fill min-w-0">
+              <%= link_to r.employee&.full_name || "—",
+                          (r.employee_id ? employee_path(r.employee_id) : "#"),
+                          class: "link-plain" %>
+              <span class="footnote text-tertiary">
+                <%= t("dashboard.burnout_alerts.burnout_high", default: "Burnout high") %>
+                · <%= time_ago_in_words(r.created_at) %> <%= t("common.ago", default: "назад") %>
+              </span>
+            </div>
+            <span class="pill pill--warning"><%= t("ai.leaves.risk_levels.high", default: "Высокий") %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</section>

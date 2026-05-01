@@ -21,17 +21,17 @@ class AiRunCompletedNotifier < ApplicationNotifier
       # Phrasing: «по сотруднику …» / «по документу …» / по умолчанию «по кандидату …»
       key = if AiRunCompletedNotifier::DOCUMENT_KINDS.include?(ar.kind)
               "#{base}_document"
-            elsif AiRunCompletedNotifier::DICTIONARY_KINDS.include?(ar.kind)
+      elsif AiRunCompletedNotifier::DICTIONARY_KINDS.include?(ar.kind)
               "#{base}_dictionary"
-            elsif AiRunCompletedNotifier::COMPANY_KINDS.include?(ar.kind)
+      elsif AiRunCompletedNotifier::COMPANY_KINDS.include?(ar.kind)
               "#{base}_company"
-            elsif AiRunCompletedNotifier::HR_KINDS.include?(ar.kind) ||
+      elsif AiRunCompletedNotifier::HR_KINDS.include?(ar.kind) ||
                   AiRunCompletedNotifier::ONBOARDING_KINDS.include?(ar.kind) ||
                   AiRunCompletedNotifier::OFFBOARDING_KINDS.include?(ar.kind)
               "#{base}_employee"
-            else
+      else
               base
-            end
+      end
       I18n.t(key, kind: kind_label, name: target_name, locale: recipient_locale)
     end
 

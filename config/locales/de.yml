@@ -21,6 +21,25 @@ de:
     hr_note: Position, Abteilung, Gehalt und Personalnummer können nur von HR geändert werden. Bei Fehlern wende dich an sie.
     dietary_placeholder: Allergien oder Diät — nützlich für Firmenfeiern und Arbeitsessen
     special_needs_placeholder: 'Z.B.: angepasster Arbeitsplatz, zwei Remote-Tage pro Woche, Assistent für Meetings'
+    tabs:
+      personal: Persönlich
+      security: Sicherheit
+      notifications: Benachrichtigungen
+    security:
+      title: Sicherheit
+      hint: E-Mail, Passwort und Sprache ändern. Zum Ändern von E-Mail oder Passwort — aktuelles Passwort zur Bestätigung eingeben.
+      account_section: Konto
+      password_section: Passwort ändern
+      current_password: Aktuelles Passwort
+      current_password_hint: Erforderlich zur Bestätigung von E-Mail- oder Passwort-Änderung
+      new_password: Neues Passwort
+      confirm_password: Bestätigen
+      wrong_password: Aktuelles Passwort ist falsch
+      updated: Sicherheits-Einstellungen aktualisiert
+    notifications:
+      title: Benachrichtigungen
+      hint: Welche Ereignisse wohin geliefert werden. Eine Benachrichtigung wird verworfen, wenn beide Kanäle aus sind.
+      updated: Benachrichtigungs-Einstellungen gespeichert
   navigation:
     workspace: Arbeitsbereich
     org: Organisation
@@ -164,6 +183,48 @@ de:
       expired_title: Bereits abgelaufen
       expired_days_ago: abgelaufen vor %{n} Tagen
       days_left: "%{n} Tage"
+    customize: "⚙ Anpassen"
+    customize_title: Dashboard anpassen
+    customize_hint: Ziehe Widgets, um die Reihenfolge zu ändern. Häkchen entfernen zum Ausblenden. Verfügbare Widgets hängen von deiner Rolle ab.
+    preferences_saved: Dashboard angepasst
+    preferences_reset: Auf Standard zurückgesetzt
+    reset_to_default: Zurücksetzen
+    reset_confirm: Widget-Einstellungen auf Standard zurücksetzen?
+    drag_to_reorder: Ziehen zum Umordnen
+    role_only: nur %{roles}
+    widgets:
+      kpi_tiles: KPI-Kacheln
+      recent_activity: Neueste Aktivität
+      upcoming_events: Anstehende Ereignisse
+      my_kpi: Mein KPI
+      pending_leaves: Urlaubsgenehmigungen
+      documents_expiring: Ablaufende Dokumente
+      burnout_alerts: Gefährdete
+      ai_activity: KI-Aktivität
+      onboarding: Aktive Onboardings
+      offboarding: Aktive Offboardings
+    ai_activity:
+      title: KI-Aktivität
+      summary: 'Heute: %{today} Läufe · diesen Monat: $%{cost}'
+      empty: Noch keine KI-Aufgaben
+    pending_leaves:
+      title: Urlaubsanträge zur Genehmigung
+      subtitle: Die deine Entscheidung benötigen
+      empty: Keine ausstehenden Anträge. Alles im grünen Bereich.
+      days: T
+    burnout_alerts:
+      title: Gefährdete Personen
+      subtitle: Hohes Austrittsrisiko + Burnout laut KI-Analyse
+      empty: Niemand gefährdet laut letzten KI-Prüfungen.
+      exit_risk: Austrittsrisiko
+      burnout_high: Burnout hoch
+    my_kpi:
+      title: Mein KPI
+      subtitle: Aktive Metriken und Monatsdurchschnitt
+      no_assignments: Keine aktiven KPI-Zuweisungen.
+      month_avg: Monatsdurchschnitt
+      target: Ziel
+      last: letzter
   stub:
     title: Bereich im Aufbau
     subtitle: Eine vollständige Oberfläche kommt bald.
@@ -1838,6 +1899,7 @@ de:
       positions: Positionen
       leave_types: Urlaubsarten
       dictionaries: Wörterbücher
+      users: Benutzer
     dictionaries:
       title: Wörterbücher
       subtitle: 'Auswahllisten und Zusatzfelder für Module: Dokumente, Mitarbeiter, Urlaube. Alle Wörterbücher sind unternehmensbezogen.'
@@ -2348,6 +2410,46 @@ de:
       tips_title: Tipps
       title: SMTP / E-Mail-Einstellungen
       updated: SMTP-Einstellungen gespeichert
+    users:
+      title: Systembenutzer
+      subtitle: Wer Zugriff auf das System hat. Nur Superadmin kann hinzufügen/sperren.
+      new: "+ Neuer Benutzer"
+      created: 'Benutzer erstellt. Passwort: %{p}'
+      locked: Benutzer gesperrt
+      locked_badge: gesperrt
+      lock: Sperren
+      lock_confirm: "%{e} sperren? Kann sich nicht anmelden."
+      unlock: Entsperren
+      reactivated: Benutzer entsperrt
+      cannot_lock_self: Du kannst dich nicht selbst sperren.
+      reset_password: Passwort zurücksetzen
+      reset_confirm: Reset-Link an %{e} senden?
+      reset_sent: Passwort-Reset-E-Mail gesendet an %{e}
+      reset_failed: E-Mail konnte nicht gesendet werden.
+      password_placeholder: Leer lassen — System generiert
+      password_hint: Falls leer — wir generieren ein zufälliges 16-Zeichen-Passwort, das einmal angezeigt wird.
+      stats:
+        total: Gesamt
+        active: Aktiv
+        locked: Gesperrt
+        with_employee: Mit Profil
+      fields:
+        email: E-Mail
+        role: Rolle
+        locale: Sprache
+        time_zone: Zeitzone
+        password: Passwort (optional)
+        employee: Mitarbeiterkarte
+        last_seen: Letzte Anmeldung
+        state: Status
+      notification_kinds:
+        ai_run_completed: KI-Aufgabe abgeschlossen
+        interview_soon: Interview bald
+        interview_tomorrow: Interview morgen
+        interview_scheduled: Interview geplant
+        interview_cancelled: Interview abgesagt
+        applicant_stage_change: Bewerber-Phasenwechsel
+        document_expiring: Dokument läuft ab
   ai_runs:
     title: KI Audit
     eyebrow: KI-Log

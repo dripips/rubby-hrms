@@ -1,0 +1,41 @@
+<%
+  recent_ai = AiRun.where.not(kind: "ping").recent.includes(:user).limit(6)
+  ai_total_today = AiRun.where.not(kind: "ping").where("created_at >= ?", Date.current.beginning_of_day).count
+  ai_cost_month  = AiRun.where("created_at >= ?", Time.current.beginning_of_month).sum(:cost_usd).to_f
+%>
+<section class="mb-3" data-widget="ai_activity">
+  <div class="card-apple">
+    <div class="card-apple__header">
+      <div>
+        <h3 class="card-apple__title">🪄 <%= t("dashboard.ai_activity.title", default: "Активность AI") %></h3>
+        <p class="card-apple__subtitle">
+          <%= t("dashboard.ai_activity.summary",
+                default: "Сегодня запусков: %{today} · этот месяц: $%{cost}",
+                today: ai_total_today, cost: format("%.4f", ai_cost_month)) %>
+        </p>
+      </div>
+      <%= link_to t("common.show_all", default: "Все"), ai_runs_path, class: "btn btn-ghost btn-sm" %>
+    </div>
+
+    <% if recent_ai.empty? %>
+      <p class="footnote text-tertiary m-0"><%= t("dashboard.ai_activity.empty", default: "AI-задач пока не было") %></p>
+    <% else %>
+      <ul class="list-apple m-0">
+        <% recent_ai.each do |r| %>
+          <li class="list-apple__item">
+            <span class="me-1 fs-5"><%= r.success ? "✓" : "⚠" %></span>
+            <div class="d-flex flex-column flex-fill min-w-0">
+              <%= link_to t("ai.actions.#{r.kind}", default: r.kind.humanize),
+                          ai_run_path(r), class: "link-plain" %>
+              <span class="footnote text-tertiary">
+                <%= r.user&.email&.split("@")&.first || "—" %>
+                · <%= time_ago_in_words(r.created_at) %> <%= t("common.ago", default: "назад") %>
+              </span>
+            </div>
+            <span class="footnote text-tertiary tabular-nums"><%= r.cost_display %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</section>

@@ -31,6 +31,54 @@ class ProfileController < ApplicationController
     end
   end
 
+  # ── Безопасность: смена пароля + email ──────────────────────────────────
+  def security; end
+
+  def update_security
+    raw = params.require(:user).permit(:current_password, :email, :password, :password_confirmation, :locale)
+    user = current_user
+
+    # Если меняем пароль или email — current_password обязателен
+    if raw[:password].present? || raw[:email] != user.email
+      unless user.valid_password?(raw[:current_password].to_s)
+        flash.now[:alert] = t("profile.security.wrong_password", default: "Текущий пароль неверный")
+        render :security, status: :unprocessable_entity
+        return
+      end
+    end
+
+    updates = { email: raw[:email], locale: raw[:locale] }.compact
+    updates[:password]              = raw[:password]              if raw[:password].present?
+    updates[:password_confirmation] = raw[:password_confirmation] if raw[:password].present?
+
+    if user.update(updates)
+      bypass_sign_in(user) if raw[:password].present?  # держим сессию живой
+      redirect_to security_profile_path, notice: t("profile.security.updated", default: "Безопасность обновлена")
+    else
+      render :security, status: :unprocessable_entity
+    end
+  end
+
+  # ── Уведомления: per-user prefs (in_app/email per kind) ─────────────────
+  def notifications
+    @kinds = User::NOTIFICATION_KINDS
+    @prefs = (current_user.notification_preferences || {})
+  end
+
+  def update_notifications
+    raw = params[:preferences].to_h
+    cleaned = {}
+    User::NOTIFICATION_KINDS.each do |kind, _defaults|
+      pref = raw[kind].to_h
+      cleaned[kind] = {
+        "in_app" => pref["in_app"] == "1",
+        "email"  => pref["email"]  == "1"
+      }
+    end
+    current_user.update!(notification_preferences: cleaned)
+    redirect_to notifications_profile_path, notice: t("profile.notifications.updated", default: "Настройки уведомлений сохранены")
+  end
+
   private
 
   def load_employee

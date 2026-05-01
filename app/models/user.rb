@@ -17,6 +17,16 @@ class User < ApplicationRecord
 
   scope :active, -> { kept }
 
+  # Devise hook: discarded-юзеры не могут логиниться. Залок через
+  # Settings::UsersController#destroy ставит discarded_at.
+  def active_for_authentication?
+    super && discarded_at.nil?
+  end
+
+  def inactive_message
+    discarded_at ? :locked : super
+  end
+
   has_one  :employee, dependent: :nullify
   has_many :leave_approvals,  foreign_key: :approver_id,  dependent: :nullify, inverse_of: :approver
   has_many :kpi_evaluations,  foreign_key: :evaluator_id, dependent: :nullify, inverse_of: :evaluator
