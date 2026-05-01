@@ -5,7 +5,7 @@
     <div class="page-header__eyebrow">⚙ <%= t("navigation.dashboard") %></div>
     <h1 class="page-header__title m-0"><%= t("dashboard.customize_title", default: "Настройка дашборда") %></h1>
     <p class="page-header__subtitle">
-      <%= t("dashboard.customize_hint", default: "Перетащи виджеты чтобы изменить порядок. Сними галочку чтобы скрыть. Доступные виджеты зависят от твоей роли.") %>
+      <%= t("dashboard.customize_hint_v2", default: "Перетащи виджет чтобы изменить порядок. Кликни S/M/L чтобы выбрать размер. Сними галочку чтобы скрыть.") %>
     </p>
   </div>
   <div class="page-header__actions">
@@ -18,12 +18,14 @@
 </header>
 
 <%= form_with url: update_dashboard_widgets_path, method: :post, local: true,
-              data: { controller: "dashboard-customize", action: "submit->dashboard-customize#prepareSubmit" } do %>
+              data: { controller: "dashboard-customize",
+                      action: "submit->dashboard-customize#prepareSubmit" } do %>
   <div class="card-apple">
     <ul class="list-apple m-0" data-dashboard-customize-target="list">
       <% @widgets.each do |w| %>
         <li class="list-apple__item dashboard-widget-row" draggable="true" data-widget-key="<%= w[:key] %>">
           <span class="dashboard-widget-row__handle" title="<%= t("dashboard.drag_to_reorder", default: "Тащи чтобы изменить порядок") %>">⠿</span>
+
           <div class="form-check m-0">
             <input type="checkbox" class="form-check-input" data-customize="visible"
                    id="cb-<%= w[:key] %>" <%= 'checked' unless w[:hidden] %>>
@@ -33,6 +35,22 @@
                 <span class="footnote text-tertiary">· <%= t("dashboard.role_only", default: "только %{roles}", roles: w[:roles].join(", ")) %></span>
               <% end %>
             </label>
+          </div>
+
+          <%# ── Size picker (iOS-style 3-pip segmented control) ───────────── %>
+          <div class="size-segment" role="radiogroup"
+               aria-label="<%= t("dashboard.widget_size", default: "Размер виджета") %>">
+            <% %w[s m l].each do |size| %>
+              <label class="size-segment__pip <%= 'is-active' if w[:size] == size %>" title="<%= t("dashboard.sizes.#{size}_hint", default: { 's' => '1 колонка — компактный', 'm' => '2 колонки — средний', 'l' => '4 колонки — широкий' }[size]) %>">
+                <input type="radio"
+                       name="sizes[<%= w[:key] %>]"
+                       value="<%= size %>"
+                       data-customize="size"
+                       <%= 'checked' if w[:size] == size %>>
+                <span class="size-segment__icon size-segment__icon--<%= size %>" aria-hidden="true"></span>
+                <span class="size-segment__label"><%= size.upcase %></span>
+              </label>
+            <% end %>
           </div>
         </li>
       <% end %>

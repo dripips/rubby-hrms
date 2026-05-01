@@ -15,11 +15,12 @@ class DashboardController < ApplicationController
     @widgets = DashboardWidgets.catalog_for_user(current_user)
   end
 
-  # POST: { order: [...], hidden: [...] }
+  # POST: { order: [...], hidden: [...], sizes: { key => "s|m|l" } }
   def update_widgets
     DashboardWidgets.save_preferences!(current_user,
                                        order:  params[:order],
-                                       hidden: params[:hidden])
+                                       hidden: params[:hidden],
+                                       sizes:  params[:sizes])
     redirect_to dashboard_path, notice: t("dashboard.preferences_saved", default: "Дашборд настроен")
   end
 

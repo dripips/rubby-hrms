@@ -8,6 +8,21 @@ export default class extends Controller {
 
   connect() {
     this._bindDragHandlers()
+    this._bindSizeSegments()
+  }
+
+  // Toggle .is-active на size-pip при клике (radio-чек делает форма сама,
+  // нам только визуал надо обновить).
+  _bindSizeSegments() {
+    if (!this.hasListTarget) return
+    this.listTarget.addEventListener("change", (e) => {
+      const radio = e.target.closest('input[type="radio"][data-customize="size"]')
+      if (!radio) return
+      const segment = radio.closest(".size-segment")
+      if (!segment) return
+      segment.querySelectorAll(".size-segment__pip").forEach(p => p.classList.remove("is-active"))
+      radio.closest(".size-segment__pip")?.classList.add("is-active")
+    })
   }
 
   _bindDragHandlers() {

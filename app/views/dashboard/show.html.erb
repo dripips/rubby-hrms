@@ -15,8 +15,13 @@
   </div>
 </header>
 
-<%# ── Виджеты по списку из user.dashboard_preferences ──────────────────── %>
-<% DashboardWidgets.for_user(current_user).each do |widget| %>
-  <% next if widget[:hidden] %>
-  <%= render "dashboard/widgets/#{widget[:key]}" %>
-<% end %>
+<%# ── iOS-style grid: 4 cols (lg) → 2 cols (md) → 1 col (sm) ──────────── %>
+<div class="dashboard-grid">
+  <% DashboardWidgets.for_user(current_user).each do |widget| %>
+    <% next if widget[:hidden] %>
+    <div class="dashboard-widget dashboard-widget--<%= widget[:size] %>"
+         data-widget-key="<%= widget[:key] %>">
+      <%= render "dashboard/widgets/#{widget[:key]}", widget_size: widget[:size] %>
+    </div>
+  <% end %>
+</div>

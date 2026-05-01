@@ -47,7 +47,7 @@
             <div class="d-flex flex-column flex-fill min-w-0">
               <strong><%= a.kpi_metric&.name %></strong>
               <span class="footnote text-tertiary">
-                <%= t("dashboard.my_kpi.target", default: "цель") %>: <%= a.target_value %>
+                <%= t("dashboard.my_kpi.target", default: "цель") %>: <%= a.target %>
                 <% if last_eval %>
                   · <%= t("dashboard.my_kpi.last", default: "последний") %>: <%= last_eval.score %>%
                 <% end %>

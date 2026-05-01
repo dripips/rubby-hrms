@@ -276,6 +276,12 @@ de:
       month_avg: Monatsdurchschnitt
       target: Ziel
       last: letzter
+    customize_hint_v2: Ziehe Widgets zum Umsortieren. Klicke S/M/L für die Größe. Häkchen entfernen zum Ausblenden.
+    widget_size: Widget-Größe
+    sizes:
+      s_hint: 1 Spalte — kompakt
+      m_hint: 2 Spalten — mittel
+      l_hint: 4 Spalten — breit
   stub:
     title: Bereich im Aufbau
     subtitle: Eine vollständige Oberfläche kommt bald.

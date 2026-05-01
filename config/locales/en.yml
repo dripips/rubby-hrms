@@ -276,6 +276,12 @@ en:
       month_avg: monthly avg
       target: target
       last: latest
+    customize_hint_v2: Drag widgets to reorder. Click S/M/L to resize. Uncheck to hide.
+    widget_size: Widget size
+    sizes:
+      s_hint: 1 column — compact
+      m_hint: 2 columns — medium
+      l_hint: 4 columns — wide
   stub:
     title: Section under construction
     subtitle: A full UI will land here soon.
