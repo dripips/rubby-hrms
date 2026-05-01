@@ -79,6 +79,35 @@ class ProfileController < ApplicationController
     redirect_to notifications_profile_path, notice: t("profile.notifications.updated", default: "Настройки уведомлений сохранены")
   end
 
+  # ── GDPR / 152-ФЗ: Privacy ──────────────────────────────────────────────
+  def privacy; end
+
+  # Export всех данных юзера в JSON (DSAR — Data Subject Access Request).
+  def export_data
+    payload = GdprExporter.call(current_user)
+    send_data payload.to_json,
+              filename: "hrms-data-#{current_user.id}-#{Date.current}.json",
+              type:     "application/json",
+              disposition: "attachment"
+  end
+
+  # Soft-delete аккаунта: discarded_at на User + Employee. Sensitive fields
+  # обнуляются (email → "deleted-N@hrms.local", custom_fields → {}). Это GDPR
+  # Right to Erasure compliance — данные не уничтожаются полностью (audit
+  # требует следы), но PII убирается.
+  def delete_account
+    unless params[:confirm] == "DELETE"
+      redirect_to privacy_profile_path,
+                  alert: t("profile.privacy.delete_confirm_required",
+                           default: "Введи DELETE заглавными для подтверждения.")
+      return
+    end
+
+    GdprDeleter.call(current_user)
+    sign_out current_user
+    redirect_to root_path, notice: t("profile.privacy.deleted", default: "Аккаунт удалён. Прощай.")
+  end
+
   private
 
   def load_employee

@@ -16,12 +16,21 @@ load Rails.root.join("db", "seeds", "process_templates.rb").to_s
 load Rails.root.join("db", "seeds", "processes.rb").to_s
 load Rails.root.join("db", "seeds", "document_types.rb").to_s
 
+# В development засеиваем фиксированный пароль "password123" чтобы dev-юзеры
+# могли логиниться. В production этот код запускается только если БД пустая —
+# для каждого юзера генерируется случайный пароль и логируется.
+# Для prod-инсталляций пароли всё равно лучше задать через
+# scripts/install.sh — он создаёт ОДНОГО superadmin'а с генерируемым паролем
+# и не сидирует demo-юзеров.
+default_password = Rails.env.development? ? "password123" : SecureRandom.alphanumeric(20)
+
 users = [
-  { email: "admin@hrms.local",   password: "password123", role: :superadmin },
-  { email: "hr@hrms.local",      password: "password123", role: :hr },
-  { email: "manager@hrms.local", password: "password123", role: :manager },
-  { email: "alice@hrms.local",   password: "password123", role: :employee }
+  { email: "admin@hrms.local",   password: default_password, role: :superadmin },
+  { email: "hr@hrms.local",      password: default_password, role: :hr },
+  { email: "manager@hrms.local", password: default_password, role: :manager },
+  { email: "alice@hrms.local",   password: default_password, role: :employee }
 ]
+puts "[seed] default password for fresh seed users: #{default_password}" unless Rails.env.development?
 
 created = 0
 updated = 0

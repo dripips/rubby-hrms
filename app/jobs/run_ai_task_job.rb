@@ -32,7 +32,15 @@ class RunAiTaskJob < ApplicationJob
     setting = AppSetting.fetch(company: Company.kept.first, category: "ai")
     ai      = RecruitmentAi.new(setting: setting, output_locale: user.locale)
 
-    result = begin
+    # ── Hard-cap по бюджету (защита от runaway costs / abuse) ──────────────
+    budget_blocked = AiBudgetGuard.over_budget?(setting)
+
+    result = if budget_blocked
+      reason = AiBudgetGuard.block_reason(setting)
+      Rails.logger.warn("[RunAiTaskJob] BLOCKED #{kind}: #{reason}")
+      { ok: false, error: reason, tokens: 0, input_tokens: 0, output_tokens: 0 }
+    else
+      begin
       case kind
       when "analyze_resume"          then ai.analyze_resume(applicant)
       when "recommend"               then ai.recommend(applicant)
@@ -70,9 +78,10 @@ class RunAiTaskJob < ApplicationJob
         ai.company_bootstrap(company, user_message: user_message, history: history)
       else raise "Unknown AI kind: #{kind}"
       end
-    rescue StandardError => e
-      Rails.logger.error("[RunAiTaskJob] #{e.class}: #{e.message}")
-      { ok: false, error: e.message.first(200), tokens: 0, input_tokens: 0, output_tokens: 0 }
+      rescue StandardError => e
+        Rails.logger.error("[RunAiTaskJob] #{e.class}: #{e.message}")
+        { ok: false, error: e.message.first(200), tokens: 0, input_tokens: 0, output_tokens: 0 }
+      end
     end
 
     # Для company_bootstrap сохраняем user_message в payload — UI thread его

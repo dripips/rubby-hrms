@@ -181,6 +181,10 @@ Rails.application.routes.draw do
       patch :update_security, path: "security"
       get :notifications
       patch :update_notifications, path: "notifications"
+      # GDPR / 152-ФЗ
+      get :privacy
+      get :export_data
+      delete :delete_account
     end
 
     # AI Audit log — отдельный аудит для запусков AI-задач (HR/admin only).

@@ -25,6 +25,7 @@ de:
       personal: Persönlich
       security: Sicherheit
       notifications: Benachrichtigungen
+      privacy: Datenschutz
     security:
       title: Sicherheit
       hint: E-Mail, Passwort und Sprache ändern. Zum Ändern von E-Mail oder Passwort — aktuelles Passwort zur Bestätigung eingeben.
@@ -40,6 +41,19 @@ de:
       title: Benachrichtigungen
       hint: Welche Ereignisse wohin geliefert werden. Eine Benachrichtigung wird verworfen, wenn beide Kanäle aus sind.
       updated: Benachrichtigungs-Einstellungen gespeichert
+    privacy:
+      title: Datenschutz & Daten
+      hint: Lade alle deine Daten als JSON herunter oder lösche dein Konto. DSGVO Art.15+17 / 152-FZ.
+      export_title: Meine Daten exportieren
+      export_hint: 'JSON mit allen deinen Daten: Profil, Dokumente, Urlaube, KPI, KI-Läufe, Änderungsverlauf. DSGVO Art.15 (Auskunftsrecht).'
+      export_btn: JSON herunterladen
+      delete_title: Konto löschen
+      delete_hint: E-Mail, Name, Kontakte, Zusatzfelder, Dokumente — werden gelöscht. Audit-Protokolle bleiben für Compliance erhalten, mit anonymisiertem Autor. Nicht rückgängig zu machen. Recht auf Vergessenwerden (DSGVO Art.17 / 152-FZ).
+      confirm_prompt: 'Tippe DELETE in Großbuchstaben:'
+      delete_confirm: Konto wirklich endgültig löschen?
+      delete_confirm_required: Tippe DELETE in Großbuchstaben zur Bestätigung.
+      delete_btn: Endgültig löschen
+      deleted: Konto gelöscht. Auf Wiedersehen.
   navigation:
     workspace: Arbeitsbereich
     org: Organisation

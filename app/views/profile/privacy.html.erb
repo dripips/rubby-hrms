@@ -1,0 +1,52 @@
+<% content_for(:page_title) { t("profile.privacy.title", default: "Приватность и данные") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🛡 <%= t("profile.eyebrow", default: "Мой профиль") %></div>
+    <h1 class="page-header__title m-0"><%= t("profile.privacy.title", default: "Приватность и данные") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("profile.privacy.hint", default: "Скачай все свои данные одним JSON или удали аккаунт. Соответствие GDPR Art.15+17 / 152-ФЗ.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), profile_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "profile/tabs" %>
+
+<section class="row g-3">
+  <div class="col-lg-6">
+    <div class="card-apple">
+      <h3 class="title-3 mb-3">📥 <%= t("profile.privacy.export_title", default: "Выгрузить мои данные") %></h3>
+      <p class="footnote text-secondary-apple">
+        <%= t("profile.privacy.export_hint",
+              default: "JSON со всеми твоими данными в системе: профиль, документы, отпуски, KPI, AI-вызовы, история изменений. Соответствие праву доступа (GDPR Art.15).") %>
+      </p>
+      <%= link_to "📥 #{t("profile.privacy.export_btn", default: "Скачать JSON")}",
+                  export_data_profile_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card-apple ai-leaves-result--error">
+      <h3 class="title-3 mb-3">⚠ <%= t("profile.privacy.delete_title", default: "Удалить аккаунт") %></h3>
+      <p class="footnote text-secondary-apple">
+        <%= t("profile.privacy.delete_hint",
+              default: "Email, имя, контакты, доп.поля, документы — обнулятся. Audit-журналы останутся для compliance, но с обезличенным автором. Восстановить нельзя. Право на забвение (GDPR Art.17 / 152-ФЗ).") %>
+      </p>
+      <%= form_with url: delete_account_profile_path, method: :delete, local: true, class: "d-flex gap-2 align-items-end" do %>
+        <div class="flex-fill">
+          <label for="confirm" class="form-label">
+            <%= t("profile.privacy.confirm_prompt", default: "Введи DELETE заглавными:") %>
+          </label>
+          <input type="text" name="confirm" id="confirm" class="form-control" placeholder="DELETE" required>
+        </div>
+        <button type="submit" class="btn btn-danger"
+                data-turbo-confirm="<%= t("profile.privacy.delete_confirm", default: "Точно удалить аккаунт без возможности восстановления?") %>">
+          <%= t("profile.privacy.delete_btn", default: "Удалить навсегда") %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+</section>

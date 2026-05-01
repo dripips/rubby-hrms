@@ -25,6 +25,7 @@ en:
       personal: Personal
       security: Security
       notifications: Notifications
+      privacy: Privacy
     security:
       title: Security
       hint: Change email, password and interface locale. To change email or password — confirm with current password.
@@ -40,6 +41,19 @@ en:
       title: Notifications
       hint: Which events delivered where. A notification is dropped if both channels are off.
       updated: Notification preferences saved
+    privacy:
+      title: Privacy & Data
+      hint: Download all your data as JSON or delete your account. GDPR Art.15+17 / 152-FZ compliance.
+      export_title: Export my data
+      export_hint: 'JSON with all your data: profile, documents, leaves, KPI, AI runs, change history. GDPR Art.15 (right of access).'
+      export_btn: Download JSON
+      delete_title: Delete account
+      delete_hint: Email, name, contacts, custom fields, documents — wiped. Audit logs remain for compliance with the author anonymized. Cannot be undone. Right to erasure (GDPR Art.17 / 152-FZ).
+      confirm_prompt: 'Type DELETE in caps:'
+      delete_confirm: Really delete the account permanently?
+      delete_confirm_required: Type DELETE in caps to confirm.
+      delete_btn: Delete forever
+      deleted: Account deleted. Goodbye.
   navigation:
     workspace: Workspace
     org: Organization
