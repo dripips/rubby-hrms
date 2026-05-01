@@ -1,0 +1,13 @@
+<% content_for(:page_title) { @leave_type.name } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🏖 <%= t("settings.leave_types.title", default: "Типы отпусков") %></div>
+    <h1 class="page-header__title m-0"><%= t("common.edit") %>: <%= @leave_type.name %></h1>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_leave_types_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "form", leave_type: @leave_type %>

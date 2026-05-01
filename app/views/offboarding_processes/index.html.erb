@@ -2,8 +2,13 @@
 
 <header class="page-header">
   <div>
-    <h1 class="title-1 m-0">👋 <%= t("offboarding.title") %></h1>
-    <p class="footnote text-secondary-apple m-0"><%= t("offboarding.subtitle") %></p>
+    <div class="page-header__eyebrow">👋 <%= t("offboarding.eyebrow", default: "HR-процессы") %></div>
+    <h1 class="page-header__title m-0"><%= t("offboarding.title") %></h1>
+    <p class="page-header__subtitle"><%= t("offboarding.subtitle") %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), dashboard_path, class: "btn btn-ghost" %>
+    <%= link_to t("offboarding.actions.new", default: "+ Новый процесс"), new_offboarding_process_path, class: "btn btn-primary" %>
   </div>
 </header>
 

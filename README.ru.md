@@ -1,121 +1,177 @@
-# HRMS — Система управления персоналом
+# HRMS
 
-[English](README.md) | [Русский](README.ru.md)
+[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md)
 
-Современная HRMS на Rails 8 c дизайном в стиле Apple-HIG и 22 AI-агентами, покрывающими весь цикл жизни сотрудника — от резюме кандидата до его последнего рабочего дня.
+**Универсальная HRMS для любой индустрии — от tech-стартапа до септик-сервиса.** Open source, self-hosted, с AI-ассистентом, дружелюбна к регуляторам (152-ФЗ, GDPR).
 
-Это первый проект в обучающем зонтике [`rubby`](https://github.com/dripips?tab=repositories&q=rubby) — пять серьёзных Ruby/Rails-проектов на реальных доменах, не «учебные».
+Rails 8 · Hotwire · 24 AI-агента · Apple-HIG · Три локали · Установка в одну команду через Docker.
+
+![Статус](https://img.shields.io/badge/status-beta-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Ruby](https://img.shields.io/badge/ruby-4.0.3-red) ![Rails](https://img.shields.io/badge/rails-8.1-cc0000)
+
+---
+
+## Зачем
+
+Большинство HR-систем зашивают словарь одной индустрии в код. Сотрудник — «разработчик», отпуск — «PTO», документ — «паспорт». Реальные компании сложнее: у септик-сервиса нужны категории ВУ и ADR-допуски; у частной клиники — номера лицензий; у tech-стартапа — GitHub URL'ы. Каждая компания — *своя* версия HR.
+
+**HRMS гнётся под компанию, а не наоборот.** У каждой сущности (Сотрудник, Должность, Документ, Заявка на отпуск, Кандидат, Отдел) есть универсальный механизм **Доп.полей** через Справочники. HR определяет схему один раз — формы, валидация, AI-извлечение и аудит подхватывают её автоматически.
 
 ## Главное
 
-- **Полный цикл сотрудника:** найм → онбординг → KPI → отпуска → офбординг
-- **22 AI-агента** на OpenAI: разбор резюме, ранжирование кандидатов, подбор наставника, анализ выгорания, оценка риска ухода, план передачи знаний и многое другое
-- **Live UI** — каждое действие обновляет интерфейс через Turbo + ActionCable. Никаких перезагрузок страниц.
-- **Дизайн-система Apple-HIG** — общий SCSS-сабмодуль [`rubby-design-system`](https://github.com/dripips/rubby-design-system) с системными цветами, шрифтом SF Pro и spring-анимациями
-- **Три локали** — русская (основная), английская, немецкая с автоматическим fallback'ом
-- **Готовность к мульти-компании** — компании → отделы → сотрудники, хотя по умолчанию засеивается только одна
-- **Журнал событий** на paper_trail с возможностью отката любого отслеживаемого события
-- **RBAC через Pundit**: четыре роли (superadmin / hr / manager / employee)
+- 🌍 **Универсально по индустриям.** Доп.поля для каждой сущности, настраиваемые списки, всё company-scoped.
+- 🪄 **24 AI-агента** на весь жизненный цикл сотрудника, работают на **любом OpenAI-compatible endpoint** — OpenAI, OpenRouter, Together, Groq, DeepSeek, vLLM, Ollama, свой сервер.
+- 📄 **Раздел документов** с авто-разбором (pdf-reader + Tesseract OCR + OpenAI Vision как fallback), AI-сводкой, отслеживанием срока действия, email-уведомлениями.
+- 🤖 **AI Bootstrap чат** — расскажи про компанию обычным текстом, AI предложит полный набор полей и справочников под твою индустрию. Подтверди что нужно.
+- ⚡ **Реактивный UI** — каждое изменение через Turbo + ActionCable. Без перезагрузок страниц.
+- 🎨 **Apple-HIG дизайн-система** — системные цвета, SF Pro, spring-анимации.
+- 🌐 **Три локали (RU / EN / DE)** с автоматической цепочкой fallback. AI отвечает на локали пользователя.
+- 📊 **Cost dashboard** — реальные траты на AI по задачам, моделям, пользователям.
+- 🔐 **Audit log** + Pundit RBAC + soft-delete + revert.
+- 📧 **Email-уведомления** с настраиваемым через UI SMTP.
+- 🐳 **Установка одной командой** через Docker, секреты генерируются автоматически.
 
-## Стек
+## Быстрая установка (Docker)
 
-- **Rails 8.1** + Hotwire (Turbo, Stimulus) + Bootstrap 5.3 (поверх Apple-токенов)
-- **PostgreSQL 18** + Solid Queue (фоновые задачи) + Solid Cable (WebSocket)
-- **Devise** — аутентификация, **Pundit** — авторизация
-- **paper_trail** + **Discard** — soft-delete и история
-- **AASM** — стейт-машины (отпуска, интервью, процессы)
-- **noticed** — in-app уведомления + email
-- **OpenAI Chat Completions** для AI-агентов (настройки модели на задачу)
-- **dartsass-rails** + кастомный дизайн-система-сабмодуль
-- **RSpec** + FactoryBot + Capybara для тестов
+```bash
+git clone https://github.com/dripips/hrms.git
+cd hrms
+./scripts/install.sh
+```
+
+Готово. Установщик:
+
+1. Сгенерит случайные `RAILS_MASTER_KEY` и пароль PostgreSQL
+2. Соберёт образ (Tesseract OCR + poppler + libvips включены)
+3. Запустит `db + app + worker` контейнеры
+4. Создаст первого superadmin'а
+5. Выведет URL и доступы
+
+Открой http://localhost:3000 и заходи.
 
 ## Модули
 
 | Модуль | Что делает |
 |---|---|
-| **Найм** | Вакансии, кандидаты, канбан-пайплайн, раунды интервью со scorecard'ами, публичная страница карьеры, календарь, аналитика |
-| **KPI** | Еженедельные назначения метрик, оценки, лидерборд, дашборд трендов |
-| **Отпуска** | Настраиваемые правила согласования с приоритетной цепочкой, баланс дней, аналитика выгорания |
-| **Онбординг / Офбординг** | Шаблоны процессов с задачами по этапам, AI-планирование, оценка риска ухода |
-| **Журнал событий** | Все изменения отслеживаются, откатываются, фильтруются по пользователю / событию / объекту / периоду |
-| **Настройки** | Языки, SMTP, AI-провайдеры, уведомления, страница карьеры, правила отпусков, гендеры, шаблоны процессов |
+| **Документы** | Загрузка, авто-разбор (regex + AI Vision), применение с правками, уведомления об истечении |
+| **Recruitment** | Вакансии, кандидаты, kanban-pipeline, раунды интервью со scorecard, публичная careers-страница, календарь, аналитика |
+| **KPI** | Еженедельные метрики, оценки, leaderboard, тренды |
+| **Отпуски** | Настраиваемые правила согласования с приоритетами, баланс, аналитика выгорания |
+| **Онбординг / Офбординг** | Шаблоны процессов с задачами по этапам, AI-планы, exit risk |
+| **Справочники** | Универсальные company-scoped списки + схемы доп.полей + AI seed |
+| **Audit log** | Каждое изменение трекается + revert; история AI-вызовов с drill-down'ами |
+| **Профиль** | Self-service портал — сотрудник правит свои контакты, экстренный контакт, доступность |
+| **Настройки** | Языки, SMTP, AI-провайдеры (OpenAI / OpenRouter / Anthropic / свой), уведомления, careers, правила отпусков, типы документов, должности, типы отпусков |
+
+## Система Custom Fields
+
+У каждой сущности есть `custom_fields` (jsonb). Схемы определяются как **Справочники** с `kind: field_schema` и `code: "<Модель>:<scope>"`.
+
+Пример для септик-сервиса:
+
+```
+HR заходит в /settings/dictionaries
+  → "+ Схема" → Code: Employee:default
+  → AI helper: "септик-сервис в Подмосковье, 12 водителей, обязательная мед.книжка"
+  → AI предлагает 5 полей:
+      - driver_license_class (select: B, C, D, E)
+      - adr_license_until (date)
+      - medical_book_until (date, обязательное)
+      - hazardous_work_clearance (boolean)
+      - uniform_size (select)
+  → Применить всё → поля появляются в форме каждого сотрудника сразу.
+```
+
+Тот же механизм для `Document:N` (одна схема на тип документа), `JobApplicant:opening_id` (под вакансию), `LeaveRequest:leave_type_id`, `Department:default`, `Position:default`, `LeaveType:default`.
 
 ## AI-агенты
 
-Все 22 агента идут по единому пайплайну: `RunAiTaskJob` (асинхронно) → сервис `RecruitmentAi` → запись в `AiRun` → live-broadcast в UI.
+24 агента на весь жизненный цикл. Два самых новых:
 
-**Со стороны найма:**
-- `analyze_resume` — навыки, опыт, сильные стороны, красные флаги
-- `recommend` — рекомендация по найму (strong_yes / yes / maybe / no / strong_no) + балл
-- `generate_assignment` — тестовое задание под уровень кандидата
-- `questions_for` — вопросы для раунда интервью под профиль кандидата
-- `summarize_interview` — резюме раунда с вердиктом
-- `compare_candidates` — ранжирование нескольких кандидатов на одну вакансию
-- `offer_letter` — полное оффер-письмо с переговорными заметками
+- **`company_bootstrap`** — чат-консультант, интервьюирует HR про компанию и предлагает полную конфигурацию словарей
+- **`dictionary_seed`** — наполняет один конкретный словарь записями
 
-**Удержание сотрудников:**
-- `burnout_brief` — анализ риска выгорания по KPI + отпускам + стажу
-- `suggest_leave_window` — оптимальное окно для отпуска
-- `kpi_brief` — бриф эффективности для руководителя
-- `meeting_agenda` — подготовка к 1:1
-- `kpi_team_brief` — стратегический обзор команды
-- `compensation_review` — оценка справедливости компенсации (raise / hold / review_band)
-- `exit_risk_brief` — проактивная оценка риска ухода 0–100 + действия по удержанию
+Плюс жизненный цикл:
 
-**Онбординг:**
-- `onboarding_plan` — персональный план задач поверх шаблона
-- `welcome_letter` — тёплое приветственное письмо
-- `mentor_match` — топ-3 кандидатов в наставники с обоснованием
-- `probation_review` — review итогов испытательного срока
+| Домен | Агенты |
+|---|---|
+| Рекрутинг | `analyze_resume`, `recommend`, `generate_assignment`, `questions_for`, `summarize_interview`, `compare_candidates`, `offer_letter` |
+| Удержание | `burnout_brief`, `suggest_leave_window`, `kpi_brief`, `meeting_agenda`, `kpi_team_brief`, `compensation_review`, `exit_risk_brief` |
+| Онбординг | `onboarding_plan`, `welcome_letter`, `mentor_match`, `probation_review` |
+| Офбординг | `knowledge_transfer_plan`, `exit_interview_brief`, `replacement_brief` |
+| Документы | `document_summary`, `document_extract_assist` (с Vision API для картинок) |
 
-**Офбординг:**
-- `knowledge_transfer_plan` — области передачи, получатели, структура сессий
-- `exit_interview_brief` — персональные вопросы для exit-interview
-- `replacement_brief` — черновик вакансии на замену
+Серверный **AiLock** не даёт запустить ту же задачу дважды (даже из разных вкладок).
 
-Серверный **AiLock** не даёт запустить дубль одной и той же задачи по одному объекту во вкладках/сессиях, с автоматическим откатом UI при завершении воркера.
+### AI-провайдеры
 
-## Быстрый старт
+Переключаются в **Настройки → AI**. Готовые пресеты:
 
-Требования: **Ruby 4.0.3**, **PostgreSQL 18**, **Bundler 4.0.6**.
+- OpenAI (по умолчанию) — `gpt-5-nano`, `gpt-5-mini`, `gpt-5`, `o3`
+- OpenRouter — Qwen, Claude, Llama, DeepSeek, Gemini
+- Together.ai — Qwen-Turbo, Llama-Turbo, DeepSeek-V3
+- Groq — Llama-3.3, Qwen-QwQ, DeepSeek-R1
+- DeepSeek (native)
+- Anthropic (через LiteLLM прокси)
+- Custom — любой OpenAI-compatible endpoint (vLLM, Ollama, свой сервер)
+
+Override модели на задачу: `gpt-5-mini` для `company_bootstrap` (лучше с meta-rules) и `gpt-5-nano` на остальное (дёшево и быстро).
+
+## Стек
+
+- **Rails 8.1** + Hotwire (Turbo, Stimulus) + Bootstrap 5.3 (под Apple-токены)
+- **PostgreSQL 18** + Solid Queue + Solid Cable
+- **Devise** + **Pundit** + **paper_trail** + **Discard** + **AASM**
+- **noticed** для in-app + email уведомлений
+- **pdf-reader** + **rtesseract** для разбора документов
+- **dartsass-rails** + дизайн-система через сабмодуль
+- **RSpec** + FactoryBot + Capybara
+
+## Ручная установка (без Docker)
+
+Требования: **Ruby 4.0.3**, **PostgreSQL 18**, **Tesseract OCR** (с `tesseract-ocr-rus` и `tesseract-ocr-eng`), **Poppler** (`pdftoppm` для скан-PDF).
 
 ```bash
-# Клонирование с дизайн-системой как сабмодулем
-git clone --recurse-submodules git@github.com:dripips/rubby-hrms.git
-cd rubby-hrms
+git clone https://github.com/dripips/hrms.git
+cd hrms
 
-# Зависимости
+# Настрой БД в config/database.yml или .env.development.local
 bundle install
-
-# База данных
 bin/rails db:create db:migrate db:seed
 
-# Dev-сервер (Rails + dartsass watcher + Solid Queue)
-bin/dev
+bin/dev   # Rails + dartsass watcher + Solid Queue
 ```
 
-Учётки по умолчанию (пароль: `password123`):
-- `admin@hrms.local` — суперадмин
-- `hr@hrms.local` — HR-специалист
+Засеяные пользователи (пароль: `password123`):
+- `admin@hrms.local` — superadmin
+- `hr@hrms.local` — HR
 - `manager@hrms.local` — менеджер
-- `alice@hrms.local` — обычный сотрудник
+- `alice@hrms.local` — рядовой сотрудник
 
-Сидер создаёт реалистичную команду из 27 сотрудников с иерархией, историей KPI, отпусками, активными воронками найма и 7 процессами онбординга/офбординга в разных стадиях.
+## Архитектура
 
-## Конфигурация
+- **Реактивный UI**: контроллеры делают broadcast через `Turbo::StreamsChannel`. AI-задачи используют `AiLock` + `broadcast_controls` для in-flight индикаторов в каждой вкладке.
+- **i18n**: русский — основной; EN/DE fallback на ru. Все три локали поддерживаются в строгой парности (2094 ключа каждая на v1.0).
+- **AI cost-ceiling**: каждый AiRun пишет токены и стоимость в долларах. Настройки → AI показывает разбивку за месяц.
+- **SMTP runtime-конфиг**: `ApplicationMailer#apply_runtime_smtp` читает `AppSetting(category: "smtp")` на каждый запрос — менять SMTP можно через UI без рестарта.
+- **2FA пока нет** by design — упор на сильные пароли + RBAC. Добавить через Devise extension если нужно для прода.
 
-AI-провайдеры, модели и лимиты токенов на задачу настраиваются через **Настройки → AI ассистент** (только HR/superadmin). API-ключ OpenAI хранится зашифрованным в `app_settings`.
+## Roadmap
 
-## Архитектурные заметки
+- ☐ Multi-tenant routing (subdomain на компанию)
+- ☐ Mobile-first review screen
+- ☐ Slack/Telegram канал для уведомлений
+- ☐ Улучшения публичной job board
+- ☐ RSpec покрытие до >80%
+- ☐ PDF scan→OCR pipeline (poppler + Tesseract для скан-PDF)
 
-- **Live UI**: каждое действие контроллера broadcast'ит через `Turbo::StreamsChannel`. Никаких `redirect_to` после AJAX — всё обновляется turbo-stream'ами.
-- **i18n**: русский — основной; en/de падают fallback'ом на ru через `config.i18n.fallbacks = { en: [:ru], de: [:ru] }`. Переводы добавляются по одной локали за раз.
-- **Кириллица в путях ломает Windows.** Проект живёт по пути `C:\rubby\01_hrms\` — перенос под кириллический каталог сломал Bootsnap, файловый I/O и SSH known_hosts.
+## Вклад
+
+Pull request'ы приветствуются. Проект следует Apple-HIG SCSS-токенам — никакого голого Bootstrap. Анимации только через spring easing. Новые i18n ключи добавляются во все три локали сразу (`tmp/sync_locales.rb` — helper для массовых добавлений).
 
 ## Лицензия
 
-MIT
+MIT — см. [LICENSE](LICENSE).
 
 ## Автор
 
-[Вадим Бобков](https://github.com/dripips) — пишу это как часть путешествия по Ruby, параллельно выкатывая продакшн-код на PHP, Java, Python и TypeScript.
+[Вадим Бобков](https://github.com/dripips) — построил как часть [`rubby`](https://github.com/dripips?tab=repositories&q=rubby) обучающего пакета, параллельно работая на проде в PHP / Java / Python / TypeScript.

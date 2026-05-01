@@ -1,0 +1,63 @@
+<%= form_with model: leave_type, url: leave_type.persisted? ? settings_leave_type_path(leave_type) : settings_leave_types_path,
+              local: true, class: "card-apple form-apple d-flex flex-column gap-3" do |f| %>
+  <% if leave_type.errors.any? %>
+    <div class="alert alert-danger">
+      <%= leave_type.errors.full_messages.to_sentence %>
+    </div>
+  <% end %>
+
+  <div class="row g-3">
+    <div class="col-md-8">
+      <%= f.label :name, t("settings.leave_types.fields.name", default: "Название"), class: "form-label" %>
+      <%= f.text_field :name, class: "form-control", required: true,
+                       placeholder: t("settings.leave_types.name_placeholder", default: "Очередной отпуск / Командировка / Remote-day") %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :code, t("settings.leave_types.fields.code", default: "Код"), class: "form-label" %>
+      <%= f.text_field :code, class: "form-control", placeholder: "annual / business_trip / remote" %>
+    </div>
+
+    <div class="col-md-4">
+      <%= f.label :default_days_per_year, t("settings.leave_types.fields.default_days_per_year", default: "Дней в году по умолчанию"), class: "form-label" %>
+      <%= f.number_field :default_days_per_year, class: "form-control", min: 0, step: 1 %>
+      <p class="form-text"><%= t("settings.leave_types.default_days_hint", default: "Оставь пустым если квота индивидуальная.") %></p>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :color, t("settings.leave_types.fields.color", default: "Цвет"), class: "form-label" %>
+      <%= f.color_field :color, class: "form-control form-control-color", value: leave_type.color || "#0a84ff" %>
+    </div>
+    <div class="col-md-4">
+      <%= f.label :sort_order, t("settings.leave_types.fields.sort_order", default: "Порядок"), class: "form-label" %>
+      <%= f.number_field :sort_order, class: "form-control" %>
+    </div>
+
+    <div class="col-md-4">
+      <div class="form-check mt-2">
+        <%= f.check_box :paid, class: "form-check-input" %>
+        <%= f.label :paid, t("settings.leave_types.fields.paid", default: "Оплачиваемый"), class: "form-check-label" %>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-check mt-2">
+        <%= f.check_box :requires_doc, class: "form-check-input" %>
+        <%= f.label :requires_doc, t("settings.leave_types.fields.requires_doc", default: "Нужна справка"), class: "form-check-label" %>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-check mt-2">
+        <%= f.check_box :active, class: "form-check-input" %>
+        <%= f.label :active, t("common.active", default: "Активен"), class: "form-check-label" %>
+      </div>
+    </div>
+  </div>
+
+  <%= render_custom_fields_inputs(f,
+        target_model: "LeaveType",
+        target_scope: "default",
+        values:       leave_type.custom_fields) %>
+
+  <div class="d-flex gap-2">
+    <%= f.submit t("common.save"), class: "btn btn-primary" %>
+    <%= link_to t("common.cancel"), settings_leave_types_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

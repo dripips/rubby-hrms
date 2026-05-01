@@ -120,6 +120,10 @@
       </div>
     </div>
 
+    <%= render_custom_field_values(@leave_request.custom_fields,
+          target_model: "LeaveRequest",
+          target_scope: @leave_request.leave_type_id || "default") %>
+
     <% if @approvals.any? %>
       <div class="card-apple mt-3">
         <h3 class="card-apple__title mb-3"><%= t("leaves.history", default: "История согласований") %></h3>

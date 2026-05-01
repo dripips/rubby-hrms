@@ -103,6 +103,11 @@
           <%= f.text_area :reason, class: "form-control", rows: 3, placeholder: t("leaves.reason_placeholder") %>
         </div>
 
+        <%= render_custom_fields_inputs(f,
+              target_model: "LeaveRequest",
+              target_scope: @leave_request.leave_type_id || "default",
+              values:       @leave_request.custom_fields) %>
+
         <div class="d-flex justify-content-end gap-2">
           <%= f.submit t("leaves.save_draft"), class: "btn btn-soft" %>
           <%= f.submit t("leaves.submit_now"), name: "submit", class: "btn btn-primary" %>

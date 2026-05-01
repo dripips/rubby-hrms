@@ -53,6 +53,7 @@ class LeaveRequestsController < ApplicationController
     @leave_request = LeaveRequest.new(leave_request_params)
     @leave_request.employee ||= current_employee
     @leave_request.days = (@leave_request.ended_on - @leave_request.started_on + 1).to_i if @leave_request.started_on && @leave_request.ended_on
+    apply_custom_fields(@leave_request, params[:custom_fields])
 
     if @leave_request.save
       @leave_request.submit! if params[:submit]
@@ -61,6 +62,14 @@ class LeaveRequestsController < ApplicationController
       load_form_data
       redirect_to leave_requests_path, alert: @leave_request.errors.full_messages.to_sentence
     end
+  end
+
+  def apply_custom_fields(leave_request, raw)
+    return unless raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
+
+    cleaned = raw.to_unsafe_h.transform_values { |v| v.is_a?(String) ? v.strip : v }
+    cleaned.reject! { |_, v| v.nil? || (v.is_a?(String) && v.empty?) }
+    leave_request.custom_fields = (leave_request.custom_fields.to_h || {}).merge(cleaned)
   end
 
   def destroy

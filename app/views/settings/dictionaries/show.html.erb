@@ -1,0 +1,90 @@
+<% content_for(:page_title) { @dictionary.name } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">
+      📚 <%= t("settings.dictionaries.title", default: "Справочники") %>
+      ·
+      <span class="pill pill--<%= @dictionary.field_schema? ? 'purple' : 'info' %>">
+        <%= t("settings.dictionaries.kinds.#{@dictionary.kind}", default: @dictionary.kind.humanize) %>
+      </span>
+    </div>
+    <h1 class="page-header__title m-0"><%= @dictionary.name %></h1>
+    <p class="page-header__subtitle">
+      <code><%= @dictionary.code %></code>
+      <% if @dictionary.description.present? %>· <%= @dictionary.description %><% end %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"),  settings_dictionaries_path,           class: "btn btn-ghost" %>
+    <%= link_to t("common.edit"),  edit_settings_dictionary_path(@dictionary), class: "btn btn-soft" %>
+    <%= button_to t("common.delete"), settings_dictionary_path(@dictionary), method: :delete,
+                  class: "btn btn-danger", form: { class: "d-inline" },
+                  data: { turbo_confirm: t("common.confirm.delete") } %>
+  </div>
+</header>
+
+<section class="card-apple mb-3">
+  <h2 class="title-3 mb-3">
+    <% if @dictionary.field_schema? %>
+      🧩 <%= t("settings.dictionaries.fields_in_schema", default: "Поля схемы") %>
+    <% else %>
+      📋 <%= t("settings.dictionaries.entries_title", default: "Записи списка") %>
+    <% end %>
+  </h2>
+
+  <% if @entries.empty? %>
+    <p class="footnote text-tertiary mb-3">
+      <%= t("settings.dictionaries.entries_empty", default: "Записей пока нет — добавь ниже.") %>
+    </p>
+  <% else %>
+    <ul class="list-apple mb-3">
+      <% @entries.each do |entry| %>
+        <li class="list-apple__item">
+          <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <strong><%= entry.value %></strong>
+              <span class="footnote text-tertiary"><code><%= entry.key %></code></span>
+              <% if @dictionary.field_schema? %>
+                <span class="pill pill--neutral"><%= entry.field_type %></span>
+                <% if entry.field_required %>
+                  <span class="pill pill--danger"><%= t("settings.dictionaries.required_badge", default: "обязательное") %></span>
+                <% end %>
+              <% end %>
+              <% unless entry.active %>
+                <span class="pill pill--neutral"><%= t("common.inactive", default: "выключено") %></span>
+              <% end %>
+            </div>
+            <% if @dictionary.field_schema? && entry.field_hint.present? %>
+              <span class="footnote text-secondary-apple"><%= entry.field_hint %></span>
+            <% end %>
+            <% if @dictionary.field_schema? && entry.field_type == "select" && entry.field_options.any? %>
+              <span class="footnote text-tertiary">
+                <%= t("settings.dictionaries.options_label", default: "Варианты") %>: <%= entry.field_options.join(", ") %>
+              </span>
+            <% end %>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <%= link_to t("common.edit"), edit_settings_dictionary_entry_path(@dictionary, entry), class: "btn btn-ghost btn-sm" %>
+            <%= button_to t("common.delete"), settings_dictionary_entry_path(@dictionary, entry), method: :delete,
+                          class: "btn btn-ghost btn-sm", form: { class: "d-inline" },
+                          data: { turbo_confirm: t("common.confirm.delete") } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <details <%= "open" unless @entries.any? %> class="mt-2">
+    <summary class="footnote text-secondary-apple" style="cursor: pointer;">
+      <%= t("settings.dictionaries.add_entry", default: "+ Добавить запись") %>
+    </summary>
+    <div class="mt-3">
+      <%= render "settings/dictionary_entries/form",
+                 dictionary: @dictionary, entry: @new_entry,
+                 url: settings_dictionary_entries_path(@dictionary) %>
+    </div>
+  </details>
+</section>
+
+<%= render "ai_panel", dictionary: @dictionary %>

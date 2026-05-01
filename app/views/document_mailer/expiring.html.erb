@@ -1,0 +1,59 @@
+<h2><%= t("document_mailer.expiring.heading", default: "Документ требует внимания") %></h2>
+
+<p>
+  <% if @days_left < 0 %>
+    <strong style="color: #ff453a;">⚠
+      <%= t("document_mailer.expiring.body_expired",
+            title: @document.display_title, owner: @owner_name, days: @days_left.abs,
+            default: "Document «%{title}» (%{owner}) is %{days} days overdue.") %>
+    </strong>
+  <% elsif @days_left == 0 %>
+    <strong style="color: #ff9f0a;">⚠
+      <%= t("document_mailer.expiring.body_today",
+            title: @document.display_title, owner: @owner_name,
+            default: "Document «%{title}» (%{owner}) expires today.") %>
+    </strong>
+  <% elsif @days_left <= 7 %>
+    ⏰ <%= t("document_mailer.expiring.body_week",
+            title: @document.display_title, owner: @owner_name, days: @days_left,
+            default: "Document «%{title}» (%{owner}) expires in %{days} days.") %>
+  <% else %>
+    <%= t("document_mailer.expiring.body_month",
+          title: @document.display_title, owner: @owner_name, days: @days_left,
+          default: "Document «%{title}» (%{owner}) expires in %{days} days.") %>
+  <% end %>
+</p>
+
+<table style="margin: 20px 0; border-collapse: collapse; font-size: 14px;">
+  <tr>
+    <td style="padding: 6px 12px 6px 0; color: #6e6e73;"><%= t("document_mailer.expiring.field_title", default: "Документ") %>:</td>
+    <td style="padding: 6px 0;"><strong><%= @document.display_title %></strong></td>
+  </tr>
+  <tr>
+    <td style="padding: 6px 12px 6px 0; color: #6e6e73;"><%= t("document_mailer.expiring.field_owner", default: "Владелец") %>:</td>
+    <td style="padding: 6px 0;"><%= @owner_name %></td>
+  </tr>
+  <% if @document.expires_at %>
+    <tr>
+      <td style="padding: 6px 12px 6px 0; color: #6e6e73;"><%= t("document_mailer.expiring.field_expires_at", default: "Действует до") %>:</td>
+      <td style="padding: 6px 0;"><%= l(@document.expires_at, format: :long) %></td>
+    </tr>
+  <% end %>
+  <% if @document.document_type %>
+    <tr>
+      <td style="padding: 6px 12px 6px 0; color: #6e6e73;"><%= t("document_mailer.expiring.field_type", default: "Тип документа") %>:</td>
+      <td style="padding: 6px 0;"><%= @document.document_type.name %></td>
+    </tr>
+  <% end %>
+</table>
+
+<p style="margin-top: 24px;">
+  <%= link_to t("document_mailer.expiring.cta", default: "Открыть документ"),
+              Rails.application.routes.url_helpers.document_url(@document, host: ENV.fetch("APP_HOST", "localhost:3000"), locale: @recipient.locale.presence || I18n.default_locale),
+              style: "display: inline-block; padding: 10px 20px; background: #0a84ff; color: #fff; text-decoration: none; border-radius: 8px;" %>
+</p>
+
+<p style="margin-top: 32px; color: #8e8e93; font-size: 13px;">
+  <%= t("document_mailer.expiring.footer",
+        default: "Это автоматическое уведомление от HRMS. Управлять подпиской: Профиль → Уведомления.") %>
+</p>

@@ -1,0 +1,65 @@
+# HRMS — production-ready compose. Запуск:
+#   docker compose up -d
+# Установщик scripts/install.sh поможет с первичной настройкой.
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hrms
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-hrms_change_me}
+      POSTGRES_DB: hrms_production
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hrms -d hrms_production"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hrms:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      RAILS_ENV: production
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      DATABASE_URL: postgres://hrms:${POSTGRES_PASSWORD:-hrms_change_me}@db:5432/hrms_production
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+      APP_HOST: ${APP_HOST:-localhost:3000}
+      # При первом запуске entrypoint автоматически выполнит db:prepare (create+migrate+seed).
+    volumes:
+      - storage:/rails/storage           # Active Storage uploads (документы)
+      - log:/rails/log
+    ports:
+      - "${APP_PORT:-3000}:80"
+
+  worker:
+    image: hrms:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      RAILS_ENV: production
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      DATABASE_URL: postgres://hrms:${POSTGRES_PASSWORD:-hrms_change_me}@db:5432/hrms_production
+      SOLID_QUEUE_IN_PUMA: "false"
+    command: ["bundle", "exec", "rake", "solid_queue:start"]
+    volumes:
+      - storage:/rails/storage
+      - log:/rails/log
+
+volumes:
+  db_data:
+  storage:
+  log:

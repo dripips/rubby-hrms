@@ -31,7 +31,8 @@
      data-ai-cost-calculator-tasks-value="<%= tasks_data.to_json %>">
   <div class="col-12 col-xl-7">
     <div class="card-apple">
-      <%= form_with(model: @setting, url: settings_ai_path, method: :patch, html: { class: "d-flex flex-column gap-3" }) do |f| %>
+      <%= form_with(model: @setting, url: settings_ai_path, method: :patch,
+                    html: { class: "d-flex flex-column gap-3", data: { controller: "ai-provider" } }) do |f| %>
         <%= f.fields_for :data do |d| %>
           <div class="form-check form-switch">
             <%= d.check_box :enabled, { checked: @setting.data["enabled"] == true, class: "form-check-input", id: "ai_enabled" } %>
@@ -41,19 +42,57 @@
           </div>
 
           <div>
-            <label class="form-label"><%= t("settings.ai.fields.api_key", default: "OpenAI API key") %></label>
-            <%= f.password_field :secret, class: "form-control", autocomplete: "new-password",
-                                 placeholder: @setting.secret.present? ? t("settings.ai.api_key_saved_placeholder", default: "sk-•••••••• (сохранён, оставь пустым чтобы не менять)") : "sk-..." %>
-            <div class="footnote text-tertiary mt-1"><%= t("settings.ai.api_key_hint", default: "Получите на platform.openai.com → API keys. Ключ хранится в БД (без шифрования на MVP).") %></div>
+            <label class="form-label"><%= t("settings.ai.fields.provider", default: "Провайдер") %></label>
+            <div class="d-flex gap-2 flex-wrap mb-2">
+              <% RecruitmentAi::PROVIDER_PRESETS.each do |key, info| %>
+                <% selected = (@setting.data["provider"].to_s == key) || (@setting.data["provider"].blank? && key == "openai") %>
+                <label class="filter-chip <%= 'is-selected' if selected %>">
+                  <input type="radio" name="app_setting[data][provider]" value="<%= key %>"
+                         <%= 'checked' if selected %>
+                         data-action="change->ai-provider#switch"
+                         data-ai-provider-url-param="<%= info[:url] %>"
+                         data-ai-provider-provider-param="<%= key %>">
+                  <span><%= info[:label] %></span>
+                </label>
+              <% end %>
+            </div>
+            <p class="footnote text-tertiary m-0">
+              <%= t("settings.ai.provider_hint", default: "Любой OpenAI-compatible endpoint: OpenAI / OpenRouter / Together / vLLM / Ollama. Анти-OpenAI клиентам нужен прокси (LiteLLM).") %>
+            </p>
           </div>
 
           <div>
+            <label class="form-label"><%= t("settings.ai.fields.api_base_url", default: "API endpoint URL") %></label>
+            <%= text_field_tag "app_setting[data][api_base_url]", @setting.data["api_base_url"],
+                               class: "form-control text-mono",
+                               placeholder: "https://api.openai.com/v1/chat/completions",
+                               id: "ai_api_base_url" %>
+            <div class="footnote text-tertiary mt-1">
+              <%= t("settings.ai.api_base_url_hint", default: "Полный URL до /chat/completions. Кнопка провайдера выше подставит автоматически. Можно вписать свой (vLLM, Ollama, прокси).") %>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label"><%= t("settings.ai.fields.api_key", default: "API key") %></label>
+            <%= f.password_field :secret, class: "form-control", autocomplete: "new-password",
+                                 placeholder: @setting.secret.present? ? t("settings.ai.api_key_saved_placeholder", default: "sk-•••••••• (сохранён, оставь пустым чтобы не менять)") : "sk-..." %>
+            <div class="footnote text-tertiary mt-1"><%= t("settings.ai.api_key_hint", default: "Для OpenAI: platform.openai.com. Для OpenRouter: openrouter.ai/keys. Для своего сервера — Bearer-токен. Хранится в БД (MVP без шифрования).") %></div>
+          </div>
+
+          <%
+            current_provider = @setting.data["provider"].to_s.presence || "openai"
+            is_openai = current_provider == "openai"
+          %>
+
+          <%# ── Блок выбора модели для OpenAI: rich-cards с ценами ─────── %>
+          <div data-ai-provider-target="openaiBlock" class="<%= 'd-none' unless is_openai %>">
             <label class="form-label"><%= t("settings.ai.fields.model", default: "Модель") %></label>
             <div class="ai-models">
               <% RecruitmentAi::MODELS.each do |key, info| %>
                 <label class="ai-models__option <%= 'is-selected' if @setting.data["model"] == key %>">
                   <input type="radio" name="app_setting[data][model]" value="<%= key %>"
                          <%= 'checked' if @setting.data["model"] == key %>
+                         <%= 'disabled' unless is_openai %>
                          data-ai-cost-calculator-target="model"
                          data-action="change->ai-cost-calculator#recalc">
                   <div>
@@ -83,6 +122,41 @@
                 </label>
               <% end %>
             </div>
+          </div>
+
+          <%# ── Блок для не-OpenAI: пресеты по провайдеру + free-form ──── %>
+          <div data-ai-provider-target="customBlock" class="<%= 'd-none' if is_openai %>">
+            <label class="form-label" for="ai_custom_model">
+              <%= t("settings.ai.fields.model", default: "Модель") %>
+            </label>
+
+            <% RecruitmentAi::MODEL_PRESETS_BY_PROVIDER.each do |provider, models| %>
+              <% next if models.empty? %>
+              <% group_visible = (current_provider == provider) %>
+              <div class="d-flex gap-2 flex-wrap mb-2 ai-models-presets <%= 'd-none' unless group_visible %>"
+                   data-ai-provider-target="presetGroup"
+                   data-provider="<%= provider %>">
+                <% models.each do |m| %>
+                  <button type="button" class="btn btn-soft btn-sm"
+                          data-action="click->ai-provider#pickModel"
+                          data-ai-provider-model-param="<%= m %>">
+                    <%= m %>
+                  </button>
+                <% end %>
+              </div>
+            <% end %>
+
+            <input type="text" id="ai_custom_model"
+                   name="app_setting[data][model]"
+                   value="<%= @setting.data["model"] %>"
+                   class="form-control text-mono"
+                   placeholder="qwen/qwen-2.5-72b-instruct  /  Qwen/Qwen2.5-32B-Instruct  /  свою модель"
+                   <%= 'disabled' if is_openai %>
+                   data-ai-provider-target="customModelInput">
+            <p class="form-text">
+              <%= t("settings.ai.custom_model_hint",
+                    default: "Имя модели как ожидает endpoint. У OpenRouter формат vendor/model. Кнопки выше — популярные варианты.") %>
+            </p>
           </div>
 
           <div>
@@ -258,67 +332,4 @@
   </div>
 </div>
 
-<%# ── Usage statistics ──────────────────────────────────────────────────── %>
-<%
-  total_runs       = AiRun.count
-  total_tokens     = AiRun.sum(:total_tokens)
-  total_cost       = AiRun.sum(:cost_usd).to_f
-  this_month       = AiRun.where("created_at >= ?", Time.current.beginning_of_month)
-  this_month_runs  = this_month.count
-  this_month_cost  = this_month.sum(:cost_usd).to_f
-  by_kind          = AiRun.group(:kind).pluck(Arel.sql("kind, COUNT(*), SUM(total_tokens), SUM(cost_usd)"))
-%>
-
-<div class="card-apple mt-4">
-  <h3 class="card-apple__title mb-3"><%= t("settings.ai.usage_title", default: "Расход токенов и денег") %></h3>
-
-  <div class="kpi-grid mb-3">
-    <div class="kpi-card">
-      <div class="kpi-card__label"><%= t("settings.ai.usage.total_runs", default: "Всего запусков") %></div>
-      <div class="kpi-card__value"><%= total_runs %></div>
-      <div class="kpi-card__hint"><%= t("settings.ai.usage.this_month_runs", default: "%{n} в этом месяце", n: this_month_runs) %></div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__label"><%= t("settings.ai.usage.total_tokens", default: "Всего токенов") %></div>
-      <div class="kpi-card__value"><%= number_with_delimiter(total_tokens) %></div>
-      <div class="kpi-card__hint"><%= t("settings.ai.usage.all_time", default: "через всё время") %></div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__label"><%= t("settings.ai.usage.total_cost", default: "Всего потрачено") %></div>
-      <div class="kpi-card__value">$<%= "%.4f" % total_cost %></div>
-      <div class="kpi-card__hint"><%= t("settings.ai.usage.this_month_cost", default: "$%{cost} в этом месяце", cost: "%.4f" % this_month_cost) %></div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-card__label"><%= t("settings.ai.usage.budget_used", default: "Бюджет месяца") %></div>
-      <% budget = (@setting.data["monthly_budget_usd"] || 5).to_f %>
-      <% pct = budget.zero? ? 0 : (this_month_cost / budget * 100).round %>
-      <div class="kpi-card__value <%= 'kpi-card__value--success' if pct < 80 %>"><%= pct %><span class="kpi-card__unit">%</span></div>
-      <div class="kpi-card__hint"><%= t("settings.ai.usage.budget_of", default: "из $%{budget} лимита", budget: budget) %></div>
-    </div>
-  </div>
-
-  <% if by_kind.any? %>
-    <table class="table-apple m-0">
-      <thead>
-        <tr>
-          <th><%= t("settings.ai.task", default: "Задача") %></th>
-          <th class="text-end"><%= t("settings.ai.usage.runs", default: "Запусков") %></th>
-          <th class="text-end"><%= t("settings.ai.usage.tokens", default: "Токенов") %></th>
-          <th class="text-end"><%= t("settings.ai.usage.cost", default: "Стоимость") %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% by_kind.each do |kind, count, tokens, cost| %>
-          <tr>
-            <td><%= t("ai.actions.#{kind}", default: kind.humanize) %></td>
-            <td class="text-end" style="font-variant-numeric: tabular-nums;"><%= count %></td>
-            <td class="text-end" style="font-variant-numeric: tabular-nums;"><%= number_with_delimiter(tokens.to_i) %></td>
-            <td class="text-end" style="font-variant-numeric: tabular-nums; font-weight: 700;">$<%= "%.4f" % cost.to_f %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% else %>
-    <p class="footnote text-tertiary m-0"><%= t("settings.ai.usage.empty", default: "Запусков ещё не было — данных нет.") %></p>
-  <% end %>
-</div>
+<%= render "usage", usage: @usage %>

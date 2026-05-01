@@ -1,0 +1,108 @@
+<%
+  scope = AiLock.for_dictionary(dictionary)
+  busy  = AiLock.running?(scope)
+  run   = AiRun.where(dictionary_id: dictionary.id, kind: "dictionary_seed").recent.first
+  payload = run&.payload.is_a?(Hash) ? run.payload : {}
+  proposed = Array(payload["proposed_entries"]).reject { |e| dictionary.entries.exists?(key: e["key"].to_s) }
+  confidence = payload["confidence"]
+  notes      = payload["notes"]
+%>
+<div id="dictionary-ai-<%= dictionary.id %>" class="card-apple ai-leaves-result mt-3" data-controller="">
+  <%= turbo_stream_from dictionary, "ai_seed" %>
+
+  <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+    <span class="ai-spark"><%= busy ? "✨" : "🪄" %></span>
+    <h3 class="title-3 m-0"><%= t("settings.dictionaries.ai.title", default: "AI-помощь со словарём") %></h3>
+    <% if confidence.present? && !busy %>
+      <span class="pill pill--<%= confidence == 'high' ? 'success' : (confidence == 'medium' ? 'warning' : 'neutral') %>">
+        <%= t("documents.confidence.#{confidence}", default: confidence) %>
+      </span>
+    <% end %>
+    <% if run && !busy %>
+      <span class="footnote text-tertiary ms-auto"><%= run.model %> · <%= run.cost_display %></span>
+    <% end %>
+  </div>
+
+  <% if busy %>
+    <p class="footnote text-tertiary mb-2">
+      <span class="spinner-dot me-2"></span>
+      <%= t("settings.dictionaries.ai.running", default: "AI подбирает записи под вашу компанию…") %>
+    </p>
+    <div class="ai-leaves-skeleton">
+      <div class="ai-leaves-skeleton__line" style="width: 90%;"></div>
+      <div class="ai-leaves-skeleton__line" style="width: 70%;"></div>
+      <div class="ai-leaves-skeleton__line" style="width: 80%;"></div>
+    </div>
+  <% else %>
+    <%= form_with url: suggest_settings_dictionary_path(dictionary), method: :post,
+                  data: { turbo_stream: true } do |f| %>
+      <div class="d-flex gap-2 flex-wrap mb-3">
+        <%= text_field_tag :hint, "", class: "form-control flex-fill",
+                           placeholder: t("settings.dictionaries.ai.hint_placeholder",
+                             default: "Расскажите про компанию: индустрия, размер, что нужно. Например: «Септик-сервис, 10 водителей, нужны категории ВУ и допуски»") %>
+        <%= f.submit t("settings.dictionaries.ai.run", default: "✨ Спросить AI"), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+
+    <% if !run %>
+      <p class="footnote text-tertiary m-0">
+        <%= t("settings.dictionaries.ai.empty", default: "Опиши свою компанию — AI предложит конкретные записи под её специфику. Ничего не сохранится без твоего одобрения.") %>
+      </p>
+    <% elsif !run.success %>
+      <div class="callout callout--danger mt-2">
+        <strong>⚠ <%= t("documents.ai_failed_title", default: "AI не справился") %></strong>
+        <p class="footnote m-0 mt-1"><%= run.error.to_s.first(400) %></p>
+      </div>
+    <% elsif proposed.empty? %>
+      <p class="footnote text-tertiary m-0">
+        <%= t("settings.dictionaries.ai.all_applied", default: "Все предложенные записи уже добавлены в словарь.") %>
+      </p>
+    <% else %>
+      <% if notes.present? %>
+        <p class="footnote text-secondary-apple mb-3"><%= notes %></p>
+      <% end %>
+
+      <%= form_with url: apply_suggestions_settings_dictionary_path(dictionary), method: :post,
+                    local: true, class: "d-flex flex-column gap-2" do |f| %>
+        <ul class="list-apple m-0">
+          <% proposed.each do |e| %>
+            <li class="list-apple__item align-items-start">
+              <input type="checkbox" name="keys[]" value="<%= e["key"] %>" id="aiseed-<%= dictionary.id %>-<%= e["key"] %>"
+                     class="form-check-input mt-1" checked>
+              <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+                <label for="aiseed-<%= dictionary.id %>-<%= e["key"] %>" class="d-flex align-items-center gap-2 flex-wrap m-0">
+                  <strong><%= e["value"] %></strong>
+                  <span class="footnote text-tertiary"><code><%= e["key"] %></code></span>
+                  <% if dictionary.field_schema? %>
+                    <span class="pill pill--neutral"><%= e["type"] || "string" %></span>
+                    <% if e["required"] %>
+                      <span class="pill pill--danger"><%= t("settings.dictionaries.required_badge", default: "обязательное") %></span>
+                    <% end %>
+                  <% end %>
+                </label>
+                <% if dictionary.field_schema? && e["hint"].present? %>
+                  <span class="footnote text-secondary-apple"><%= e["hint"] %></span>
+                <% end %>
+                <% if dictionary.field_schema? && e["type"] == "select" && Array(e["options"]).any? %>
+                  <span class="footnote text-tertiary">
+                    <%= t("settings.dictionaries.options_label", default: "Варианты") %>: <%= Array(e["options"]).join(", ") %>
+                  </span>
+                <% end %>
+                <% if e["rationale"].present? %>
+                  <span class="footnote text-tertiary fst-italic">💡 <%= e["rationale"] %></span>
+                <% end %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+
+        <div class="d-flex gap-2 mt-3">
+          <%= f.submit t("settings.dictionaries.ai.apply", default: "✓ Применить выбранные"), class: "btn btn-primary" %>
+          <span class="footnote text-tertiary align-self-center">
+            <%= t("settings.dictionaries.ai.apply_hint", default: "Только отмеченные галочками будут добавлены") %>
+          </span>
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,1301 +1,2381 @@
+---
 de:
   app:
-    name: "HRMS"
-    tagline: "Personalmanagement"
-
+    name: HRMS
+    tagline: Personalmanagement
+  profile:
+    title: Mein Profil
+    eyebrow: Mein Profil
+    edit: Bearbeiten
+    edit_title: Profil bearbeiten
+    edit_hint: Du kannst Kontakte, persönliche Vorlieben und Notfallkontakt ändern. HR verwaltet Position, Abteilung, Gehalt.
+    updated: Profil aktualisiert
+    no_employee: Dieses Konto ist nicht mit einem Mitarbeiterdatensatz verknüpft. Wende dich an HR.
+    contact_section: Kontakte
+    personal_section: Persönlich
+    emergency_section: Notfallkontakt
+    emergency_hint: Wen man anrufen soll, wenn dir bei der Arbeit oder auf einer Reise etwas passiert.
+    no_emergency_contact: Nicht angegeben — füge einen für Notfälle hinzu.
+    accessibility_section: Barrierefreiheit
+    accessibility_hint: Wird nur verwendet, wenn du dies angibst. HR wird es sehen und anpassen.
+    hr_note: Position, Abteilung, Gehalt und Personalnummer können nur von HR geändert werden. Bei Fehlern wende dich an sie.
+    dietary_placeholder: Allergien oder Diät — nützlich für Firmenfeiern und Arbeitsessen
+    special_needs_placeholder: 'Z.B.: angepasster Arbeitsplatz, zwei Remote-Tage pro Woche, Assistent für Meetings'
   navigation:
-    workspace: "Arbeitsbereich"
-    org: "Organisation"
-    admin: "Verwaltung"
-    dashboard: "Dashboard"
-    employees: "Mitarbeiter"
-    departments: "Abteilungen"
-    positions: "Stellen"
-    leaves: "Urlaube"
-    timesheet: "Zeiterfassung"
-    kpi: "KPI"
-    documents: "Dokumente"
-    dictionaries: "Stammdaten"
-    audit: "Auditprotokoll"
-    settings: "Einstellungen"
-    profile: "Profil"
-    sign_out: "Abmelden"
-    recruitment: "Recruiting"
-    recruitment_kanban: "Pipeline"
-    job_openings: "Stellenangebote"
-    job_applicants: "Bewerber"
-    interview_rounds: "Alle Interviews"
-    recruitment_calendar: "Interview-Kalender"
-    recruitment_analytics: "Recruiting-Analyse"
-    onboarding: "Onboarding"
-    offboarding: "Offboarding"
-
+    workspace: Arbeitsbereich
+    org: Organisation
+    admin: Verwaltung
+    dashboard: Dashboard
+    employees: Mitarbeiter
+    departments: Abteilungen
+    positions: Stellen
+    leaves: Urlaube
+    timesheet: Zeiterfassung
+    kpi: KPI
+    documents: Dokumente
+    dictionaries: Stammdaten
+    audit: Auditprotokoll
+    settings: Einstellungen
+    profile: Profil
+    sign_out: Abmelden
+    recruitment: Recruiting
+    recruitment_kanban: Pipeline
+    job_openings: Stellenangebote
+    job_applicants: Bewerber
+    interview_rounds: Alle Interviews
+    recruitment_calendar: Interview-Kalender
+    recruitment_analytics: Recruiting-Analyse
+    onboarding: Onboarding
+    offboarding: Offboarding
+    menu: Menü
+    ai_runs: KI-Log
   locale_names:
-    ru: "Russisch"
-    en: "Englisch"
-    de: "Deutsch"
-
+    ru: Russisch
+    en: Englisch
+    de: Deutsch
   common:
-    save: "Speichern"
-    cancel: "Abbrechen"
-    close: "Schließen"
-    delete: "Löschen"
-    edit: "Bearbeiten"
-    create: "Erstellen"
-    search: "Suche"
-    filter: "Filter"
-    export: "Exportieren"
-    import: "Importieren"
-    "yes": "Ja"
-    "no":  "Nein"
-    back: "Zurück"
-    actions: "Aktionen"
-    all:    "Alle"
-    name: "Name"
-    description: "Beschreibung"
-    status: "Status"
-    created_at: "Erstellt am"
-    updated_at: "Aktualisiert am"
-    ago: "vor"
-    view_all: "Alle anzeigen"
-    toggle_theme: "Design wechseln"
+    save: Speichern
+    cancel: Abbrechen
+    close: Schließen
+    delete: Löschen
+    edit: Bearbeiten
+    create: Erstellen
+    search: Suche
+    filter: Filter
+    export: Exportieren
+    import: Importieren
+    'yes': Ja
+    'no': Nein
+    back: Zurück
+    actions: Aktionen
+    all: Alle
+    name: Name
+    description: Beschreibung
+    status: Status
+    created_at: Erstellt am
+    updated_at: Aktualisiert am
+    ago: vor
+    view_all: Alle anzeigen
+    toggle_theme: Design wechseln
     filter_numeric_hint: ">3, =5, <10"
-    filter_numeric_help: "Numerische Filter unterstützen Operatoren: > >= < <= = <>"
+    filter_numeric_help: 'Numerische Filter unterstützen Operatoren: > >= < <= = <>'
     confirm:
-      title:    "Aktion bestätigen"
-      default:  "Möchtest du wirklich fortfahren?"
-      ok:       "Bestätigen"
-      delete:   "Löschen"
-
+      title: Aktion bestätigen
+      default: Möchtest du wirklich fortfahren?
+      ok: Bestätigen
+      delete: Löschen
+    active: Aktiv
+    confirm_delete: Löschen?
+    errors: Fehler
+    no_template: Keine Vorlage
+    open: Öffnen
+    default: Standard
+    inactive: deaktiviert
+    show_all: Alle anzeigen
+    unassigned: Nicht zugewiesen
+    prev: Zurück
+    next: Weiter
   auth:
-    sign_in: "Anmelden"
-    sign_up: "Registrieren"
-    sign_out: "Abmelden"
-    email: "E-Mail"
-    password: "Passwort"
-    password_confirmation: "Passwort bestätigen"
-    remember_me: "Angemeldet bleiben"
-    forgot_password: "Passwort vergessen?"
-    welcome_back: "Willkommen zurück"
-    welcome_back_subtitle: "Melde dich an, um fortzufahren."
-    create_account: "Konto erstellen"
-    create_account_subtitle: "Registriere dich, um loszulegen."
-    already_have_account: "Bereits ein Konto? Anmelden"
+    sign_in: Anmelden
+    sign_up: Registrieren
+    sign_out: Abmelden
+    email: E-Mail
+    password: Passwort
+    password_confirmation: Passwort bestätigen
+    remember_me: Angemeldet bleiben
+    forgot_password: Passwort vergessen?
+    welcome_back: Willkommen zurück
+    welcome_back_subtitle: Melde dich an, um fortzufahren.
+    create_account: Konto erstellen
+    create_account_subtitle: Registriere dich, um loszulegen.
+    already_have_account: Bereits ein Konto? Anmelden
     hero:
-      title:    "Gemacht für Teams, die liefern."
-      subtitle: "Eine Plattform. Jeder Mitarbeiter. Null Reibung."
-      slogan_1: "Jeder Prozess unter Kontrolle."
-      slogan_2: "Vom Recruiting bis zum KPI — alles an einem Ort."
-      slogan_3: "Zufriedene Mitarbeiter. Wachsendes Geschäft."
-      slogan_4: "Weniger Excel. Mehr Ergebnisse."
-
+      title: Gemacht für Teams, die liefern.
+      subtitle: Eine Plattform. Jeder Mitarbeiter. Null Reibung.
+      slogan_1: Jeder Prozess unter Kontrolle.
+      slogan_2: Vom Recruiting bis zum KPI — alles an einem Ort.
+      slogan_3: Zufriedene Mitarbeiter. Wachsendes Geschäft.
+      slogan_4: Weniger Excel. Mehr Ergebnisse.
   roles:
-    superadmin: "Super-Admin"
-    hr: "HR-Spezialist"
-    manager: "Manager"
-    employee: "Mitarbeiter"
-
+    superadmin: Super-Admin
+    hr: HR-Spezialist
+    manager: Manager
+    employee: Mitarbeiter
   dashboard:
-    subtitle: "Heutiger Unternehmensüberblick"
+    subtitle: Heutiger Unternehmensüberblick
     greetings:
-      morning: "Guten Morgen"
-      afternoon: "Guten Tag"
-      evening: "Guten Abend"
-      night: "Gute Nacht"
+      morning: Guten Morgen
+      afternoon: Guten Tag
+      evening: Guten Abend
+      night: Gute Nacht
     tiles:
-      active_employees: "Aktive Mitarbeiter"
-      on_leave_today:   "Heute im Urlaub"
-      open_positions:   "Offene Stellen"
-      weekly_kpi_avg:   "KPI-Durchschnitt der Woche"
+      active_employees: Aktive Mitarbeiter
+      on_leave_today: Heute im Urlaub
+      open_positions: Offene Stellen
+      weekly_kpi_avg: KPI-Durchschnitt der Woche
     actions:
-      new_employee: "Neuer Mitarbeiter"
+      new_employee: Neuer Mitarbeiter
     activity:
-      title: "Letzte Aktivität"
-      subtitle: "Team-Aktionen der letzten 24 Stunden"
-      who: "Wer"
-      what: "Was"
-      when: "Wann"
-      requested_leave:        "Urlaub beantragt"
-      completed_onboarding:   "Onboarding abgeschlossen"
-      kpi_updated:            "KPI aktualisiert"
-      document_uploaded:      "Dokument hochgeladen"
+      title: Letzte Aktivität
+      subtitle: Team-Aktionen der letzten 24 Stunden
+      who: Wer
+      what: Was
+      when: Wann
+      requested_leave: Urlaub beantragt
+      completed_onboarding: Onboarding abgeschlossen
+      kpi_updated: KPI aktualisiert
+      document_uploaded: Dokument hochgeladen
     upcoming:
-      title: "Anstehend"
-      subtitle: "Was diese Woche zu beachten ist"
-      birthday:     "Geburtstag"
-      review:       "Leistungsbeurteilung"
-      contract_end: "Vertragsende"
-
+      title: Anstehend
+      subtitle: Was diese Woche zu beachten ist
+      birthday: Geburtstag
+      review: Leistungsbeurteilung
+      contract_end: Vertragsende
+      empty: Nichts in den nächsten 14 Tagen
+    onboarding:
+      title: Aktive Onboardings
+      subtitle: Eingewöhnung neuer Mitarbeiter
+    offboarding:
+      title: Aktive Offboardings
+      subtitle: Wissenstransfer und Zugriffsentzug
+    documents_expiring:
+      title: Dokumente laufen bald ab
+      subtitle: Nächste 30 Tage + bereits abgelaufen. Benachrichtigung 30/7/0 Tage vorher.
+      expired_title: Bereits abgelaufen
+      expired_days_ago: abgelaufen vor %{n} Tagen
+      days_left: "%{n} Tage"
   stub:
-    title: "Bereich im Aufbau"
-    subtitle: "Eine vollständige Oberfläche kommt bald."
-    body: "Dieser Bereich wird in der nächsten Iteration umgesetzt. Anmeldung, Dashboard, Sprach- und Themenwechsel funktionieren bereits."
-
+    title: Bereich im Aufbau
+    subtitle: Eine vollständige Oberfläche kommt bald.
+    body: Dieser Bereich wird in der nächsten Iteration umgesetzt. Anmeldung, Dashboard, Sprach- und Themenwechsel funktionieren bereits.
   pundit:
-    not_authorized: "Du hast keine Berechtigung dafür."
-
+    not_authorized: Du hast keine Berechtigung dafür.
   employees:
-    search_placeholder: "Name oder Personalnr."
-    empty: "Keine Mitarbeiter gefunden"
-    new: "Neuer Mitarbeiter"
-    edit: "Profil bearbeiten"
-    quick_leave_action: "In Urlaub schicken"
-    quick_leave_title:  "Mitarbeiter in Urlaub schicken"
-    quick_leave_hint:   "Genehmigt den Antrag für %{name} mit einem Klick — Vorgesetzten- und HR-Schritte werden automatisch bestätigt."
-    quick_leave_submit: "Genehmigen und anlegen"
-    cancel: "Abbrechen"
-    save: "Speichern"
-    columns_button: "Spalten"
+    search_placeholder: Name oder Personalnr.
+    empty: Keine Mitarbeiter gefunden
+    new: Neuer Mitarbeiter
+    edit: Profil bearbeiten
+    quick_leave_action: In Urlaub schicken
+    quick_leave_title: Mitarbeiter in Urlaub schicken
+    quick_leave_hint: Genehmigt den Antrag für %{name} mit einem Klick — Vorgesetzten- und HR-Schritte werden automatisch bestätigt.
+    quick_leave_submit: Genehmigen und anlegen
+    cancel: Abbrechen
+    save: Speichern
+    columns_button: Spalten
     active_count:
-      zero:  "Keine aktiven Mitarbeiter"
-      one:   "1 aktiver Mitarbeiter"
-      few:   "%{count} aktive Mitarbeiter"
-      many:  "%{count} aktive Mitarbeiter"
+      zero: Keine aktiven Mitarbeiter
+      one: 1 aktiver Mitarbeiter
+      few: "%{count} aktive Mitarbeiter"
+      many: "%{count} aktive Mitarbeiter"
       other: "%{count} aktive Mitarbeiter"
     fields:
-      personnel_number: "PN"
-      full_name:    "Vollständiger Name"
-      first_name:   "Vorname"
-      last_name:    "Nachname"
-      middle_name:  "Zweiter Vorname"
-      position:     "Stelle"
-      department:   "Abteilung"
-      grade:        "Stufe"
-      hired_at:     "Eingestellt"
-      state:        "Status"
-      manager:      "Vorgesetzter"
-      birth_date:   "Geburtsdatum"
-      gender:       "Geschlecht"
-      phone:        "Telefon"
-      personal_email: "Private E-Mail"
-      employment_type: "Beschäftigungsart"
-      marital_status:      "Familienstand"
-      emergency_contact:   "Notfallkontakt"
-      hobbies:             "Hobbys"
-      shirt_size:          "T-Shirt-Größe"
-      dietary_restrictions: "Ernährungsbesonderheiten"
-      tax_id:              "Steuer-ID"
-      insurance_id:        "Versicherungsnummer"
-      passport:            "Pass"
-      education:           "Bildung"
-      native_city:         "Geburtsstadt"
+      personnel_number: PN
+      full_name: Vollständiger Name
+      first_name: Vorname
+      last_name: Nachname
+      middle_name: Zweiter Vorname
+      position: Stelle
+      department: Abteilung
+      grade: Stufe
+      hired_at: Eingestellt
+      state: Status
+      manager: Vorgesetzter
+      birth_date: Geburtsdatum
+      gender: Geschlecht
+      phone: Telefon
+      personal_email: Private E-Mail
+      employment_type: Beschäftigungsart
+      marital_status: Familienstand
+      emergency_contact: Notfallkontakt
+      hobbies: Hobbys
+      shirt_size: T-Shirt-Größe
+      dietary_restrictions: Ernährungsbesonderheiten
+      tax_id: Steuer-ID
+      insurance_id: Versicherungsnummer
+      passport: Pass
+      education: Bildung
+      native_city: Geburtsstadt
+      gender_other: Andere
+      hobbies_placeholder: 'Z.B.: Radfahren, Fotografie, Brettspiele'
     states:
-      probation: "Probezeit"
-      active: "Aktiv"
-      on_leave: "Im Urlaub"
-      terminated: "Ausgeschieden"
+      probation: Probezeit
+      active: Aktiv
+      on_leave: Im Urlaub
+      terminated: Ausgeschieden
     employment_types:
-      full_time: "Vollzeit"
-      part_time: "Teilzeit"
-      contract:  "Werkvertrag"
-      intern:    "Praktikant"
+      full_time: Vollzeit
+      part_time: Teilzeit
+      contract: Werkvertrag
+      intern: Praktikant
     genders:
-      male:        "Männlich"
-      female:      "Weiblich"
-      unspecified: "Keine Angabe"
-    profile: "Profil"
-    work:    "Arbeit"
-    documents_card: "Dokumente (nur HR)"
+      male: Männlich
+      female: Weiblich
+      unspecified: Keine Angabe
+    profile: Profil
+    work: Arbeit
+    documents_card: Dokumente (nur HR)
     marital_statuses:
-      single:       "Ledig"
-      married:      "Verheiratet"
-      divorced:     "Geschieden"
-      widowed:      "Verwitwet"
-      partnership:  "In Partnerschaft"
+      single: Ledig
+      married: Verheiratet
+      divorced: Geschieden
+      widowed: Verwitwet
+      partnership: In Partnerschaft
     family:
-      title:        "Familie & Persönliches"
-      edit_title:   "Familie & Persönliches bearbeiten"
-      subtitle:     "Hilft bei Geschenken, Feiertagen und Fürsorge"
-      no_children:  "Keine Kinder hinterlegt"
-      add_child:    "Kind hinzufügen"
-      child_notes:  "Notizen"
-      child_notes_placeholder: "Allergien, Geschenkwünsche, Schule"
-      relation:     "Beziehung"
-      relation_placeholder: "Ehepartner, Vater, Bruder"
-      hobbies_placeholder:  "Radfahren, Fotografie, Bücher"
-      dietary_placeholder:  "Vegetarier, glutenfrei, Allergien"
-      has_disability:       "Hat eine Behinderung oder besondere Bedürfnisse"
-      special_needs:        "Besondere Bedürfnisse / Anpassungen"
-      special_needs_placeholder: "Optional. Nur für HR sichtbar."
+      title: Familie & Persönliches
+      edit_title: Familie & Persönliches bearbeiten
+      subtitle: Hilft bei Geschenken, Feiertagen und Fürsorge
+      no_children: Keine Kinder hinterlegt
+      add_child: Kind hinzufügen
+      child_notes: Notizen
+      child_notes_placeholder: Allergien, Geschenkwünsche, Schule
+      relation: Beziehung
+      relation_placeholder: Ehepartner, Vater, Bruder
+      hobbies_placeholder: Radfahren, Fotografie, Bücher
+      dietary_placeholder: Vegetarier, glutenfrei, Allergien
+      has_disability: Hat eine Behinderung oder besondere Bedürfnisse
+      special_needs: Besondere Bedürfnisse / Anpassungen
+      special_needs_placeholder: Optional. Nur für HR sichtbar.
       age_years:
-        one:   "%{count} Jahr"
-        few:   "%{count} Jahre"
-        many:  "%{count} Jahre"
+        one: "%{count} Jahr"
+        few: "%{count} Jahre"
+        many: "%{count} Jahre"
         other: "%{count} Jahre"
       children_count:
-        one:   "%{count} Kind"
-        few:   "%{count} Kinder"
-        many:  "%{count} Kinder"
+        one: "%{count} Kind"
+        few: "%{count} Kinder"
+        many: "%{count} Kinder"
         other: "%{count} Kinder"
     leaves:
-      title:           "Alle Urlaube"
-      subtitle:        "%{total} Anträge in der Historie"
-      empty_subtitle:  "Noch keine Urlaubsanträge"
-
+      title: Alle Urlaube
+      subtitle: "%{total} Anträge in der Historie"
+      empty_subtitle: Noch keine Urlaubsanträge
+    created: Mitarbeiter erstellt
+    updated: Mitarbeiter aktualisiert
+    deleted: Mitarbeiter gelöscht
+    columns_group_main: Wichtigste
+    columns_help: Wähle, welche Spalten in der Tabelle angezeigt werden
+    columns_visible: Sichtbare Spalten
+    density_full: Detaillierte Ansicht
   departments:
-    new: "Neue Abteilung"
-    created: "Abteilung erstellt"
-    updated: "Abteilung aktualisiert"
-    deleted: "Abteilung entfernt"
-    empty: "Noch keine Abteilungen"
-    empty_hint: "Lege die Hauptabteilung an, um den Organisationsbaum aufzubauen."
-    expand_all: "Alle ausklappen"
-    collapse_all: "Alle einklappen"
-    employees_in: "Mitarbeiter"
-    no_employees: "keine Mitarbeiter"
-    no_subdepartments: "keine Unterabteilungen"
-    no_head: "kein Leiter"
-    no_parent: "keine Übergeordnete"
-    has_employees: "hat Mitarbeiter"
-    has_children: "hat Unterabteilungen"
-    subdepartments: "Unterabteilungen"
-    total_count: "Abteilungen gesamt"
+    new: Neue Abteilung
+    created: Abteilung erstellt
+    updated: Abteilung aktualisiert
+    deleted: Abteilung entfernt
+    empty: Noch keine Abteilungen
+    empty_hint: Lege die Hauptabteilung an, um den Organisationsbaum aufzubauen.
+    expand_all: Alle ausklappen
+    collapse_all: Alle einklappen
+    employees_in: Mitarbeiter
+    no_employees: keine Mitarbeiter
+    no_subdepartments: keine Unterabteilungen
+    no_head: kein Leiter
+    no_parent: keine Übergeordnete
+    has_employees: hat Mitarbeiter
+    has_children: hat Unterabteilungen
+    subdepartments: Unterabteilungen
+    total_count: Abteilungen gesamt
     employees_count:
-      zero:  "keine Mitarbeiter"
-      one:   "1 Mitarbeiter"
-      few:   "%{count} Mitarbeiter"
-      many:  "%{count} Mitarbeiter"
+      zero: keine Mitarbeiter
+      one: 1 Mitarbeiter
+      few: "%{count} Mitarbeiter"
+      many: "%{count} Mitarbeiter"
       other: "%{count} Mitarbeiter"
     fields:
-      name:       "Name"
-      code:       "Code"
-      parent:     "Übergeordnete Abteilung"
-      head:       "Leiter"
-      sort_order: "Reihenfolge"
-
+      name: Name
+      code: Code
+      parent: Übergeordnete Abteilung
+      head: Leiter
+      sort_order: Reihenfolge
   leaves:
-    requires_doc_short: "Doku"
+    requires_doc_short: Doku
     tabs:
-      me:        "Meine"
-      team:      "Team"
-      all:       "Alle"
-      analytics: "Analyse"
+      me: Meine
+      team: Team
+      all: Alle
+      analytics: Analyse
     analytics:
-      tile_pending:           "Wartend auf Genehmigung"
-      tile_pending_hint:      "Warten auf Entscheidung"
-      tile_on_leave:          "Heute im Urlaub"
-      tile_on_leave_hint:     "Im gesamten Unternehmen"
-      tile_avg_days:          "Ø Tage/Mitarbeiter"
-      tile_avg_days_hint:     "In %{year} genommen"
-      tile_not_taken:         "Nichts genommen"
-      tile_not_taken_hint:    "Jahresurlaub dieses Jahr"
-      not_taken_title:        "Kein Jahresurlaub genommen"
-      not_taken_subtitle:     "Kein genehmigter Jahresurlaub in %{year}"
-      not_taken_empty:        "Jeder hat zumindest etwas Urlaub genommen"
-      zero_days:              "0 Tage"
-      top_users_title:        "Top-Nutzer"
-      top_users_subtitle:     "Meiste Tage in %{year}"
-      top_users_empty:        "Noch kein Urlaub dieses Jahr"
-      type_breakdown_title:   "Nach Urlaubsart"
-      type_breakdown_subtitle: "Gesamt Tage in %{year}"
-      monthly_title:          "Monatliche Verteilung"
-      monthly_subtitle:       "Tage pro Monat in %{year}"
-      on_leave_now_title:     "Aktuell im Urlaub"
-      on_leave_now_subtitle:  "Aktive Urlaube"
-      upcoming_title:         "Kommende genehmigte"
-      upcoming_subtitle:      "Genehmigte zukünftige Urlaube"
-      upcoming_empty:         "Keine anstehenden genehmigten Urlaube"
-      burnout_title:          "Zeit zum Ausruhen"
-      burnout_subtitle:       "Mitarbeiter mit Burnout-Risiko basierend auf KPI und Zeit ohne Urlaub"
-      burnout_no_leave_days:  "%{n} Tage ohne Urlaub"
-      burnout_no_leave_ever:  "kein Urlaub in der Historie"
+      tile_pending: Wartend auf Genehmigung
+      tile_pending_hint: Warten auf Entscheidung
+      tile_on_leave: Heute im Urlaub
+      tile_on_leave_hint: Im gesamten Unternehmen
+      tile_avg_days: Ø Tage/Mitarbeiter
+      tile_avg_days_hint: In %{year} genommen
+      tile_not_taken: Nichts genommen
+      tile_not_taken_hint: Jahresurlaub dieses Jahr
+      not_taken_title: Kein Jahresurlaub genommen
+      not_taken_subtitle: Kein genehmigter Jahresurlaub in %{year}
+      not_taken_empty: Jeder hat zumindest etwas Urlaub genommen
+      zero_days: 0 Tage
+      top_users_title: Top-Nutzer
+      top_users_subtitle: Meiste Tage in %{year}
+      top_users_empty: Noch kein Urlaub dieses Jahr
+      type_breakdown_title: Nach Urlaubsart
+      type_breakdown_subtitle: Gesamt Tage in %{year}
+      monthly_title: Monatliche Verteilung
+      monthly_subtitle: Tage pro Monat in %{year}
+      on_leave_now_title: Aktuell im Urlaub
+      on_leave_now_subtitle: Aktive Urlaube
+      upcoming_title: Kommende genehmigte
+      upcoming_subtitle: Genehmigte zukünftige Urlaube
+      upcoming_empty: Keine anstehenden genehmigten Urlaube
+      burnout_title: Zeit zum Ausruhen
+      burnout_subtitle: Mitarbeiter mit Burnout-Risiko basierend auf KPI und Zeit ohne Urlaub
+      burnout_no_leave_days: "%{n} Tage ohne Urlaub"
+      burnout_no_leave_ever: kein Urlaub in der Historie
       burnout_reason:
-        no_leave_long: "Ohne Urlaub 6+ Mon."
-        low_kpi:       "KPI unter 60%"
-        both:          "Burnout-Risiko"
+        no_leave_long: Ohne Urlaub 6+ Mon.
+        low_kpi: KPI unter 60%
+        both: Burnout-Risiko
+        high_kpi_drop: KPI-Einbruch
+        no_leave: Keine Urlaubstage
     quota:
-      title:     "Kontingent · %{year}"
+      title: Kontingent · %{year}
     my_quota:
-      title:     "Mein Kontingent · %{year}"
-      subtitle:  "Verbleibende Tage pro Urlaubsart"
-      empty:     "Keine Urlaubsarten konfiguriert"
-      days_short: "T"
+      title: Mein Kontingent · %{year}
+      subtitle: Verbleibende Tage pro Urlaubsart
+      empty: Keine Urlaubsarten konfiguriert
+      days_short: T
       pending:
-        one:   "%{count} Tag wartet auf Genehmigung"
-        few:   "%{count} Tage warten auf Genehmigung"
-        many:  "%{count} Tage warten auf Genehmigung"
+        one: "%{count} Tag wartet auf Genehmigung"
+        few: "%{count} Tage warten auf Genehmigung"
+        many: "%{count} Tage warten auf Genehmigung"
         other: "%{count} Tage warten auf Genehmigung"
     my_quota_subtitle_year: "%{year}"
     my_requests:
-      title:      "Meine Anträge"
-      subtitle:   "Letzte 30 Anträge"
-      empty:      "Noch keine Anträge"
-      empty_hint: "Lege den ersten Antrag an — er erscheint hier."
+      title: Meine Anträge
+      subtitle: Letzte 30 Anträge
+      empty: Noch keine Anträge
+      empty_hint: Lege den ersten Antrag an — er erscheint hier.
     team:
-      pending_title:        "Auf meine Genehmigung wartend"
-      pending_subtitle:     "Warten auf Entscheidung in deinem Bereich"
-      pending_empty:        "Alles erledigt"
-      pending_empty_hint:   "Keine Anträge warten auf dich."
-      on_leave_title:       "Im Urlaub (14 Tage)"
-      on_leave_subtitle:    "Aktive und anstehende Urlaube"
-      on_leave_empty:       "Niemand im Urlaub"
+      pending_title: Auf meine Genehmigung wartend
+      pending_subtitle: Warten auf Entscheidung in deinem Bereich
+      pending_empty: Alles erledigt
+      pending_empty_hint: Keine Anträge warten auf dich.
+      on_leave_title: Im Urlaub (14 Tage)
+      on_leave_subtitle: Aktive und anstehende Urlaube
+      on_leave_empty: Niemand im Urlaub
     day_counter:
-      label: "Tage"
-      unit:  "inkl."
+      label: Tage
+      unit: inkl.
     presets:
       days_label:
-        one:   "%{count} Tag"
-        few:   "%{count} Tage"
-        many:  "%{count} Tage"
+        one: "%{count} Tag"
+        few: "%{count} Tage"
+        many: "%{count} Tage"
         other: "%{count} Tage"
-    new: "Neuer Antrag"
-    new_subtitle: "Trage Daten und Urlaubsart ein. Nach dem Absenden geht der Antrag in die Genehmigung."
-    show_title: "Urlaubsantrag"
-    summary: "In Prüfung: %{p} · Aktiv: %{a} · Anstehend: %{u}"
-    save_draft: "Als Entwurf speichern"
-    submit_now: "Zur Genehmigung einreichen"
-    workflow_title: "Wie die Genehmigung funktioniert"
-    workflow_progress: "Genehmigung"
-    workflow_step_1: "Du erstellst den Antrag und reichst ihn zur Genehmigung ein."
-    workflow_step_2: "Dein Vorgesetzter genehmigt oder lehnt ab."
-    workflow_step_3: "Nach dem Vorgesetzten bestätigt HR."
-    workflow_step_4: "Am ersten Tag wird der Urlaub aktiviert und die Zeiterfassung füllt sich automatisch."
-    actions_title: "Aktionen"
-    confirm_reject: "Diesen Antrag ablehnen?"
-    history: "Genehmigungshistorie"
-    applicant: "Antragsteller"
-    reason_placeholder: "Optional"
+    new: Neuer Antrag
+    new_subtitle: Trage Daten und Urlaubsart ein. Nach dem Absenden geht der Antrag in die Genehmigung.
+    show_title: Urlaubsantrag
+    summary: 'In Prüfung: %{p} · Aktiv: %{a} · Anstehend: %{u}'
+    save_draft: Als Entwurf speichern
+    submit_now: Zur Genehmigung einreichen
+    workflow_title: Wie die Genehmigung funktioniert
+    workflow_progress: Genehmigung
+    workflow_step_1: Du erstellst den Antrag und reichst ihn zur Genehmigung ein.
+    workflow_step_2: Dein Vorgesetzter genehmigt oder lehnt ab.
+    workflow_step_3: Nach dem Vorgesetzten bestätigt HR.
+    workflow_step_4: Am ersten Tag wird der Urlaub aktiviert und die Zeiterfassung füllt sich automatisch.
+    actions_title: Aktionen
+    confirm_reject: Diesen Antrag ablehnen?
+    history: Genehmigungshistorie
+    applicant: Antragsteller
+    reason_placeholder: Optional
     days_count:
-      one:   "%{count} Tag"
-      few:   "%{count} Tage"
-      many:  "%{count} Tage"
+      one: "%{count} Tag"
+      few: "%{count} Tage"
+      many: "%{count} Tage"
       other: "%{count} Tage"
-    created: "Antrag erstellt"
-    deleted: "Antrag gelöscht"
+    created: Antrag erstellt
+    deleted: Antrag gelöscht
     fields:
-      employee: "Mitarbeiter"
-      department: "Abteilung"
-      type: "Urlaubsart"
-      started_on: "Von"
-      ended_on: "Bis"
-      days: "Tage"
-      reason: "Grund / Notiz"
-      state: "Status"
-      applied_at: "Eingereicht"
+      employee: Mitarbeiter
+      department: Abteilung
+      type: Urlaubsart
+      started_on: Von
+      ended_on: Bis
+      days: Tage
+      reason: Grund / Notiz
+      state: Status
+      applied_at: Eingereicht
     states:
-      draft: "Entwurf"
-      submitted: "In Genehmigung"
-      manager_approved: "Vom Vorgesetzten genehmigt"
-      hr_approved: "Von HR genehmigt"
-      active: "Im Urlaub"
-      completed: "Abgeschlossen"
-      rejected: "Abgelehnt"
-      cancelled: "Storniert"
+      draft: Entwurf
+      submitted: In Genehmigung
+      manager_approved: Vom Vorgesetzten genehmigt
+      hr_approved: Von HR genehmigt
+      active: Im Urlaub
+      completed: Abgeschlossen
+      rejected: Abgelehnt
+      cancelled: Storniert
+      started: Im Urlaub
     transitions:
-      submitted: "Antrag eingereicht"
-      manager_approved: "Vorgesetzter genehmigt"
-      hr_approved: "HR genehmigt"
-      started: "Urlaub aktiviert"
-      completed: "Urlaub abgeschlossen"
-      rejected: "Antrag abgelehnt"
-      cancelled: "Antrag storniert"
+      submitted: Antrag eingereicht
+      manager_approved: Vorgesetzter genehmigt
+      hr_approved: HR genehmigt
+      started: Urlaub aktiviert
+      completed: Urlaub abgeschlossen
+      rejected: Antrag abgelehnt
+      cancelled: Antrag storniert
+      active: Aktiviert
     actions:
-      submit: "Zur Genehmigung einreichen"
-      approve_manager: "Genehmigen (Vorgesetzter)"
-      approve_hr: "Genehmigen (HR)"
-      force_approve: "Als Admin genehmigen"
-      approve_step_for: "Genehmigen als %{role}"
-      start: "Aktivieren"
-      complete: "Abschließen"
-      reject: "Ablehnen"
-      cancel: "Stornieren"
-    confirm_force_approve: "Antrag in einem Schritt genehmigen und Vorgesetzten/HR überspringen?"
+      submit: Zur Genehmigung einreichen
+      approve_manager: Genehmigen (Vorgesetzter)
+      approve_hr: Genehmigen (HR)
+      force_approve: Als Admin genehmigen
+      approve_step_for: Genehmigen als %{role}
+      start: Aktivieren
+      complete: Abschließen
+      reject: Ablehnen
+      cancel: Stornieren
+    confirm_force_approve: Antrag in einem Schritt genehmigen und Vorgesetzten/HR überspringen?
     quick:
-      created:        "Urlaub erstellt und genehmigt"
-      auto_approval:  "Automatisch genehmigt über Schnell-Aktion"
-    auto_approve_step: "Automatisch genehmigt durch Regel"
-    approved_step:    "Schritt %{n} von %{total} genehmigt"
-    no_next_step:     "Kein weiterer Genehmigungsschritt erforderlich"
-    not_your_step:    "Du bist nicht der Genehmiger für den aktuellen Schritt"
-    history_title:    "Aktuelle Urlaube"
-    history_subtitle: "Letzte 8 Anträge"
-    history_empty:    "Noch keine Urlaubshistorie"
+      created: Urlaub erstellt und genehmigt
+      auto_approval: Automatisch genehmigt über Schnell-Aktion
+    auto_approve_step: Automatisch genehmigt durch Regel
+    approved_step: Schritt %{n} von %{total} genehmigt
+    no_next_step: Kein weiterer Genehmigungsschritt erforderlich
+    not_your_step: Du bist nicht der Genehmiger für den aktuellen Schritt
+    history_title: Aktuelle Urlaube
+    history_subtitle: Letzte 8 Anträge
+    history_empty: Noch keine Urlaubshistorie
     approval_steps:
-      manager:         "Vorgesetzter"
-      hr:              "HR"
-      ceo:             "Geschäftsführer"
-      department_head: "Abteilungsleiter"
+      manager: Vorgesetzter
+      hr: HR
+      ceo: Geschäftsführer
+      department_head: Abteilungsleiter
+      any: Beliebig
+      auto: Auto
     steps:
-      manager: "Vorgesetzter"
-      hr: "HR"
+      manager: Vorgesetzter
+      hr: HR
     decisions:
-      pending: "Ausstehend"
-      approved: "Genehmigt"
-      rejected: "Abgelehnt"
-
+      pending: Ausstehend
+      approved: Genehmigt
+      rejected: Abgelehnt
+    updated: Urlaubsantrag aktualisiert
   recruitment:
-    kanban_subtitle: "Ziehe Kandidaten zwischen den Phasen. Änderungen werden sofort gespeichert."
-
+    kanban_subtitle: Ziehe Kandidaten zwischen den Phasen. Änderungen werden sofort gespeichert.
   job_openings:
-    new: "Neue Stelle"
-    summary: "Offen: %{open} · Pausiert: %{hold} · Geschlossen: %{closed}"
-    funnel: "Bewerber-Funnel"
-    applicants_title: "Bewerber für diese Stelle"
-    created: "Stelle erstellt"
-    updated: "Stelle aktualisiert"
-    deleted: "Stelle gelöscht"
-    opened: "Stelle veröffentlicht"
-    closed: "Stelle geschlossen"
-    held: "Stelle pausiert"
+    new: Neue Stelle
+    summary: 'Offen: %{open} · Pausiert: %{hold} · Geschlossen: %{closed}'
+    funnel: Bewerber-Funnel
+    applicants_title: Bewerber für diese Stelle
+    created: Stelle erstellt
+    updated: Stelle aktualisiert
+    deleted: Stelle gelöscht
+    opened: Stelle veröffentlicht
+    closed: Stelle geschlossen
+    held: Stelle pausiert
     fields:
-      code: "Code"
-      title: "Titel"
-      department: "Abteilung"
-      position: "Stelle"
-      grade: "Stufe"
-      owner: "Verantwortlicher"
-      openings_count: "Plätze"
-      applicants_count: "Bewerber"
-      state: "Status"
-      description: "Beschreibung"
-      requirements: "Anforderungen"
-      nice_to_have: "Nice-to-have"
-      salary_from: "Gehalt von"
-      salary_to: "Gehalt bis"
-      currency: "Währung"
-      employment_type: "Beschäftigungsart"
-      published_at: "Veröffentlicht"
-      closes_at: "Schließt"
+      code: Code
+      title: Titel
+      department: Abteilung
+      position: Stelle
+      grade: Stufe
+      owner: Verantwortlicher
+      openings_count: Plätze
+      applicants_count: Bewerber
+      state: Status
+      description: Beschreibung
+      requirements: Anforderungen
+      nice_to_have: Nice-to-have
+      salary_from: Gehalt von
+      salary_to: Gehalt bis
+      currency: Währung
+      employment_type: Beschäftigungsart
+      published_at: Veröffentlicht
+      closes_at: Schließt
     states:
-      draft: "Entwurf"
-      open: "Offen"
-      on_hold: "Pausiert"
-      closed: "Geschlossen"
+      draft: Entwurf
+      open: Offen
+      on_hold: Pausiert
+      closed: Geschlossen
     actions:
-      open: "Veröffentlichen"
-      close: "Schließen"
-      hold: "Pausieren"
-
+      open: Veröffentlichen
+      close: Schließen
+      hold: Pausieren
+      duplicate: Duplizieren
+    employment_types:
+      contract: Vertrag
+      full_time: Vollzeit
+      intern: Praktikum
+      part_time: Teilzeit
   job_applicants:
-    new: "Neuer Bewerber"
-    empty: "Noch keine Bewerber"
-    empty_hint: "Füge den ersten Bewerber manuell hinzu oder warte auf Eingänge von der Karriereseite."
-    summary: "Gesamt: %{n} · Aktiv: %{a}"
+    new: Neuer Bewerber
+    empty: Noch keine Bewerber
+    empty_hint: Füge den ersten Bewerber manuell hinzu oder warte auf Eingänge von der Karriereseite.
+    summary: 'Gesamt: %{n} · Aktiv: %{a}'
     talent_pool: "— Talent-Pool —"
-    stage: "Phase"
-    days_short: "T"
-    years: "J."
-    links: "Links"
-    download: "Herunterladen"
-    no_resume: "Kein Lebenslauf hochgeladen"
-    no_portfolio: "Kein Portfolio angehängt"
-    no_history: "Noch keine Phasenwechsel"
-    created: "Bewerber erstellt"
-    updated: "Bewerber aktualisiert"
-    deleted: "Bewerber gelöscht"
-    stage_moved: "Phase aktualisiert"
+    stage: Phase
+    days_short: T
+    years: J.
+    links: Links
+    download: Herunterladen
+    no_resume: Kein Lebenslauf hochgeladen
+    no_portfolio: Kein Portfolio angehängt
+    no_history: Noch keine Phasenwechsel
+    created: Bewerber erstellt
+    updated: Bewerber aktualisiert
+    deleted: Bewerber gelöscht
+    stage_moved: Phase aktualisiert
     fields:
-      first_name: "Vorname"
-      last_name: "Nachname"
-      phone: "Telefon"
-      location: "Stadt"
-      current_company: "Aktuelles Unternehmen"
-      current_position: "Aktuelle Rolle"
-      years_of_experience: "Erfahrung"
-      expected_salary: "Gehaltsvorstellung"
-      portfolio_url: "Portfolio-URL"
-      portfolio_files: "Portfolio-Dateien"
-      resume: "Lebenslauf (PDF)"
-      summary: "Zusammenfassung"
-      source: "Quelle"
-      opening: "Stelle"
-      owner: "Recruiter"
+      first_name: Vorname
+      last_name: Nachname
+      phone: Telefon
+      location: Stadt
+      current_company: Aktuelles Unternehmen
+      current_position: Aktuelle Rolle
+      years_of_experience: Erfahrung
+      expected_salary: Gehaltsvorstellung
+      portfolio_url: Portfolio-URL
+      portfolio_files: Portfolio-Dateien
+      resume: Lebenslauf (PDF)
+      summary: Zusammenfassung
+      source: Quelle
+      opening: Stelle
+      owner: Recruiter
+      candidate: Kandidat
+      job_opening: Offene Stelle
+      summary_placeholder: Was ist wichtig am Kandidaten, warum weitermachen…
+      photo: Foto
     sources:
-      manual: "Manuell"
-      careers_page: "Karriereseite"
-      hh: "HeadHunter"
-      linkedin: "LinkedIn"
-      referral: "Empfehlung"
-      email: "E-Mail"
+      manual: Manuell
+      careers_page: Karriereseite
+      hh: HeadHunter
+      linkedin: LinkedIn
+      referral: Empfehlung
+      email: E-Mail
+      api: API
+      recruiter: Recruiter
+      website: Unternehmensseite
     stages:
-      applied: "Eingegangen"
-      screening: "Screening"
-      interview: "Interview"
-      offered: "Angebot"
-      hired: "Eingestellt"
-      rejected: "Abgelehnt"
-      withdrawn: "Zurückgezogen"
+      applied: Eingegangen
+      screening: Screening
+      interview: Interview
+      offered: Angebot
+      hired: Eingestellt
+      rejected: Abgelehnt
+      withdrawn: Zurückgezogen
+      test_assignment: Testaufgabe
     tabs:
-      profile: "Profil"
-      resume: "Lebenslauf"
-      portfolio: "Portfolio"
-      assignments: "Aufgaben"
-      interviews: "Interviews"
-      ai: "KI"
-      notes: "Notizen"
-      history: "Verlauf"
-
-
+      profile: Profil
+      resume: Lebenslauf
+      portfolio: Portfolio
+      assignments: Aufgaben
+      interviews: Interviews
+      ai: KI
+      notes: Notizen
+      history: Verlauf
+    actions:
+      apply: Bewerben
+    confirm_stage_change: Kandidat in diese Phase verschieben?
+    edit: Kandidat bearbeiten
   recruitment_calendar:
-    subtitle: "Alle geplanten Interview-Runden auf einer Zeitleiste. Farben spiegeln den Status. Hover für Details."
+    subtitle: Alle geplanten Interview-Runden auf einer Zeitleiste. Farben spiegeln den Status. Hover für Details.
     filters:
-      interviewer: "Interviewer"
-      kind:        "Art"
-      state:       "Status"
-      reset:       "Zurücksetzen"
+      interviewer: Interviewer
+      kind: Art
+      state: Status
+      reset: Zurücksetzen
     popover:
-      kind:        "Runde"
-      when:        "Wann"
-      interviewer: "Interviewer"
-      location:    "Ort"
-      score:       "Bewertung"
+      kind: Runde
+      when: Wann
+      interviewer: Interviewer
+      location: Ort
+      score: Bewertung
     agenda:
-      title:       "Nächste 30 Tage"
-      hint:        "Klicke einen Spaltenkopf, um zu sortieren"
-      when:        "Wann"
-      candidate:   "Kandidat"
-      kind:        "Runde"
-      interviewer: "Interviewer"
-      state:       "Status"
-
+      title: Nächste 30 Tage
+      hint: Klicke einen Spaltenkopf, um zu sortieren
+      when: Wann
+      candidate: Kandidat
+      kind: Runde
+      interviewer: Interviewer
+      state: Status
   employee_notes:
-    title:       "Notizen"
-    add:         "Hinzufügen"
-    placeholder: "Beobachtung, Plan, Erinnerung..."
-    hr_only:     "Nur HR"
-    hr_only_label: "Nur HR"
-    pinned:      "Anpinnen"
-    created:     "Notiz hinzugefügt"
-    deleted:     "Notiz entfernt"
-    empty:       "Noch keine Notizen — füge die erste hinzu"
-
+    title: Notizen
+    add: Hinzufügen
+    placeholder: Beobachtung, Plan, Erinnerung...
+    hr_only: Nur HR
+    hr_only_label: Nur HR
+    pinned: Anpinnen
+    created: Notiz hinzugefügt
+    deleted: Notiz entfernt
+    empty: Noch keine Notizen — füge die erste hinzu
   employee_children:
-    created: "Kind hinzugefügt"
-    updated: "Information aktualisiert"
-    deleted: "Eintrag entfernt"
-
+    created: Kind hinzugefügt
+    updated: Information aktualisiert
+    deleted: Eintrag entfernt
   applicant_notes:
-    placeholder: "Teile deine Eindrücke zum Bewerber..."
-    add: "Notiz hinzufügen"
-    added: "Notiz hinzugefügt"
-    deleted: "Notiz gelöscht"
-    empty: "Noch keine Notizen"
-
+    placeholder: Teile deine Eindrücke zum Bewerber...
+    add: Notiz hinzufügen
+    added: Notiz hinzugefügt
+    deleted: Notiz gelöscht
+    empty: Noch keine Notizen
   careers:
     public:
-      site_subtitle:        "Karriere"
-      hero_eyebrow:         "OFFENE STELLEN"
-      hero_title:           "%{name} stellt ein"
-      hero_lead:            "Wenn du in einem starken Team an sinnvollen Aufgaben arbeiten willst — schick uns unten deine Bewerbung. Wir lesen jede einzelne und antworten persönlich."
-      card_open_cta:        "Mehr erfahren und bewerben"
-      card_salary_from:     "ab"
-      card_salary_to:       "bis zu"
-      empty_title:          "Aktuell keine offenen Stellen"
-      empty_hint:           "Schau bald wieder vorbei — wir veröffentlichen regelmäßig neue Rollen."
-      back_all:             "Alle Stellen"
-      section_description:  "Beschreibung"
-      section_requirements: "Anforderungen"
-      section_nice:         "Nice-to-have"
-      form_title:           "Auf diese Stelle bewerben"
-      form_hint:            "Erzähl uns von dir und hänge deinen Lebenslauf an. Alle Felder außer der Motivation sind Pflicht."
-      form_resume_label:    "Lebenslauf (PDF / DOC / DOCX)"
-      form_portfolio_label: "Portfolio-Dateien (optional)"
-      form_summary_label:   "Erzähl uns von dir und warum dich diese Rolle interessiert"
-      form_summary_placeholder: "Was dir bei der Arbeit wichtig ist, woran du zuletzt gearbeitet hast, Projekte auf die du stolz bist…"
-      form_submit:          "Bewerbung absenden"
-      form_errors_title:    "Bewerbung konnte nicht gesendet werden"
-      thank_you_title:      "Danke für deine Bewerbung!"
-      thank_you_text:       "Wir haben deine Bewerbung erhalten und dir eine Bestätigung per E-Mail geschickt. Das HR-Team prüft dein Profil innerhalb weniger Werktage und meldet sich per E-Mail oder Telefon."
-      thank_you_back:       "Andere Stellen ansehen"
-      footer_note:          "Alle Rechte vorbehalten."
-      footer_link_privacy:  "Datenschutz"
-      footer_link_terms:    "AGB"
-      footer_link_cookies:  "Cookies"
-      cookie_accept_all:    "Alle akzeptieren"
-      cookie_only_essential: "Nur essenziell"
-      cookie_customize:     "Anpassen"
-      cookie_save:          "Auswahl speichern"
-      cookie_required_label: "erforderlich"
-      cookie_banner_title:  "Cookies"
-      page_title_privacy:   "Datenschutzerklärung"
-      page_title_terms:     "Nutzungsbedingungen"
-      page_title_cookies:   "Cookie-Richtlinie"
+      site_subtitle: Karriere
+      hero_eyebrow: OFFENE STELLEN
+      hero_title: "%{name} stellt ein"
+      hero_lead: Wenn du in einem starken Team an sinnvollen Aufgaben arbeiten willst — schick uns unten deine Bewerbung. Wir lesen jede einzelne und antworten persönlich.
+      card_open_cta: Mehr erfahren und bewerben
+      card_salary_from: ab
+      card_salary_to: bis zu
+      empty_title: Aktuell keine offenen Stellen
+      empty_hint: Schau bald wieder vorbei — wir veröffentlichen regelmäßig neue Rollen.
+      back_all: Alle Stellen
+      section_description: Beschreibung
+      section_requirements: Anforderungen
+      section_nice: Nice-to-have
+      form_title: Auf diese Stelle bewerben
+      form_hint: Erzähl uns von dir und hänge deinen Lebenslauf an. Alle Felder außer der Motivation sind Pflicht.
+      form_resume_label: Lebenslauf (PDF / DOC / DOCX)
+      form_portfolio_label: Portfolio-Dateien (optional)
+      form_summary_label: Erzähl uns von dir und warum dich diese Rolle interessiert
+      form_summary_placeholder: Was dir bei der Arbeit wichtig ist, woran du zuletzt gearbeitet hast, Projekte auf die du stolz bist…
+      form_submit: Bewerbung absenden
+      form_errors_title: Bewerbung konnte nicht gesendet werden
+      thank_you_title: Danke für deine Bewerbung!
+      thank_you_text: Wir haben deine Bewerbung erhalten und dir eine Bestätigung per E-Mail geschickt. Das HR-Team prüft dein Profil innerhalb weniger Werktage und meldet sich per E-Mail oder Telefon.
+      thank_you_back: Andere Stellen ansehen
+      footer_note: Alle Rechte vorbehalten.
+      footer_link_privacy: Datenschutz
+      footer_link_terms: AGB
+      footer_link_cookies: Cookies
+      cookie_accept_all: Alle akzeptieren
+      cookie_only_essential: Nur essenziell
+      cookie_customize: Anpassen
+      cookie_save: Auswahl speichern
+      cookie_required_label: erforderlich
+      cookie_banner_title: Cookies
+      page_title_privacy: Datenschutzerklärung
+      page_title_terms: Nutzungsbedingungen
+      page_title_cookies: Cookie-Richtlinie
       cookie_category:
         essential:
-          label:       "Essenziell"
-          description: "Erforderlich für die Funktion der Seite (Sitzung, Sicherheit)"
+          label: Essenziell
+          description: Erforderlich für die Funktion der Seite (Sitzung, Sicherheit)
         analytics:
-          label:       "Analyse"
-          description: "Helfen uns zu verstehen, wie die Seite genutzt wird"
+          label: Analyse
+          description: Helfen uns zu verstehen, wie die Seite genutzt wird
         marketing:
-          label:       "Marketing"
-          description: "Werden für relevante Werbung verwendet"
+          label: Marketing
+          description: Werden für relevante Werbung verwendet
       consent:
         personal_data:
-          label: "Ich willige in die Verarbeitung meiner personenbezogenen Daten ein"
+          label: Ich willige in die Verarbeitung meiner personenbezogenen Daten ein
         terms:
-          label: "Ich akzeptiere die Nutzungsbedingungen"
+          label: Ich akzeptiere die Nutzungsbedingungen
         marketing:
-          label: "Ich möchte E-Mails über neue Stellen und Inhalte erhalten"
-
+          label: Ich möchte E-Mails über neue Stellen und Inhalte erhalten
+      site_name: Karriere
     layout:
-      title:           "Karriere"
-      meta_description: "Offene Stellen und Bewerbungsformular"
-      sign_in:         "Anmelden"
-      dashboard:       "Dashboard"
-      footer_note:     "Alle Rechte vorbehalten."
+      title: Karriere
+      meta_description: Offene Stellen und Bewerbungsformular
+      sign_in: Anmelden
+      dashboard: Dashboard
+      footer_note: Alle Rechte vorbehalten.
     flash:
-      received:        "Bewerbung eingegangen. Wir melden uns in Kürze."
-      consents_required: "Bitte bestätige die erforderlichen Einwilligungen"
+      received: Bewerbung eingegangen. Wir melden uns in Kürze.
+      consents_required: Bitte bestätige die erforderlichen Einwilligungen
     index:
-      eyebrow:         "OFFENE STELLEN"
-      title_company:   "%{name} stellt ein"
-      lead:            "Wenn du in einem starken Team an sinnvollen Aufgaben arbeiten willst — schick uns unten deine Bewerbung. Wir lesen jede einzelne und antworten persönlich."
-      from:            "ab"
-      to:              "bis zu"
-      open:            "Mehr erfahren und bewerben"
-      empty_title:     "Aktuell keine offenen Stellen"
-      empty_hint:      "Schau bald wieder vorbei — wir veröffentlichen regelmäßig neue Rollen."
+      eyebrow: OFFENE STELLEN
+      title_company: "%{name} stellt ein"
+      lead: Wenn du in einem starken Team an sinnvollen Aufgaben arbeiten willst — schick uns unten deine Bewerbung. Wir lesen jede einzelne und antworten persönlich.
+      from: ab
+      to: bis zu
+      open: Mehr erfahren und bewerben
+      empty_title: Aktuell keine offenen Stellen
+      empty_hint: Schau bald wieder vorbei — wir veröffentlichen regelmäßig neue Rollen.
     show:
-      back_all:        "Alle Stellen"
-      description:     "Beschreibung"
-      requirements:    "Anforderungen"
-      nice_to_have:    "Nice-to-have"
-      form_title:      "Auf diese Stelle bewerben"
-      form_hint:       "Erzähl uns von dir und hänge deinen Lebenslauf an. Alle Felder außer der Motivation sind Pflicht."
-      resume_label:    "Lebenslauf (PDF / DOC / DOCX)"
-      portfolio_files_label: "Portfolio-Dateien (optional)"
-      summary_label:   "Erzähl uns von dir und warum dich diese Rolle interessiert"
-      summary_placeholder: "Was dir bei der Arbeit wichtig ist, woran du zuletzt gearbeitet hast, Projekte auf die du stolz bist…"
-      submit:          "Bewerbung absenden"
-      privacy:         "Mit dem Absenden dieses Formulars stimmst du der Verarbeitung personenbezogener Daten zu."
-      errors_title:    "Bewerbung konnte nicht gesendet werden"
-      read_more:       "mehr lesen"
+      back_all: Alle Stellen
+      description: Beschreibung
+      requirements: Anforderungen
+      nice_to_have: Nice-to-have
+      form_title: Auf diese Stelle bewerben
+      form_hint: Erzähl uns von dir und hänge deinen Lebenslauf an. Alle Felder außer der Motivation sind Pflicht.
+      resume_label: Lebenslauf (PDF / DOC / DOCX)
+      portfolio_files_label: Portfolio-Dateien (optional)
+      summary_label: Erzähl uns von dir und warum dich diese Rolle interessiert
+      summary_placeholder: Was dir bei der Arbeit wichtig ist, woran du zuletzt gearbeitet hast, Projekte auf die du stolz bist…
+      submit: Bewerbung absenden
+      privacy: Mit dem Absenden dieses Formulars stimmst du der Verarbeitung personenbezogener Daten zu.
+      errors_title: Bewerbung konnte nicht gesendet werden
+      read_more: mehr lesen
     thank_you:
-      title:           "Danke für deine Bewerbung!"
-      text:            "Wir haben deine Bewerbung erhalten und dir eine Bestätigung per E-Mail geschickt. Das HR-Team prüft dein Profil innerhalb weniger Werktage und meldet sich per E-Mail oder Telefon."
-      back:            "Andere Stellen ansehen"
-
+      title: Danke für deine Bewerbung!
+      text: Wir haben deine Bewerbung erhalten und dir eine Bestätigung per E-Mail geschickt. Das HR-Team prüft dein Profil innerhalb weniger Werktage und meldet sich per E-Mail oder Telefon.
+      back: Andere Stellen ansehen
   test_assignments:
-    new:                     "Testaufgabe vergeben"
-    created:                 "Testaufgabe erstellt"
-    updated:                 "Aufgabe aktualisiert"
-    deleted:                 "Aufgabe gelöscht"
-    overdue:                 "Überfällig"
-    submission:              "Einreichung des Kandidaten"
-    review_notes:            "Notizen des Reviewers"
-    send_now:                "An Kandidaten senden"
-    notified:                "Aufgabenbeschreibung an %{email} versendet"
-    notify_failed:           "Versand fehlgeschlagen: %{err}"
-    confirm_send_email:      "Aufgabe an den Kandidaten (%{email}) per E-Mail senden?"
-    empty:                   "Noch keine Testaufgaben"
-    created_by:              "Vergeben von"
+    new: Testaufgabe vergeben
+    created: Testaufgabe erstellt
+    updated: Aufgabe aktualisiert
+    deleted: Aufgabe gelöscht
+    overdue: Überfällig
+    submission: Einreichung des Kandidaten
+    review_notes: Notizen des Reviewers
+    send_now: An Kandidaten senden
+    notified: Aufgabenbeschreibung an %{email} versendet
+    notify_failed: 'Versand fehlgeschlagen: %{err}'
+    confirm_send_email: Aufgabe an den Kandidaten (%{email}) per E-Mail senden?
+    empty: Noch keine Testaufgaben
+    created_by: Vergeben von
     states:
-      sent:        "Versendet"
-      in_progress: "In Bearbeitung"
-      submitted:   "Eingereicht"
-      reviewed:    "Bewertet"
-      cancelled:   "Storniert"
+      sent: Versendet
+      in_progress: In Bearbeitung
+      submitted: Eingereicht
+      reviewed: Bewertet
+      cancelled: Storniert
+      draft: Entwurf
     fields:
-      title:            "Titel"
-      description:      "Beschreibung"
-      requirements:     "Was bewertet wird"
-      deadline:         "Frist"
-      brief_files:      "Briefing-Dateien (PDF, ZIP, Bilder)"
-      submission_files: "Einreichungsdateien"
-      score:            "Bewertung"
-    submission_text:    "Kommentar"
-    submission_text_placeholder: "Kurze Beschreibung der Arbeit, Links, Schlussfolgerungen"
+      title: Titel
+      description: Beschreibung
+      requirements: Was bewertet wird
+      deadline: Frist
+      brief_files: Briefing-Dateien (PDF, ZIP, Bilder)
+      submission_files: Einreichungsdateien
+      score: Bewertung
+      brief: Briefing
+      payment: Bezahlung
+      reviewer_notes: Notizen des Prüfers
+    submission_text: Kommentar
+    submission_text_placeholder: Kurze Beschreibung der Arbeit, Links, Schlussfolgerungen
     transitioned:
-      start:        "Kandidat hat mit der Bearbeitung begonnen"
-      submit_work:  "Arbeit eingereicht, wartet auf Review"
-      review:       "Bewertung erfasst"
-      cancel:       "Aufgabe storniert"
-      reopen:       "Aufgabe wieder geöffnet"
+      start: Kandidat hat mit der Bearbeitung begonnen
+      submit_work: Arbeit eingereicht, wartet auf Review
+      review: Bewertung erfasst
+      cancel: Aufgabe storniert
+      reopen: Aufgabe wieder geöffnet
     actions:
-      start:        "Kandidat hat begonnen"
-      submit_work:  "Arbeit einreichen"
-      review:       "Bewerten"
-      cancel:       "Stornieren"
-      reopen:       "Wieder öffnen"
-      send_email:   "An Kandidaten mailen"
-
+      start: Kandidat hat begonnen
+      submit_work: Arbeit einreichen
+      review: Bewerten
+      cancel: Stornieren
+      reopen: Wieder öffnen
+      send_email: An Kandidaten mailen
   interview_rounds:
-    new: "Interview planen"
-    schedule: "Planen"
-    scorecard: "Scorecard"
-    minutes_short: "Min."
-    period: "Zeitraum"
-    summary: "Gesamt: %{total} · Anstehend: %{upcoming} · Abgeschlossen: %{completed}"
+    new: Interview planen
+    schedule: Planen
+    scorecard: Scorecard
+    minutes_short: Min.
+    period: Zeitraum
+    summary: 'Gesamt: %{total} · Anstehend: %{upcoming} · Abgeschlossen: %{completed}'
     periods:
-      all:      "Alle"
-      today:    "Heute"
-      week:     "Diese Woche"
-      upcoming: "Anstehend"
-      past:     "Vergangen"
-    subtitle: "Interview-Runden mit 1–5 Kompetenz-Scorecard und finaler Empfehlung"
-    empty: "Noch keine Interview-Runden"
-    empty_hint: "Plane die erste Runde — HR, technisch, kulturell oder final."
-    location_placeholder: "HQ Büro, Tower B, Raum 3.14"
-    notes_placeholder: "Was besprochen wurde, Stärken, Risiken, Follow-ups"
-    decision_placeholder: "Zusammenfassung der Runde in 1–2 Zeilen"
-    created: "Interview geplant"
-    updated: "Interview aktualisiert"
-    deleted: "Interview entfernt"
+      all: Alle
+      today: Heute
+      week: Diese Woche
+      upcoming: Anstehend
+      past: Vergangen
+    subtitle: Interview-Runden mit 1–5 Kompetenz-Scorecard und finaler Empfehlung
+    empty: Noch keine Interview-Runden
+    empty_hint: Plane die erste Runde — HR, technisch, kulturell oder final.
+    location_placeholder: HQ Büro, Tower B, Raum 3.14
+    notes_placeholder: Was besprochen wurde, Stärken, Risiken, Follow-ups
+    decision_placeholder: Zusammenfassung der Runde in 1–2 Zeilen
+    created: Interview geplant
+    updated: Interview aktualisiert
+    deleted: Interview entfernt
     fields:
-      kind: "Runde"
-      scheduled_at: "Wann"
-      duration_minutes: "Dauer, Min."
-      interviewer: "Interviewer"
-      location: "Ort"
-      meeting_url: "Meeting-Link"
-      recommendation: "Empfehlung"
-      notes: "Notizen des Interviewers"
-      decision_comment: "Abschließender Kommentar"
+      kind: Runde
+      scheduled_at: Wann
+      duration_minutes: Dauer, Min.
+      interviewer: Interviewer
+      location: Ort
+      meeting_url: Meeting-Link
+      recommendation: Empfehlung
+      notes: Notizen des Interviewers
+      decision_comment: Abschließender Kommentar
     kinds:
-      hr: "HR"
-      tech: "Technisch"
-      cultural: "Kulturell"
-      final: "Final"
+      hr: HR
+      tech: Technisch
+      cultural: Kulturell
+      final: Final
     states:
-      scheduled: "Geplant"
-      in_progress: "Läuft"
-      completed: "Abgeschlossen"
-      cancelled: "Storniert"
-      no_show: "Nicht erschienen"
+      scheduled: Geplant
+      in_progress: Läuft
+      completed: Abgeschlossen
+      cancelled: Storniert
+      no_show: Nicht erschienen
     recommendations:
-      strong_no: "Klares Nein"
-      "no":      "Nein"
-      maybe:     "Vielleicht"
-      "yes":     "Ja"
-      strong_yes: "Klares Ja"
+      strong_no: Klares Nein
+      'no': Nein
+      maybe: Vielleicht
+      'yes': Ja
+      strong_yes: Klares Ja
     competencies:
-      communication: "Kommunikation"
-      motivation: "Motivation"
-      culture_fit: "Cultural Fit"
-      reliability: "Zuverlässigkeit"
-      technical_depth: "Technische Tiefe"
-      problem_solving: "Problemlösung"
-      system_design: "System-Design"
-      code_quality: "Code-Qualität"
-      teamwork: "Teamarbeit"
-      ownership: "Verantwortungsgefühl"
-      growth_mindset: "Lernbereitschaft"
-      feedback: "Feedback"
-      overall_impression: "Gesamteindruck"
-      risk_assessment: "Risikobewertung"
-      compensation_fit: "Vergütungsrahmen"
+      communication: Kommunikation
+      motivation: Motivation
+      culture_fit: Cultural Fit
+      reliability: Zuverlässigkeit
+      technical_depth: Technische Tiefe
+      problem_solving: Problemlösung
+      system_design: System-Design
+      code_quality: Code-Qualität
+      teamwork: Teamarbeit
+      ownership: Verantwortungsgefühl
+      growth_mindset: Lernbereitschaft
+      feedback: Feedback
+      overall_impression: Gesamteindruck
+      risk_assessment: Risikobewertung
+      compensation_fit: Vergütungsrahmen
     actions:
-      start: "Starten"
-      complete: "Interview abschließen"
-      cancel: "Stornieren"
-      no_show: "Nicht erschienen"
-      reopen: "Wieder öffnen"
-      fill_scorecard: "Scorecard ausfüllen"
+      start: Starten
+      complete: Interview abschließen
+      cancel: Stornieren
+      no_show: Nicht erschienen
+      reopen: Wieder öffnen
+      fill_scorecard: Scorecard ausfüllen
     transitioned:
-      start: "Interview gestartet"
-      complete: "Interview abgeschlossen"
-      cancel: "Interview storniert"
-      mark_no_show: "Als nicht erschienen markiert"
-      reopen: "Interview wieder geöffnet"
+      start: Interview gestartet
+      complete: Interview abgeschlossen
+      cancel: Interview storniert
+      mark_no_show: Als nicht erschienen markiert
+      reopen: Interview wieder geöffnet
+      start_now: Gestartet
+      no_show: Kandidat nicht erschienen
     confirm:
-      stage_change: "Der Kandidat ist aktuell in der Phase «%{from}». Nach dem Speichern wird er in «%{to}» verschoben. Fortfahren?"
-
+      stage_change: Der Kandidat ist aktuell in der Phase «%{from}». Nach dem Speichern wird er in «%{to}» verschoben. Fortfahren?
   recruitment_analytics:
-    subtitle: "Funnel, Time-to-Hire, Effektivität der Quellen"
-    days_short: "T"
-    candidates: "Kandidaten"
-    no_hires_yet: "noch keine Einstellungen"
-    empty: "Keine Daten für den gewählten Zeitraum"
-    empty_hint: "Wähle einen größeren Zeitraum oder warte auf neue Bewerbungen."
+    subtitle: Funnel, Time-to-Hire, Effektivität der Quellen
+    days_short: T
+    candidates: Kandidaten
+    no_hires_yet: noch keine Einstellungen
+    empty: Keine Daten für den gewählten Zeitraum
+    empty_hint: Wähle einen größeren Zeitraum oder warte auf neue Bewerbungen.
     periods:
-      "30":  "30 Tage"
-      "90":  "90 Tage"
-      "180": "180 Tage"
-      "365": "1 Jahr"
-      all:   "Gesamter Zeitraum"
+      '30': 30 Tage
+      '90': 90 Tage
+      '180': 180 Tage
+      '365': 1 Jahr
+      all: Gesamter Zeitraum
     kpi:
-      active:               "Aktiv"
-      active_hint:          "In aktiver Pipeline"
-      hired:                "Eingestellt"
-      hired_hint:           "Im Zeitraum"
-      time_to_hire:         "Time-to-Hire"
-      time_to_hire_hint:    "Ø von Bewerbung bis Einstellung"
-      hire_rate:            "Einstellungsquote"
-      hire_rate_hint:       "Bewerbung → Einstellung"
+      active: Aktiv
+      active_hint: In aktiver Pipeline
+      hired: Eingestellt
+      hired_hint: Im Zeitraum
+      time_to_hire: Time-to-Hire
+      time_to_hire_hint: Ø von Bewerbung bis Einstellung
+      hire_rate: Einstellungsquote
+      hire_rate_hint: Bewerbung → Einstellung
     funnel:
-      title:    "Hiring-Funnel"
-      subtitle: "Von der ersten Bewerbung bis zur Einstellung, mit Konversionsrate"
-      from_prev: "von vorh."
+      title: Hiring-Funnel
+      subtitle: Von der ersten Bewerbung bis zur Einstellung, mit Konversionsrate
+      from_prev: von vorh.
     distribution:
-      title: "Phasen-Verteilung"
+      title: Phasen-Verteilung
     sources:
-      title: "Effektivität der Quellen"
+      title: Effektivität der Quellen
     recruiters:
-      title:      "Recruiter"
-      name:       "E-Mail"
-      candidates: "Kandidaten"
-      interviews: "Interviews"
-      hired:      "Eingestellt"
-
+      title: Recruiter
+      name: E-Mail
+      candidates: Kandidaten
+      interviews: Interviews
+      hired: Eingestellt
   kpi:
     metrics:
-      title:     "KPI-Metriken"
-      subtitle:  "Katalog messbarer Kennzahlen zur Mitarbeiterbewertung"
-      new:       "Neue Metrik"
-      edit:      "Metrik bearbeiten"
-      created:   "Metrik hinzugefügt"
-      updated:   "Metrik aktualisiert"
-      deleted:   "Metrik gelöscht"
-      deactivated_with_history: "Metrik ist in Zuweisungen referenziert — deaktiviert statt gelöscht"
-      empty:     "Noch keine Metriken"
-      empty_hint: "Lege die erste KPI-Metrik an — z. B. Umsatz, NPS oder Termintreue."
-      target_direction_hint: "Wie ein höherer Wert die Bewertung beeinflusst: Maximieren = mehr ist besser, Minimieren = weniger ist besser, Ziel = möglichst nah am Zielwert."
+      title: KPI-Metriken
+      subtitle: Katalog messbarer Kennzahlen zur Mitarbeiterbewertung
+      new: Neue Metrik
+      edit: Metrik bearbeiten
+      created: Metrik hinzugefügt
+      updated: Metrik aktualisiert
+      deleted: Metrik gelöscht
+      deactivated_with_history: Metrik ist in Zuweisungen referenziert — deaktiviert statt gelöscht
+      empty: Noch keine Metriken
+      empty_hint: Lege die erste KPI-Metrik an — z. B. Umsatz, NPS oder Termintreue.
+      target_direction_hint: 'Wie ein höherer Wert die Bewertung beeinflusst: Maximieren = mehr ist besser, Minimieren = weniger ist besser, Ziel = möglichst nah am Zielwert.'
       placeholders:
-        name: "Vertriebsumsatz"
+        name: Vertriebsumsatz
         unit: "€, %, Stück"
       target_directions:
-        maximize: "Maximieren"
-        minimize: "Minimieren"
-        target:   "Ziel"
+        maximize: Maximieren
+        minimize: Minimieren
+        target: Ziel
+        higher_is_better: Höher ist besser
+        lower_is_better: Niedriger ist besser
       statuses:
-        active:   "Aktiv"
-        inactive: "Inaktiv"
+        active: Aktiv
+        inactive: Inaktiv
       fields:
-        name:             "Name"
-        code:             "Code"
-        unit:             "Einheit"
-        target_direction: "Richtung"
-        weight_default:   "Standardgewicht"
-        active:           "Aktiv"
+        name: Name
+        code: Code
+        unit: Einheit
+        target_direction: Richtung
+        weight_default: Standardgewicht
+        active: Aktiv
     assignments:
-      title:     "KPI-Zuweisungen"
-      subtitle:  "Metriken Mitarbeitern mit Ziel und Zeitraum zuweisen"
-      new:       "Neue Zuweisung"
-      edit:      "Zuweisung bearbeiten"
-      created:   "Zuweisung erstellt"
-      updated:   "Zuweisung aktualisiert"
-      deleted:   "Zuweisung gelöscht"
-      empty:     "Für diesen Filter keine Zuweisungen"
-      empty_hint: "Erstelle die erste Zuweisung — Mitarbeiter, Metrik, Zeitraum und Ziel wählen."
-      no_score:  "keine Bewertung"
+      title: KPI-Zuweisungen
+      subtitle: Metriken Mitarbeitern mit Ziel und Zeitraum zuweisen
+      new: Neue Zuweisung
+      edit: Zuweisung bearbeiten
+      created: Zuweisung erstellt
+      updated: Zuweisung aktualisiert
+      deleted: Zuweisung gelöscht
+      empty: Für diesen Filter keine Zuweisungen
+      empty_hint: Erstelle die erste Zuweisung — Mitarbeiter, Metrik, Zeitraum und Ziel wählen.
+      no_score: keine Bewertung
       choose_employee: "— Mitarbeiter wählen —"
-      choose_metric:   "— Metrik wählen —"
-      target_placeholder:      "z. B. 100000"
-      description_placeholder: "Optionaler Kontext für den Zeitraum"
+      choose_metric: "— Metrik wählen —"
+      target_placeholder: z. B. 100000
+      description_placeholder: Optionaler Kontext für den Zeitraum
       filters:
-        period:   "Zeitraum"
-        employee: "Mitarbeiter"
-        metric:   "Metrik"
-        reset:    "Zurücksetzen"
+        period: Zeitraum
+        employee: Mitarbeiter
+        metric: Metrik
+        reset: Zurücksetzen
       periods:
-        current_week:    "Diese Woche"
-        current_month:   "Dieser Monat"
-        current_quarter: "Dieses Quartal"
-        all:             "Gesamter Zeitraum"
+        current_week: Diese Woche
+        current_month: Dieser Monat
+        current_quarter: Dieses Quartal
+        all: Gesamter Zeitraum
+        custom: Eigener Zeitraum
       quick:
-        this_week:    "Woche"
-        this_month:   "Monat"
-        this_quarter: "Quartal"
+        this_week: Woche
+        this_month: Monat
+        this_quarter: Quartal
       fields:
-        employee:     "Mitarbeiter"
-        metric:       "Metrik"
-        period:       "Zeitraum"
-        period_start: "Von"
-        period_end:   "Bis"
-        target:       "Ziel"
-        weight:       "Gewicht"
-        description:  "Beschreibung"
-        score:        "Letzte Bewertung"
+        employee: Mitarbeiter
+        metric: Metrik
+        period: Zeitraum
+        period_start: Von
+        period_end: Bis
+        target: Ziel
+        weight: Gewicht
+        description: Beschreibung
+        score: Letzte Bewertung
     evaluations:
-      title:        "Bewertungen"
-      subtitle:     "Bewerte dein Team für jede KPI im gewählten Zeitraum — jede Eingabe wird im Verlauf festgehalten."
-      empty:        "Keine zu bewertenden Zuweisungen"
-      empty_hint:   "Sobald dein Team KPI-Zuweisungen für diesen Zeitraum hat — erscheinen sie hier."
-      target:       "Ziel"
-      score:        "Bewertung"
-      actual_value: "Ist-Wert"
-      notes_placeholder: "Optionaler Kommentar"
-      save_score:   "Speichern"
-      saved:        "Bewertung gespeichert"
-      not_scored:   "noch nicht bewertet"
-      last_evaluated: "Zuletzt bewertet"
-      history:      "Verlauf"
+      title: Bewertungen
+      subtitle: Bewerte dein Team für jede KPI im gewählten Zeitraum — jede Eingabe wird im Verlauf festgehalten.
+      empty: Keine zu bewertenden Zuweisungen
+      empty_hint: Sobald dein Team KPI-Zuweisungen für diesen Zeitraum hat — erscheinen sie hier.
+      target: Ziel
+      score: Bewertung
+      actual_value: Ist-Wert
+      notes_placeholder: Optionaler Kommentar
+      save_score: Speichern
+      saved: Bewertung gespeichert
+      not_scored: noch nicht bewertet
+      last_evaluated: Zuletzt bewertet
+      history: Verlauf
     dashboard:
-      title:    "Dashboard"
-      subtitle: "Leistungsüberblick — du, dein Team und das Unternehmen"
+      title: Dashboard
+      subtitle: Leistungsüberblick — du, dein Team und das Unternehmen
       tiles:
-        my_avg:               "Mein Durchschnitt"
-        team_avg:             "Team-Durchschnitt"
-        company_avg:          "Unternehmens-Durchschnitt"
-        across_all_metrics:   "über alle Metriken"
+        my_avg: Mein Durchschnitt
+        team_avg: Team-Durchschnitt
+        company_avg: Unternehmens-Durchschnitt
+        across_all_metrics: über alle Metriken
         my_assignments_count:
-          zero:  "keine Zuweisungen"
-          one:   "1 Zuweisung"
-          few:   "%{count} Zuweisungen"
-          many:  "%{count} Zuweisungen"
+          zero: keine Zuweisungen
+          one: 1 Zuweisung
+          few: "%{count} Zuweisungen"
+          many: "%{count} Zuweisungen"
           other: "%{count} Zuweisungen"
         team_size:
-          zero:  "keine Teammitglieder"
-          one:   "1 Teammitglied"
-          few:   "%{count} Teammitglieder"
-          many:  "%{count} Teammitglieder"
+          zero: keine Teammitglieder
+          one: 1 Teammitglied
+          few: "%{count} Teammitglieder"
+          many: "%{count} Teammitglieder"
           other: "%{count} Teammitglieder"
       my_section:
-        title:      "Meine KPI"
-        subtitle:   "Deine aktiven Zuweisungen und aktuellen Bewertungen"
-        empty:      "Keine KPI-Zuweisungen für diesen Zeitraum"
-        empty_hint: "Bitte deinen Vorgesetzten um Zuweisungen oder wähle einen größeren Zeitraum."
+        title: Meine KPI
+        subtitle: Deine aktiven Zuweisungen und aktuellen Bewertungen
+        empty: Keine KPI-Zuweisungen für diesen Zeitraum
+        empty_hint: Bitte deinen Vorgesetzten um Zuweisungen oder wähle einen größeren Zeitraum.
       trend:
-        title:    "Letzte 8 Wochen — Unternehmen"
-        subtitle: "Durchschnittliche Bewertung pro Woche, alle Mitarbeiter und Metriken zusammen"
+        title: Letzte 8 Wochen — Unternehmen
+        subtitle: Durchschnittliche Bewertung pro Woche, alle Mitarbeiter und Metriken zusammen
       distribution:
-        title:    "Nach Metrik"
-        subtitle: "Durchschnitt über alle Mitarbeiter, nach Leistung sortiert"
+        title: Nach Metrik
+        subtitle: Durchschnitt über alle Mitarbeiter, nach Leistung sortiert
       leaderboard:
-        title:    "Bestenliste"
-        subtitle: "Top- und Schlusslicht-Performer in deinem Bereich"
-        top:      "Top"
-        bottom:   "Benötigen Aufmerksamkeit"
-        empty:    "Für den gewählten Zeitraum noch keine Bewertungen"
+        title: Bestenliste
+        subtitle: Top- und Schlusslicht-Performer in deinem Bereich
+        top: Top
+        bottom: Benötigen Aufmerksamkeit
+        empty: Für den gewählten Zeitraum noch keine Bewertungen
       recent:
-        title:    "Aktuelle Bewertungen"
-        subtitle: "Neueste KPI-Aktivität"
-
+        title: Aktuelle Bewertungen
+        subtitle: Neueste KPI-Aktivität
   audit:
-    title:    "Auditprotokoll"
+    title: Auditprotokoll
     subtitle:
-      one:   "1 Ereignis im gewählten Filter"
-      few:   "%{count} Ereignisse im gewählten Filter"
-      many:  "%{count} Ereignisse im gewählten Filter"
+      one: 1 Ereignis im gewählten Filter
+      few: "%{count} Ereignisse im gewählten Filter"
+      many: "%{count} Ereignisse im gewählten Filter"
       other: "%{count} Ereignisse im gewählten Filter"
-      zero:  "keine Ereignisse im gewählten Filter"
-    empty:      "Das Auditprotokoll ist leer"
-    empty_hint: "Sobald Änderungen an verfolgten Datensätzen vorgenommen werden — erscheinen sie hier."
-    last_24h:   "Letzte 24 Stunden"
+      zero: keine Ereignisse im gewählten Filter
+    empty: Das Auditprotokoll ist leer
+    empty_hint: Sobald Änderungen an verfolgten Datensätzen vorgenommen werden — erscheinen sie hier.
+    last_24h: Letzte 24 Stunden
     filters:
-      period: "Zeitraum"
-      model:  "Objekt"
-      event:  "Aktion"
-      user:   "Benutzer"
-      reset:  "Zurücksetzen"
+      period: Zeitraum
+      model: Objekt
+      event: Aktion
+      user: Benutzer
+      reset: Zurücksetzen
     periods:
-      "1d":  "Letzte 24 Stunden"
-      "7d":  "Letzte 7 Tage"
-      "30d": "Letzte 30 Tage"
-      "90d": "Letzte 90 Tage"
-      all:   "Gesamter Zeitraum"
+      1d: Letzte 24 Stunden
+      7d: Letzte 7 Tage
+      30d: Letzte 30 Tage
+      90d: Letzte 90 Tage
+      all: Gesamter Zeitraum
     events:
-      create:        "Erstellt"
-      update:        "Geändert"
-      destroy:       "Gelöscht"
-      auth_sign_in:  "Angemeldet"
-      auth_sign_out: "Abgemeldet"
-      data_exported: "Daten exportiert"
+      create: Erstellt
+      update: Geändert
+      destroy: Gelöscht
+      auth_sign_in: Angemeldet
+      auth_sign_out: Abgemeldet
+      data_exported: Daten exportiert
     metadata_keys:
-      file:    "Datei"
-      rows:    "Zeilen"
-      format:  "Format"
-      reason:  "Grund"
-      target:  "Ziel"
-      ip:      "IP"
-      user_agent: "Browser"
-      request_id: "Anfrage-ID"
-    revert:                  "Rückgängig"
-    revert_confirm:          "Diese Änderung rückgängig machen? Die Aktion wird zurückgenommen."
-    reverted:                "Rückgängig gemacht"
-    reverted_ok:             "Aktion zurückgenommen"
-    revert_not_allowed:      "Dieses Ereignis kann nicht rückgängig gemacht werden"
-    already_reverted:        "Bereits rückgängig gemacht"
-    revert_target_missing:   "Zieldatensatz nicht gefunden"
-    revert_failed:           "Rückgängig fehlgeschlagen: %{error}"
+      file: Datei
+      rows: Zeilen
+      format: Format
+      reason: Grund
+      target: Ziel
+      ip: IP
+      user_agent: Browser
+      request_id: Anfrage-ID
+    revert: Rückgängig
+    revert_confirm: Diese Änderung rückgängig machen? Die Aktion wird zurückgenommen.
+    reverted: Rückgängig gemacht
+    reverted_ok: Aktion zurückgenommen
+    revert_not_allowed: Dieses Ereignis kann nicht rückgängig gemacht werden
+    already_reverted: Bereits rückgängig gemacht
+    revert_target_missing: Zieldatensatz nicht gefunden
+    revert_failed: 'Rückgängig fehlgeschlagen: %{error}'
     fields:
-      when:    "Wann"
-      who:     "Wer"
-      model:   "Objekt"
-      event:   "Aktion"
-      changes: "Änderungen"
+      when: Wann
+      who: Wer
+      model: Objekt
+      event: Aktion
+      changes: Änderungen
+      period: Zeitraum
     pagination:
-      prev:     "Zurück"
-      next:     "Vor"
-      page_of:  "Seite %{page} von %{total}"
+      prev: Zurück
+      next: Vor
+      page_of: Seite %{page} von %{total}
     models:
-      company:           "Unternehmen"
-      department:        "Abteilung"
-      employee:          "Mitarbeiter"
-      leave_request:     "Urlaubsantrag"
-      job_opening:       "Stelle"
-      job_applicant:     "Bewerber"
-      test_assignment:   "Testaufgabe"
-      interview_round:   "Interview-Runde"
-      kpi_metric:        "KPI-Metrik"
-      kpi_assignment:    "KPI-Zuweisung"
-      kpi_evaluation:    "KPI-Bewertung"
-      document:          "Dokument"
-      document_type:     "Dokumenttyp"
-      dictionary:        "Wörterbuch"
-      dictionary_entry:  "Wörterbuch-Eintrag"
-      app_setting:       "Einstellungen"
-      system:            "System"
-
+      company: Unternehmen
+      department: Abteilung
+      employee: Mitarbeiter
+      leave_request: Urlaubsantrag
+      job_opening: Stelle
+      job_applicant: Bewerber
+      test_assignment: Testaufgabe
+      interview_round: Interview-Runde
+      kpi_metric: KPI-Metrik
+      kpi_assignment: KPI-Zuweisung
+      kpi_evaluation: KPI-Bewertung
+      document: Dokument
+      document_type: Dokumenttyp
+      dictionary: Wörterbuch
+      dictionary_entry: Wörterbuch-Eintrag
+      app_setting: Einstellungen
+      system: System
+      onboarding_process: Onboarding
+      onboarding_task: Onboarding-Aufgabe
+      offboarding_process: Offboarding
+      offboarding_task: Offboarding-Aufgabe
+      employee_child: Kind des Mitarbeiters
+      employee_note: Mitarbeiternotiz
+      gender: Geschlecht
+      leave_approval_rule: Urlaubsgenehmigungs-Regel
+      process_template: Prozessvorlage
+      user: Benutzer
   activerecord:
     errors:
       models:
         kpi_assignment:
           attributes:
             period_end:
-              must_be_after_start: "muss am oder nach dem Startdatum liegen"
-
+              must_be_after_start: muss am oder nach dem Startdatum liegen
   user_menu:
-    profile: "Profil"
-    settings: "Einstellungen"
-    theme: "Design"
-    theme_light: "Hell"
-    theme_dark: "Dunkel"
-    theme_auto: "System"
-    language: "Sprache"
-
+    profile: Profil
+    settings: Einstellungen
+    theme: Design
+    theme_light: Hell
+    theme_dark: Dunkel
+    theme_auto: System
+    language: Sprache
   password_reset:
-    title: "Passwort zurücksetzen"
-    subtitle: "Gib deine E-Mail ein — wir senden einen Link zum Zurücksetzen."
-    submit: "Link senden"
-    back_to_sign_in: "Zurück zur Anmeldung"
-
+    title: Passwort zurücksetzen
+    subtitle: Gib deine E-Mail ein — wir senden einen Link zum Zurücksetzen.
+    submit: Link senden
+    back_to_sign_in: Zurück zur Anmeldung
   errors:
     not_found:
-      title:    "Nicht gefunden"
-      headline: "Hier ist nichts"
-      hint:     "Der Eintrag wurde möglicherweise gelöscht oder der Link ist veraltet."
-      back:     "Zurück zum Dashboard"
+      title: Nicht gefunden
+      headline: Hier ist nichts
+      hint: Der Eintrag wurde möglicherweise gelöscht oder der Link ist veraltet.
+      back: Zurück zum Dashboard
     server_error:
-      title:    "Etwas ist schiefgelaufen"
-      hint:     "Wir kümmern uns bereits darum. Versuche, die Seite neu zu laden."
+      title: Etwas ist schiefgelaufen
+      hint: Wir kümmern uns bereits darum. Versuche, die Seite neu zu laden.
     messages:
       not_saved:
-        one:   "%{resource} konnte nicht gespeichert werden: %{count} Fehler"
-        few:   "%{resource} konnte nicht gespeichert werden: %{count} Fehler"
-        many:  "%{resource} konnte nicht gespeichert werden: %{count} Fehler"
+        one: "%{resource} konnte nicht gespeichert werden: %{count} Fehler"
+        few: "%{resource} konnte nicht gespeichert werden: %{count} Fehler"
+        many: "%{resource} konnte nicht gespeichert werden: %{count} Fehler"
         other: "%{resource} konnte nicht gespeichert werden: %{count} Fehler"
-
+    company_missing: Unternehmen ist nicht konfiguriert
   date:
     formats:
-      long:  "%d. %B %Y"
+      long: "%d. %B %Y"
       short: "%d. %b"
   time:
     formats:
       default: "%d.%m.%Y %H:%M"
-      long:    "%d. %B %Y, %H:%M %Z"
-      short:   "%d.%m. %H:%M"
-      audit:   "%H:%M:%S · %d.%m.%Y %Z"
-
+      long: "%d. %B %Y, %H:%M %Z"
+      short: "%d.%m. %H:%M"
+      audit: "%H:%M:%S · %d.%m.%Y %Z"
   notifications:
-    title:    "Benachrichtigungen"
-    subtitle: "Alle System-Ereignisse — KI, Interviews, Statusänderungen"
-    mark_all_read: "Alle als gelesen markieren"
-    mark_read:     "Gelesen"
-    view_all:      "Alle anzeigen"
-    empty:         "Noch nichts Neues"
-    empty_hint:    "Hier erscheinen Ereignisse: KI-Abschlüsse, anstehende Interviews, Status-Updates der Kandidaten."
-    deleted:       "Gelöscht"
+    title: Benachrichtigungen
+    subtitle: Alle System-Ereignisse — KI, Interviews, Statusänderungen
+    mark_all_read: Alle als gelesen markieren
+    mark_read: Gelesen
+    view_all: Alle anzeigen
+    empty: Noch nichts Neues
+    empty_hint: 'Hier erscheinen Ereignisse: KI-Abschlüsse, anstehende Interviews, Status-Updates der Kandidaten.'
+    deleted: Gelöscht
     ai_run:
-      success:          "KI hat «%{kind}» für Kandidat %{name} abgeschlossen"
-      failed:           "KI «%{kind}» für %{name} fehlgeschlagen"
-      success_employee: "KI hat «%{kind}» für Mitarbeiter %{name} abgeschlossen"
-      failed_employee:  "KI «%{kind}» für Mitarbeiter %{name} fehlgeschlagen"
-    interview_soon:     "In 30 Min.: %{kind}-Interview mit %{name} um %{time}"
-    interview_tomorrow: "Heute: %{kind}-Interview mit %{name} um %{time}"
-
+      success: KI hat «%{kind}» für Kandidat %{name} abgeschlossen
+      failed: KI «%{kind}» für %{name} fehlgeschlagen
+      success_employee: KI hat «%{kind}» für Mitarbeiter %{name} abgeschlossen
+      failed_employee: KI «%{kind}» für Mitarbeiter %{name} fehlgeschlagen
+      success_document: KI hat «%{kind}» für Dokument «%{name}» abgeschlossen
+      failed_document: KI «%{kind}» für Dokument «%{name}» fehlgeschlagen
+      success_dictionary: KI hat «%{kind}» für Wörterbuch «%{name}» vorbereitet
+      failed_dictionary: KI «%{kind}» für Wörterbuch «%{name}» fehlgeschlagen
+      success_company: KI hat «%{kind}» abgeschlossen — Unternehmen «%{name}»
+      failed_company: KI «%{kind}» für Unternehmen «%{name}» fehlgeschlagen
+    interview_soon: 'In 30 Min.: %{kind}-Interview mit %{name} um %{time}'
+    interview_tomorrow: 'Heute: %{kind}-Interview mit %{name} um %{time}'
+    document_expiring:
+      month: Dokument «%{title}» (%{owner}) läuft in %{days} Tagen ab
+      week: "⏰ «%{title}» (%{owner}) läuft in %{days} Tagen ab — bitte handeln"
+      today: "⚠ «%{title}» (%{owner}) läuft heute ab"
+      expired: "⚠ «%{title}» (%{owner}) ist seit %{days} Tagen abgelaufen"
+  document_mailer:
+    expiring:
+      subject_month: Dokument «%{title}» läuft in %{days} Tagen ab
+      subject_week: "⏰ Dokument «%{title}» läuft in %{days} Tagen ab"
+      subject_today: "⚠ Dokument «%{title}» läuft heute ab"
+      subject_expired: "⚠ Dokument «%{title}» ist seit %{days} Tagen abgelaufen"
+      heading: Dokument benötigt Aufmerksamkeit
+      body_month: Dokument «%{title}» (%{owner}) läuft in %{days} Tagen ab.
+      body_week: Dokument «%{title}» (%{owner}) läuft in %{days} Tagen ab — bitte handeln.
+      body_today: Dokument «%{title}» (%{owner}) läuft heute ab.
+      body_expired: Dokument «%{title}» (%{owner}) ist seit %{days} Tagen abgelaufen.
+      field_title: Dokument
+      field_owner: Eigentümer
+      field_expires_at: Gültig bis
+      field_type: Dokumententyp
+      cta: Dokument öffnen
+      footer: 'Automatische Benachrichtigung von HRMS. Abonnements verwalten: Profil → Benachrichtigungen.'
   ai:
-    run:      "Ausführen"
-    error:    "Die KI hat keine strukturierte Antwort geliefert"
-    disabled: "Die KI ist deaktiviert oder nicht konfiguriert"
-    questions_for_round: "KI: Runden-Fragen"
-    summarize_round:     "KI: Runden-Zusammenfassung"
-    processing:       "wird auf dem Server verarbeitet..."
-    processing_hint:  "Du kannst die Seite verlassen — das Ergebnis kommt als Benachrichtigung und erscheint hier automatisch."
-    busy:             "KI arbeitet..."
-    busy_hint:        "Eine Aufgabe läuft bereits. Warte auf das Ergebnis — es erscheint automatisch."
-    history:          "Lauf-Verlauf"
-    no_recommendation: "Keine Empfehlung"
-    raw_response:     "Rohantwort des Modells"
-    run_details:      "Lauf-Details"
-    run_kind:         "Typ"
-    run_model:        "Modell"
-    run_when:         "Wann / wer"
-    run_tokens:       "Tokens"
-    run_cost:         "Kosten"
-    run_raw_payload:  "Vollständige JSON-Antwort"
-    questions_count:  "Fragen"
-    assignment_created:       "Testaufgabe aus KI-Entwurf erstellt"
-    assignment_created_sent:  "Testaufgabe erstellt und an den Kandidaten gemailt"
-    materialize_assignment:   "Als Testaufgabe erstellen"
-    materialize_and_send:     "Erstellen und an Kandidaten mailen"
-    materialize_confirm:      "Eine Testaufgabe aus diesem Entwurf erstellen? (kein E-Mail-Versand)"
-    materialize_send_confirm: "Aufgabe erstellen und an den Kandidaten mailen?"
+    run: Ausführen
+    error: Die KI hat keine strukturierte Antwort geliefert
+    disabled: Die KI ist deaktiviert oder nicht konfiguriert
+    questions_for_round: 'KI: Runden-Fragen'
+    summarize_round: 'KI: Runden-Zusammenfassung'
+    processing: wird auf dem Server verarbeitet...
+    processing_hint: Du kannst die Seite verlassen — das Ergebnis kommt als Benachrichtigung und erscheint hier automatisch.
+    busy: KI arbeitet...
+    busy_hint: Eine Aufgabe läuft bereits. Warte auf das Ergebnis — es erscheint automatisch.
+    history: Lauf-Verlauf
+    no_recommendation: Keine Empfehlung
+    raw_response: Rohantwort des Modells
+    run_details: Lauf-Details
+    run_kind: Typ
+    run_model: Modell
+    run_when: Wann / wer
+    run_tokens: Tokens
+    run_cost: Kosten
+    run_raw_payload: Vollständige JSON-Antwort
+    questions_count: Fragen
+    assignment_created: Testaufgabe aus KI-Entwurf erstellt
+    assignment_created_sent: Testaufgabe erstellt und an den Kandidaten gemailt
+    materialize_assignment: Als Testaufgabe erstellen
+    materialize_and_send: Erstellen und an Kandidaten mailen
+    materialize_confirm: Eine Testaufgabe aus diesem Entwurf erstellen? (kein E-Mail-Versand)
+    materialize_send_confirm: Aufgabe erstellen und an den Kandidaten mailen?
     leaves:
-      section_title:        "KI-Assistent"
-      section_subtitle:     "Burnout-Brief und Empfehlungen per KI"
-      run_burnout:          "Burnout-Brief"
-      run_kpi_brief:        "Leistungs-Brief"
-      run_meeting_agenda:   "1:1-Agenda"
-      run_bulk:             "KI auf Auswahl starten"
-      processing:           "KI verarbeitet"
-      empty_hint:           "Wähle einen KI-Assistenten oben — Burnout-Brief, Leistungsanalyse oder 1:1-Agenda."
-      kpi_brief_title:      "Leistungs-Brief"
-      meeting_agenda_title: "1:1-Agenda"
-      strengths:            "Stärken"
-      risks:                "Risiken"
-      metric_breakdown:     "Pro Metrik"
-      next_actions:         "Empfohlene Aktionen"
-      recognition:          "Auszeichnungswürdig"
+      section_title: KI-Assistent
+      section_subtitle: Burnout-Brief und Empfehlungen per KI
+      run_burnout: Burnout-Brief
+      run_kpi_brief: Leistungs-Brief
+      run_meeting_agenda: 1:1-Agenda
+      run_bulk: KI auf Auswahl starten
+      processing: KI verarbeitet
+      empty_hint: Wähle einen KI-Assistenten oben — Burnout-Brief, Leistungsanalyse oder 1:1-Agenda.
+      kpi_brief_title: Leistungs-Brief
+      meeting_agenda_title: 1:1-Agenda
+      strengths: Stärken
+      risks: Risiken
+      metric_breakdown: Pro Metrik
+      next_actions: Empfohlene Aktionen
+      recognition: Auszeichnungswürdig
       promotion:
-        ready:        "Bereit für Beförderung"
-        approaching:  "Annähernd bereit"
-        no_signal:    ""
+        ready: Bereit für Beförderung
+        approaching: Annähernd bereit
+        no_signal: ''
       trend:
-        rising:  "Steigend"
-        flat:    "Stabil"
-        falling: "Fallend"
-        mixed:   "Gemischt"
+        rising: Steigend
+        flat: Stabil
+        falling: Fallend
+        mixed: Gemischt
       tone:
-        supportive:  "Unterstützend"
-        celebratory: "Feiernd"
-        corrective:  "Korrigierend"
-        neutral:     "Neutral"
-      talking_points:       "Gesprächspunkte"
-      open_questions:       "Offene Fragen"
-      watch_outs:           "Sensible Themen"
-      after_meeting:        "Aktion nach dem Meeting"
+        supportive: Unterstützend
+        celebratory: Feiernd
+        corrective: Korrigierend
+        neutral: Neutral
+        formal: Formell
+        warm: Warm
+      talking_points: Gesprächspunkte
+      open_questions: Offene Fragen
+      watch_outs: Sensible Themen
+      after_meeting: Aktion nach dem Meeting
       bulk_enqueued:
-        one:   "KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich"
-        few:   "KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich"
-        many:  "KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich"
-        other: "KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich"
-      burnout_brief_title:  "Burnout-Brief"
-      suggest_window_title: "Empfohlener Zeitraum"
-      recommendation:       "Empfehlung"
-      data_observed:        "Beobachtete Daten"
-      reasoning:            "Begründung der KI"
-      option:               "Option"
-      warnings:             "Achtung"
-      refresh:              "Aktualisieren"
-      retry:                "Erneut versuchen"
-      error_title:          "KI-Anfrage fehlgeschlagen"
+        one: KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich
+        few: KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich
+        many: KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich
+        other: KI analysiert %{count} Mitarbeiter — Ergebnisse erscheinen gleich
+      burnout_brief_title: Burnout-Brief
+      suggest_window_title: Empfohlener Zeitraum
+      recommendation: Empfehlung
+      data_observed: Beobachtete Daten
+      reasoning: Begründung der KI
+      option: Option
+      warnings: Achtung
+      refresh: Aktualisieren
+      retry: Erneut versuchen
+      error_title: KI-Anfrage fehlgeschlagen
       history_title:
-        one:   "Vorheriger KI-Lauf"
-        few:   "Vorherige KI-Läufe (%{count})"
-        many:  "Vorherige KI-Läufe (%{count})"
-        other: "Vorherige KI-Läufe (%{count})"
+        one: Vorheriger KI-Lauf
+        few: Vorherige KI-Läufe (%{count})
+        many: Vorherige KI-Läufe (%{count})
+        other: Vorherige KI-Läufe (%{count})
       kinds:
-        burnout_brief:        "Burnout-Brief"
-        suggest_leave_window: "Empfohlener Zeitraum"
-        kpi_brief:            "Leistungs-Brief"
-        meeting_agenda:       "1:1-Agenda"
-        kpi_team_brief:       "Team-Leistung"
+        burnout_brief: Burnout-Brief
+        suggest_leave_window: Empfohlener Zeitraum
+        kpi_brief: Leistungs-Brief
+        meeting_agenda: 1:1-Agenda
+        kpi_team_brief: Team-Leistung
+        compensation_review: Vergütungsüberprüfung
+        exit_risk_brief: Austrittsrisiko
       severity:
-        high:   "Hohes Risiko"
-        medium: "Mittleres Risiko"
-        low:    "Geringes Risiko"
+        high: Hohes Risiko
+        medium: Mittleres Risiko
+        low: Geringes Risiko
       confidence:
-        high:   "Sicherheit: hoch"
-        medium: "Sicherheit: mittel"
-        low:    "Sicherheit: niedrig"
+        high: 'Sicherheit: hoch'
+        medium: 'Sicherheit: mittel'
+        low: 'Sicherheit: niedrig'
       agreement:
-        agree:    "Stimmt mit System überein"
-        partial:  "Teilweise einverstanden"
-        disagree: "Widerspricht dem System"
-        no_tag:   ""
+        agree: Stimmt mit System überein
+        partial: Teilweise einverstanden
+        disagree: Widerspricht dem System
+        no_tag: ''
+      compensation_review_title: Vergütungsüberprüfung
+      exit_risk_brief_title: Austrittsrisiko
+      months_short: Mon.
+      next_review_in: nächste Überprüfung in
+      retention_actions: Bindungsmaßnahmen
+      risk_levels:
+        high: Hoch
+        low: Niedrig
+        medium: Mittel
+      run_compensation_review: Vergütungsüberprüfung
+      run_exit_risk: Austrittsrisiko
+      signals: Signale
+      suggested_change: Empfehlung
+      urgency:
+        monitor: Beobachten
+        this_month: Diesen Monat
+        this_week: Diese Woche
+      verdicts:
+        hold: Halten
+        raise: Erhöhen
+        review_band: Stufe überprüfen
+        too_high: Über Markt
     kpi:
-      section_title:    "KI-Assistent"
-      section_subtitle: "Strategischer KI-Überblick über die Teamleistung"
-      run_team_brief:   "Team analysieren"
-      team_brief_title: "Team-Leistungsanalyse"
-      empty_hint:       "Klicke den Button — die KI gibt dir einen Überblick über das Team."
-      highlights:       "Wichtige Erkenntnisse"
-      people:           "Pro Person"
+      section_title: KI-Assistent
+      section_subtitle: Strategischer KI-Überblick über die Teamleistung
+      run_team_brief: Team analysieren
+      team_brief_title: Team-Leistungsanalyse
+      empty_hint: Klicke den Button — die KI gibt dir einen Überblick über das Team.
+      highlights: Wichtige Erkenntnisse
+      people: Pro Person
       health:
-        thriving: "In Hochform"
-        steady:   "Stabil"
-        stressed: "Unter Druck"
-        at_risk:  "Gefährdet"
+        thriving: In Hochform
+        steady: Stabil
+        stressed: Unter Druck
+        at_risk: Gefährdet
+        critical: Kritisch
+        stable: Stabil
+        strong: Stark
       hiring:
-        no_need:     ""
-        monitor:     "Personalbedarf beobachten"
-        urgent_hire: "Dringend einstellen"
+        no_need: ''
+        monitor: Personalbedarf beobachten
+        urgent_hire: Dringend einstellen
+        hire: Einstellen
+        hold: Halten
+        pause: Pause
       verdict:
-        top_performer: "Top"
-        steady:        "Stabil"
-        watch:         "Beobachten"
-        at_risk:       "Gefährdet"
+        top_performer: Top
+        steady: Stabil
+        watch: Beobachten
+        at_risk: Gefährdet
+        concerning: Bedenklich
+        critical: Kritisch
+        improving: Verbessert sich
+        stable: Stabil
     cards:
-      analyze_resume:      "Lebenslauf-Analyse"
-      analyze_resume_hint: "KI extrahiert Skills, Erfahrung, Stärken und Red Flags"
-      recommend:           "Einstellungs-Empfehlung"
-      recommend_hint:      "KI bewertet Profil + Scorecards und schlägt strong_yes / yes / maybe / no / strong_no vor"
-      generate_assignment: "Testaufgabe"
-      generate_assignment_hint: "KI generiert eine Aufgabe passend zu Level und Stack des Kandidaten unter Berücksichtigung von Risiken/Stärken"
+      analyze_resume: Lebenslauf-Analyse
+      analyze_resume_hint: KI extrahiert Skills, Erfahrung, Stärken und Red Flags
+      recommend: Einstellungs-Empfehlung
+      recommend_hint: KI bewertet Profil + Scorecards und schlägt strong_yes / yes / maybe / no / strong_no vor
+      generate_assignment: Testaufgabe
+      generate_assignment_hint: KI generiert eine Aufgabe passend zu Level und Stack des Kandidaten unter Berücksichtigung von Risiken/Stärken
     actions:
-      analyze_resume:       "Lebenslauf-Analyse"
-      recommend:            "Empfehlung"
-      questions:            "Runden-Fragen"
-      questions_for:        "Runden-Fragen"
-      generate_assignment:  "Testaufgabe"
-      summarize_interview:  "Runden-Zusammenfassung"
-      compare_candidates:   "Kandidaten-Vergleich"
-      burnout_brief:        "Burnout-Briefing"
-      suggest_leave_window: "Empfohlenes Urlaubsfenster"
-      kpi_brief:            "Performance-Briefing"
-      meeting_agenda:       "1:1-Meeting-Agenda"
-      kpi_team_brief:       "Team-Performance-Briefing"
-      onboarding_plan:         "Onboarding-Plan"
-      welcome_letter:          "Willkommensschreiben"
-      mentor_match:            "Mentor-Auswahl"
-      probation_review:        "Probezeit-Review"
-      offer_letter:            "Angebotsschreiben"
-      compensation_review:     "Vergütungsanalyse"
-      exit_risk_brief:         "Austrittsrisiko-Briefing"
-      knowledge_transfer_plan: "Wissenstransferplan"
-      exit_interview_brief:    "Austrittsgespräch-Briefing"
-      replacement_brief:       "Nachbesetzungs-Briefing"
+      analyze_resume: Lebenslauf-Analyse
+      recommend: Empfehlung
+      questions: Runden-Fragen
+      questions_for: Runden-Fragen
+      generate_assignment: Testaufgabe
+      summarize_interview: Runden-Zusammenfassung
+      compare_candidates: Kandidaten-Vergleich
+      burnout_brief: Burnout-Briefing
+      suggest_leave_window: Empfohlenes Urlaubsfenster
+      kpi_brief: Performance-Briefing
+      meeting_agenda: 1:1-Meeting-Agenda
+      kpi_team_brief: Team-Performance-Briefing
+      onboarding_plan: Onboarding-Plan
+      welcome_letter: Willkommensschreiben
+      mentor_match: Mentor-Auswahl
+      probation_review: Probezeit-Review
+      offer_letter: Angebotsschreiben
+      compensation_review: Vergütungsanalyse
+      exit_risk_brief: Austrittsrisiko-Briefing
+      knowledge_transfer_plan: Wissenstransferplan
+      exit_interview_brief: Austrittsgespräch-Briefing
+      replacement_brief: Nachbesetzungs-Briefing
+      company_bootstrap: KI-Unternehmenseinrichtung
+      dictionary_seed: KI-Wörterbuchvorschläge
+      document_extract_assist: KI-Dokumentenanalyse
+      document_summary: KI-Dokumentenzusammenfassung
+      ping: Ping
     fields:
-      strengths:  "Stärken"
-      concerns:   "Risiken / Red Flags"
-      skills:     "Skills"
-      highlights: "Highlights"
-      next_steps: "Nächste Schritte"
-      agreement:  "Übereinstimmung mit Interviewer"
-      experience_years: "KI-geschätzte Erfahrung"
+      strengths: Stärken
+      concerns: Risiken / Red Flags
+      skills: Skills
+      highlights: Highlights
+      next_steps: Nächste Schritte
+      agreement: Übereinstimmung mit Interviewer
+      experience_years: KI-geschätzte Erfahrung
     agreement:
-      high:   "Hoch"
-      medium: "Mittel"
-      low:    "Niedrig"
+      high: Hoch
+      medium: Mittel
+      low: Niedrig
     question_categories:
-      validation: "Bestätigung der Stärken"
-      risk_probe: "Risiko prüfen"
-      tech_stack: "Tech-Stack"
-      culture:    "Kultur"
+      validation: Bestätigung der Stärken
+      risk_probe: Risiko prüfen
+      tech_stack: Tech-Stack
+      culture: Kultur
     compare:
-      title:       "KI-Kandidatenvergleich"
-      subtitle:    "Wähle 2+ Kandidaten — die KI bewertet und erklärt die Eignung für die Rolle"
-      cta:         "Kandidaten vergleichen"
-      run:         "Vergleichen"
-      modal_title: "Wen vergleichen wir?"
-      modal_hint:  "Je mehr Daten pro Kandidat (Scorecards, Zusammenfassung), desto präziser die KI. Mindestens 2."
-      too_few:        "Wähle mindestens 2 Kandidaten"
-      too_few_title:  "Nicht genug Kandidaten"
-      too_few_hint:   "Weniger als 2 Bewerber für diese Stelle — füge weitere hinzu, um zu vergleichen."
-      years_short:  "J."
+      title: KI-Kandidatenvergleich
+      subtitle: Wähle 2+ Kandidaten — die KI bewertet und erklärt die Eignung für die Rolle
+      cta: Kandidaten vergleichen
+      run: Vergleichen
+      modal_title: Wen vergleichen wir?
+      modal_hint: Je mehr Daten pro Kandidat (Scorecards, Zusammenfassung), desto präziser die KI. Mindestens 2.
+      too_few: Wähle mindestens 2 Kandidaten
+      too_few_title: Nicht genug Kandidaten
+      too_few_hint: Weniger als 2 Bewerber für diese Stelle — füge weitere hinzu, um zu vergleichen.
+      years_short: J.
       facts:
-        experience: "Erfahrung"
-        salary:     "Gehalt"
-        location:   "Ort"
-        rounds:     "Runden"
-        skills:     "Stack"
+        experience: Erfahrung
+        salary: Gehalt
+        location: Ort
+        rounds: Runden
+        skills: Stack
       experience:
-        zero:  "keine Erfahrung"
-        one:   "%{count} Jahr"
-        few:   "%{count} Jahre"
-        many:  "%{count} Jahre"
+        zero: keine Erfahrung
+        one: "%{count} Jahr"
+        few: "%{count} Jahre"
+        many: "%{count} Jahre"
         other: "%{count} Jahre"
       compared_count:
-        zero:  "Kandidaten"
-        one:   "Kandidat"
-        few:   "Kandidaten"
-        many:  "Kandidaten"
-        other: "Kandidaten"
+        zero: Kandidaten
+        one: Kandidat
+        few: Kandidaten
+        many: Kandidaten
+        other: Kandidaten
       rounds_count:
-        zero:  "keine Interviews"
-        one:   "%{count} Interview"
-        few:   "%{count} Interviews"
-        many:  "%{count} Interviews"
+        zero: keine Interviews
+        one: "%{count} Interview"
+        few: "%{count} Interviews"
+        many: "%{count} Interviews"
         other: "%{count} Interviews"
+    brief:
+      deadline:
+        auto: KI entscheidet
+      delivery:
+        archive: Archiv (zip)
+        auto: KI entscheidet
+        doc: Dokument (Notion/Google Docs)
+        github: GitHub-Repository
+        pr: Pull Request in unser Repo
+      difficulty:
+        auto: KI entscheidet
+        junior: Junior
+        middle: Middle
+        senior: Senior
+      fields:
+        deadline_days: Frist, Tage
+        delivery: Abgabeformat
+        difficulty: Schwierigkeit
+        focus: Worauf soll die KI besonders achten (optional)
+        hours: Stunden zur Bearbeitung
+        paid: Bezahlte Aufgabe
+        payment_amount: Betrag, RUB
+      focus_placeholder: 'Z.B.: sauberer Code wichtiger als Performance, Test-Coverage prüfen, Edge-Case-Datenbank-Szenarien'
+      hours:
+        auto: KI entscheidet
+      payment_hint: Die KI erwähnt das im Briefing (Vergütungsbetrag im Text)
+      submit: Generieren
+      subtitle: Ein paar Parameter und die KI erstellt eine passende Aufgabe. Alle Felder optional (leer = KI entscheidet).
+      title: 'Briefing für KI: Testaufgabe'
+    offboarding:
+      areas: Übergabebereiche
+      create_opening: Stelle erstellen
+      docs_to_leave: Hinterlassende Dokumente
+      exit_brief_title: Exit-Interview
+      kt_title: Wissenstransfer
+      must_capture: Muss erfasst werden
+      must_have: Muss vorhanden
+      nice_to_have: Wünschenswert
+      opening_created: Stellenentwurf aus KI-Briefing erstellt
+      questions: Fragen
+      replacement_title: Briefing für Ersatz
+      responsibilities: Verantwortlichkeiten
+      run_exit: Exit-Interview-Briefing
+      run_kt: Wissenstransfer-Plan
+      run_replace: Ersatz-Briefing
+      session_plan: Sitzungsplan
+      title: KI-Offboarding-Assistent
+    onboarding:
+      concerns: Risikobereiche
+      manager_questions: Fragen für die Führungskraft
+      materialize: Als Aufgaben hinzufügen
+      mentor_match_title: Mentor-Kandidaten
+      plan_title: KI-Onboarding-Plan
+      probation_review_title: Probezeit-Überprüfung
+      probation_verdicts:
+        extend: Verlängern
+        hire: Einstellen
+        let_go: Trennen
+        undecided: Unentschieden
+      recommended_actions: Empfohlene Maßnahmen
+      run_mentor: Mentor finden
+      run_plan: Plan erweitern
+      run_review: Probezeit-Überprüfung
+      run_welcome: Willkommens-Schreiben
+      set_as_mentor: Als Mentor festlegen
+      strengths: Stärken
+      tasks_added: KI-Aufgaben hinzugefügt
+      title: KI-Onboarding-Assistent
+  custom_fields:
+    title: Unternehmens-Zusatzfelder
+    hint: 'Definiert in Wörterbüchern. Zum Ändern: Einstellungen → Wörterbücher.'
+  flash:
+    created: Erstellt
+    updated: Aktualisiert
+    deleted: Gelöscht
+  onboarding:
+    title: Onboarding
+    eyebrow: HR-Prozesse
+    subtitle: 'Eingewöhnung neuer Mitarbeiter: vom ersten Tag bis Ende der Probezeit'
+    new: Neues Onboarding
+    new_hint: Mitarbeiter und Vorlage wählen — Aufgaben werden automatisch erstellt
+    start: Onboarding starten
+    start_short: Onboarding
+    continue: Onboarding läuft
+    tasks_title: Aufgaben
+    tasks_empty: Noch keine Aufgaben
+    confirm_complete: Onboarding abschließen?
+    confirm_cancel: Onboarding abbrechen?
+    ai_generated: KI-generiert
+    actions:
+      activate: Aktivieren
+      complete_process: Prozess abschließen
+      cancel_process: Abbrechen
+      complete: Als erledigt markieren
+      reopen: Wieder öffnen
+      skip: Überspringen
+      new: "+ Neues Onboarding"
+    fields:
+      employee: Mitarbeiter
+      template: Vorlage
+      mentor: Mentor
+      started: Gestartet
+      due: Frist
+      kind: Art
+      notes: Notizen
+      task_title: Aufgabentitel
+      completed_at: Abgeschlossen am
+      target: Zielabschluss
+    kinds:
+      paperwork: Papierkram
+      equipment: Ausrüstung
+      access: Zugriffe
+      training: Training
+      intro: Vorstellung
+      checkin: Check-in
+      general: Allgemein
+    states:
+      draft: Entwurf
+      active: Aktiv
+      completed: Abgeschlossen
+      cancelled: Abgebrochen
+    task_states:
+      pending: Ausstehend
+      done: Erledigt
+      skipped: Übersprungen
+    stats:
+      active: Aktiv
+      drafts: Entwürfe
+      completed_30d: Abgeschlossen (30 Tage)
+      completed: Abgeschlossen
+    empty:
+      title: Noch keine Onboarding-Prozesse
+      hint: Starte ein Onboarding aus dem Mitarbeiterprofil oder vom Hauptdashboard
+    no_template_help: Erstelle eine Vorlage in Einstellungen → Prozessvorlagen
+    section:
+      active: Aktive Prozesse
+      drafts: Entwürfe
+      recent_completed: Kürzlich abgeschlossen
+    stages:
+      day_zero: Erster Tag
+      first_week: Erste Woche
+      first_month: Erster Monat
+      probation: Probezeit
+      later: Später
+    progress:
+      tasks_done: Aufgaben erledigt
+      overdue:
+        one: "%{count} überfällig"
+        few: "%{count} überfällig"
+        many: "%{count} überfällig"
+        other: "%{count} überfällig"
+  offboarding:
+    title: Offboarding
+    eyebrow: HR-Prozesse
+    subtitle: Wissenstransfer, Zugriffsentzug, Exit-Interview
+    new: Neues Offboarding
+    new_hint: Mitarbeiter, Grund und letzten Tag wählen — Aufgaben werden automatisch erstellt
+    start: Offboarding starten
+    start_short: Offboarding
+    continue: Offboarding läuft
+    tasks_title: Aufgaben
+    tasks_empty: Noch keine Aufgaben
+    confirm_complete: Offboarding abschließen? Mitarbeiter wird als gekündigt markiert.
+    confirm_cancel: Offboarding abbrechen?
+    last_day: Letzter Tag
+    exit_risk: Austrittsrisiko
+    exit_risk_short: Risiko
+    exit_risk_hint: 'KI-Schätzung: KPI-Trend, Urlaubshäufigkeit, letzte Notizen'
+    actions:
+      activate: Aktivieren
+      complete_process: Abschließen
+      cancel_process: Abbrechen
+      skip: Überspringen
+      new: "+ Neues Offboarding"
+    fields:
+      employee: Mitarbeiter
+      template: Vorlage
+      reason: Grund
+      last_day: Letzter Tag
+      notes: Notizen
+      kind: Art
+      completed_at: Abgeschlossen am
+      task_title: Aufgabentitel
+    kinds:
+      paperwork: Papierkram
+      equipment_return: Geräterückgabe
+      access_revoke: Zugriffsentzug
+      kt: Wissenstransfer
+      exit_interview: Exit-Interview
+      legal: Juristisches
+      general: Allgemein
+    reasons:
+      voluntary: Freiwillig
+      layoff: Entlassung
+      end_of_contract: Vertragsende
+      contract_end: Vertragsende
+      retirement: Ruhestand
+      dismissal: Kündigung
+      relocation: Umzug
+      involuntary: Vom Arbeitgeber initiiert
+      other: Andere
+    states:
+      draft: Entwurf
+      active: Aktiv
+      completed: Abgeschlossen
+      cancelled: Abgebrochen
+    task_states:
+      pending: Ausstehend
+      done: Erledigt
+      skipped: Übersprungen
+    stats:
+      active: Aktiv
+      completed: Abgeschlossen
+      completed_30d: Abgeschlossen (30 Tage)
+      high_risk: Hohes Risiko
+      drafts: Entwürfe
+    empty:
+      title: Noch keine Offboarding-Prozesse
+      hint: Starte ein Offboarding aus dem Mitarbeiterprofil
+    no_template_help: Erstelle eine Vorlage in Einstellungen → Prozessvorlagen
+    section:
+      active: Aktive
+      completed: Abgeschlossene
+      drafts: Entwürfe
+    stages:
+      far: Im Voraus
+      next_week: Nächste Woche
+      final_days: Letzte Tage
+      after: Nach Austritt
+    progress:
+      tasks_done: Aufgaben erledigt
+      overdue:
+        one: "%{count} überfällig"
+        few: "%{count} überfällig"
+        many: "%{count} überfällig"
+        other: "%{count} überfällig"
+  documents:
+    title: Dokumente
+    eyebrow: HR-Archiv
+    subtitle: 'Persönliche Dokumente von Mitarbeitern: Pässe, Verträge, Diplome, Gesundheitsbücher. Nur HR.'
+    created: Dokument hochgeladen
+    updated: Dokument aktualisiert
+    deleted: Dokument gelöscht
+    revoked: Dokument widerrufen
+    reactivated: Dokument reaktiviert
+    actions_title: Aktionen
+    actions:
+      document_summary: KI-Dokumentenzusammenfassung
+      document_extract_assist: KI-Dokumentenanalyse
+    busy:
+      document_extract: Analyse läuft (gem)…
+      document_summary: Erstelle KI-Zusammenfassung…
+      document_extract_assist: KI hilft bei der Analyse…
+    busy_short: KI arbeitet…
+    run_extraction: Analyse starten (gem)
+    run_extract_assist: KI-Analyse-Hilfe
+    run_extract_image: KI-Bildanalyse (Vision)
+    run_summary: KI-Zusammenfassung
+    summary_pending: KI-Zusammenfassung erscheint in einer Minute
+    summary_title: KI-Zusammenfassung
+    summary_running: Erstelle KI-Zusammenfassung…
+    summary_meta: Aus Dokumententext generiert
+    extraction_running: Analysiere Dokument…
+    extract_assist_running: KI hilft bei der Analyse…
+    extracting: Extrahiere…
+    extracting_hint: PDF/OCR + Regex pro Typ
+    extracting_long_hint: Du kannst die Seite schließen — das Ergebnis erscheint automatisch.
+    extracted_title: Extrahierte Daten
+    extraction_failed_title: Auto-Analyse hat kein Ergebnis geliefert
+    extraction_failed_hint: Dokument könnte ein Scan ohne OCR-Layer oder nicht-Standard-Format sein. Versuche KI-Zusammenfassung oder fülle Felder manuell.
+    extraction_failed_reason: Grund
+    ai_failed_title: KI konnte es nicht bewältigen
+    apply_extracted: Auf Dokument anwenden
+    apply_extracted_confirm: Dokumentenfelder mit extrahierten Werten überschreiben?
+    review_extracted: Mit Bearbeitung anwenden
+    review_title: Extraktion mit Bearbeitung anwenden
+    review_form_title: Dokumentenfelder
+    review_extras_title: Andere Felder, die die KI gefunden hat (zur Referenz)
+    review_hint: Werte aus Extraktion vorausgefüllt. Vergleiche mit dem Original rechts, bearbeite bei Bedarf und speichere.
+    review_save: Speichern
+    extracted_applied: 'Felder aus Extraktion gefüllt: %{fields}'
+    extracted_not_applicable: Extrahierte Daten haben keine Felder, die zum Dokument passen (number/issuer/issued_at/expires_at).
+    no_extracted_data: Keine Daten zum Anwenden — starte zuerst die Analyse.
+    image_hint: Bei Fotos und Scans erfolgt die Analyse über KI-Vision — das Modell liest das Bild und extrahiert Felder.
+    last_extracted: Letzte Extraktion
+    fields_section: Details
+    file_title: Datei
+    download: Herunterladen
+    no_file: Keine Datei angehängt
+    preview_unavailable: PDF öffnen
+    expired_short: abgelaufen
+    revoke: Widerrufen
+    revoke_confirm: Dieses Dokument wirklich widerrufen?
+    reactivate: Reaktivieren
+    open_original: Original in neuem Tab öffnen
+    zoom_in: Vergrößern
+    zoom_out: Verkleinern
+    zoom_reset: Zoom zurücksetzen
+    confidence:
+      high: hohes Vertrauen
+      medium: mittleres Vertrauen
+      low: geringes Vertrauen
+    confidentialities:
+      confidential: Vertraulich
+    states:
+      active: Aktiv
+      expired: Abgelaufen
+      revoked: Widerrufen
+      draft: Entwurf
+    fields:
+      title: Titel
+      document_type: Dokumententyp
+      number: Nummer
+      issuer: Ausgestellt von
+      issued_at: Ausgestellt am
+      expires_at: Gültig bis
+      notes: Notizen
+    ai_summary_sections:
+      key_points: Wichtige Punkte
+      parties: Parteien
+      dates: Daten
+      obligations: Verpflichtungen
+      risks: Risiken
+      action_items: Maßnahmen
+    extraction_errors:
+      tesseract_unavailable: OCR nicht verfügbar (Tesseract nicht installiert).
+      ocr_pdf: PDF ohne Textebene — benötigt OCR auf dem Server.
+      unsupported_format: Dateiformat wird nicht unterstützt.
+      empty_text: Konnte keinen Text aus Datei extrahieren.
+      no_extractor: Auto-Analyse für diesen Dokumententyp noch nicht konfiguriert.
+      no_kind: Dokumententyp hat kein extractor_kind gesetzt.
+      no_text_for_ai: 'KI hat keinen Text erhalten: PDF hat keine Textebene. Für Bilder liest KI sie direkt über Vision.'
+      image_too_large: Bild zu groß für Vision API (max 18 MB). Komprimieren und neu hochladen.
+    extracted_keys:
+      number: Nummer
+      series: Serie
+      issuer: Ausgestellt von
+      issuer_code: Ausgabe-Code
+      issued_at: Ausgestellt am
+      expires_at: Gültig bis
+      valid_until: Gültig bis
+      validity_period: Gültigkeitsdauer
+      birth_date: Geburtsdatum
+      birth_place: Geburtsort
+      birth_year: Geburtsjahr
+      gender: Geschlecht
+      nationality: Staatsangehörigkeit
+      marital_status: Familienstand
+      holder_name: Inhaber
+      full_name: Vollständiger Name
+      first_name: Vorname
+      last_name: Nachname
+      middle_name: Mittlerer Name
+      employee: Mitarbeiter
+      employee_name: Mitarbeitername
+      employer: Arbeitgeber
+      position: Position
+      department: Abteilung
+      start_date: Startdatum
+      end_date: Enddatum
+      contract_term: Vertragslaufzeit
+      term: Laufzeit
+      salary: Gehalt
+      salary_amount: Gehaltsbetrag
+      salary_currency: Gehaltswährung
+      currency: Währung
+      degree: Qualifikation
+      qualification: Qualifikation
+      specialty: Fachgebiet
+      faculty: Fakultät
+      study_form: Studienform
+      institution: Institution
+      institution_type: Institutionstyp
+      graduation_year: Abschlussjahr
+      enrollment_year: Einschreibungsjahr
+      parties: Parteien
+      address: Adresse
+      registration_address: Meldeadresse
+      passport_data: Passdetails
+      diagnosis: Diagnose
+      doctor: Arzt
+      clinic: Klinik
+      country: Land
+      visa_type: Visumtyp
+      license_category: Führerscheinklasse
+    new: "+ Dokument hochladen"
+    new_hint: 'Nach dem Upload startet die Auto-Analyse: Pässe/SNILS/INN/Verträge per Regex erkannt. KI nur für lange Textdokumente.'
+  settings:
+    tabs:
+      languages: Sprachen
+      smtp: SMTP / E-Mail
+      ai: KI-Assistent
+      notifications: Benachrichtigungen
+      communications: Kommunikation
+      careers: Karriereseite
+      leaves: Urlaube
+      genders: Geschlechter
+      process_templates: Prozessvorlagen
+      document_types: Dokumententypen
+      positions: Positionen
+      leave_types: Urlaubsarten
+      dictionaries: Wörterbücher
+    dictionaries:
+      title: Wörterbücher
+      subtitle: 'Auswahllisten und Zusatzfelder für Module: Dokumente, Mitarbeiter, Urlaube. Alle Wörterbücher sind unternehmensbezogen.'
+      new: Neues Wörterbuch
+      new_lookup: "+ Liste"
+      new_field_schema: "+ Feldschema"
+      create_schema: "+ Schema erstellen"
+      create_lookup: "+ Liste erstellen"
+      discovery_title: Verfügbare Erweiterungspunkte
+      discovery_hint: Wo das System unternehmensspezifische Anpassungen aufnehmen kann. Erstelle ein Wörterbuch — Felder/Werte aktivieren sich sofort. ✓ — bereits konfiguriert.
+      discovery_more: 'Neben Default-Schemas kannst du eines pro spezifische Instanz erstellen: «DocumentType:5», «JobApplicant:8», «LeaveRequest:3». Dann gelten Felder nur für diese Instanz.'
+      no_description: Keine Beschreibung
+      entries_title: Listeneinträge
+      entries_count: 'Einträge: %{n}'
+      fields_count: 'Felder: %{n}'
+      entries_empty: Noch keine Einträge — füge unten hinzu.
+      fields_in_schema: Schema-Felder
+      add_entry: "+ Eintrag hinzufügen"
+      required_badge: erforderlich
+      options_label: Optionen
+      default_field_schema_name: Zusatzfelder für %{target}
+      lookups_title: Listen (lookup)
+      lookups_empty: Noch keine Listen. Werden für Auswahlfelder in Formularen genutzt — z.B. Bewerberquellen oder Kündigungsgründe.
+      field_schemas_title: Zusatzfeld-Schemas
+      field_schemas_hint: Jedes Schema beschreibt Zusatzfelder für eine spezifische Entität. Z.B. «DocumentType:5» — Felder für Dokumente dieses Typs.
+      field_schemas_empty: Noch keine Schemas. Erstelle das erste, um unternehmensspezifische Felder zu Dokumenten oder Mitarbeitern hinzuzufügen.
+      kinds:
+        lookup: Liste
+        field_schema: Feldschema
+      fields:
+        kind: Typ
+        name: Name
+        code: Code
+        description: Beschreibung
+      name_placeholder: Bewerberquellen / Kündigungsgründe / …
+      code_placeholder_lookup: applicant_sources
+      code_placeholder_schema: DocumentType:5  oder  Employee:default
+      code_hint_lookup: Maschinenname der Liste. Wird beim Laden im Code verwendet.
+      code_hint_schema: 'Format: TargetModel:scope. Schema gilt für die passende Entität beim Rendering.'
+      points:
+        employee: Mitarbeiter
+        employee_hint: Zusatzfelder für alle Mitarbeiter (z.B. GitHub-URL für Devs oder Führerscheinklasse).
+        department: Abteilungen
+        department_hint: Zusatzfelder für Abteilungen (Budget, Standort, Sicherheitsverantwortlicher).
+        position: Positionen
+        position_hint: Zusatzfelder für Positionen (erforderliche Lizenz, Level, Stufe).
+        applicant: Kandidaten
+        applicant_hint: Zusatzfelder für alle Kandidaten unabhängig von der Stelle.
+        leave: Urlaube / Anträge
+        leave_hint: Zusatzfelder für alle Urlaubsanträge (Reiseziel, Kontakttelefon im Urlaub usw.).
+      lookups:
+        applicant_sources: Bewerberquellen
+        applicant_sources_hint: 'Woher der Kandidat kommt: HH / LinkedIn / Empfehlung / etc.'
+        marital_statuses: Familienstände
+        marital_statuses_hint: Wird im Mitarbeiterprofil verwendet. Standardliste vorhanden.
+        shirt_sizes: Kleidergrößen
+        shirt_sizes_hint: Für Geschenke, Firmenkleidung.
+        confidentialities: Dokumenten-Vertraulichkeitsstufen
+        confidentialities_hint: Bezeichnungen sichtbar auf Dokumenten. Schlüssel (public/internal/confidential) sind fix — nur Bezeichnungen anpassbar.
+        employment_types: Beschäftigungsarten
+        employment_types_hint: Bezeichnungen für Vollzeit/Teilzeit/Vertrag. Nur Bezeichnungs-Anpassung.
+        offboarding_reasons: Kündigungsgründe
+        offboarding_reasons_hint: 'Bezeichnungen für Gründe: «Auf eigenen Wunsch», «Im gegenseitigen Einvernehmen» usw.'
+      bootstrap:
+        title: Alles für mein Unternehmen einrichten
+        subtitle: Der KI-Berater hilft, alle Wörterbücher für deine Unternehmensspezifik einzurichten. Erzähle von Branche, Größe, Besonderheiten — er stellt entweder Klärungsfragen oder schlägt das komplette Paket vor. Nichts wird ohne deine Zustimmung gespeichert.
+        example_title: Was in der ersten Nachricht schreiben
+        example_1: 'Was das Unternehmen macht: «Klärgrubenservice», «Backend-Entwicklung», «Privatklinik», «Tanzschule»'
+        example_2: 'Größe: «10 Fahrer + 2 Disponenten», «Team aus 25 Entwicklern»'
+        example_3: 'Besonderheiten: «wir arbeiten unter 152-FZ», «haben Remote-Mitarbeiter», «brauchen Gesundheitsbücher», «arbeiten mit Regierungsaufträgen»'
+        thinking: KI denkt nach…
+        proposal_ready: KI hat einen Vorschlag erstellt — wähle, was angewendet werden soll
+        lookups_title: Listen
+        schemas_title: Zusatzfeld-Schemas
+        apply: "✓ Ausgewählte anwenden"
+        apply_hint: Du kannst unten weitere Klärung erfragen — KI rechnet neu.
+        applied: 'Erstellte Wörterbücher: %{dicts}, Einträge: %{entries}'
+        no_proposal: Noch kein Vorschlag von KI — setze den Dialog fort.
+        empty_message: Schreibe mindestens ein paar Worte über das Unternehmen.
+        busy: KI denkt noch über die vorherige Nachricht nach — bitte warten.
+        send: Senden
+        send_first: "\U0001F680 Starten"
+        reset: Neu starten
+        reset_confirm: Den gesamten Dialog löschen?
+        reset_done: Dialog gelöscht. Du kannst neu starten.
+        turns: 'Nachrichten: %{n}'
+        input_placeholder: 'Erzähle vom Unternehmen: was wir machen, Größe, Besonderheiten. Z.B.: «Klärgrubenservice in Moskauer Region, 12 Fahrer, brauchen Führerscheinklassen, Gesundheitsbücher, Arbeitspläne»'
+        input_placeholder_continue: Klären / korrigieren / ergänzen
+      ai:
+        title: KI-Wörterbuch-Helfer
+        run: "✨ KI fragen"
+        running: KI wählt Einträge für dein Unternehmen aus…
+        empty: Beschreibe dein Unternehmen — KI schlägt spezifische Einträge für deine Nische vor. Nichts wird ohne deine Zustimmung gespeichert.
+        all_applied: Alle vorgeschlagenen Einträge sind bereits im Wörterbuch.
+        apply: "✓ Ausgewählte anwenden"
+        apply_hint: Nur markierte Einträge werden hinzugefügt
+        applied: 'Einträge hinzugefügt: %{n}'
+        skipped: 'übersprungen: %{list}'
+        no_suggestions: Keine KI-Vorschläge — starte zuerst die Auswahl.
+        nothing_selected: Nichts ausgewählt.
+        hint_placeholder: 'Erzähle vom Unternehmen: Branche, Größe, was benötigt. Z.B.: «Klärgrubenservice, 10 Fahrer, brauchen FS-Klassen und Genehmigungen»'
+    dictionary_entries:
+      new: Neuer Eintrag
+      key_hint: Lateinisch, Ziffern, _. Nicht änderbar nach Erstellung.
+      fields:
+        key: Schlüssel
+        value: Wert
+        label: UI-Bezeichnung
+        type: Feldtyp
+        required: Erforderlich
+        hint: Hilfetext unter dem Feld
+        options: Auswahloptionen (komma- oder zeilengetrennt)
+        sort_order: Reihenfolge
+        active: Aktiv
+      field_types:
+        string: Text
+        textarea: Langer Text
+        integer: Ganzzahl
+        decimal: Dezimalzahl
+        date: Datum
+        boolean: Kontrollkästchen
+        select: Auswahlliste
+    positions:
+      title: Positionen
+      subtitle: 'Positions-Wörterbuch: Entwickler, Buchhalter, Klärgruben-Fahrer. Jede kann unternehmensspezifische Zusatzfelder haben.'
+      new: "+ Neue Position"
+      empty: Noch keine Positionen
+      employees_count: 'Mitarbeiter: %{n}'
+      custom_fields_count: 'Zusatzfelder gefüllt: %{n}'
+      name_placeholder: Senior Software Engineer / Klärgruben-Fahrer
+      category_placeholder: tech / ops / sales / driver
+      category_hint: Gruppierung für Berichte. Beliebige Zeichenkette.
+      fields:
+        name: Name
+        code: Code
+        category: Kategorie
+        sort_order: Reihenfolge
+    leave_types:
+      title: Urlaubsarten
+      subtitle: Arten von Urlauben und Krankentagen. Jedes Unternehmen richtet eigene ein — von Dienstreisen bis Remote-Tagen.
+      new: "+ Neue Art"
+      empty: Noch keine Urlaubsarten
+      paid_badge: bezahlt
+      unpaid_badge: unbezahlt
+      requires_doc_badge: Nachweis erforderlich
+      default_days: Standardtage pro Jahr
+      no_default_days: individuelle Quote
+      default_days_hint: Leer lassen für individuelle Quote.
+      name_placeholder: Jahresurlaub / Dienstreise / Remote-Tag
+      fields:
+        name: Name
+        code: Code
+        paid: Bezahlt
+        requires_doc: Nachweis erforderlich
+        default_days_per_year: Standardtage pro Jahr
+        color: Farbe
+        sort_order: Reihenfolge
+    ai:
+      advanced: Erweitert
+      api_base_url_hint: Vollständige URL bis /chat/completions. Provider-Knopf oben füllt automatisch. Eigene möglich (vLLM, Ollama, Proxy).
+      api_key_hint: 'Für OpenAI: platform.openai.com. Für OpenRouter: openrouter.ai/keys. Eigener Server: Bearer-Token. In DB gespeichert (MVP ohne Verschlüsselung).'
+      api_key_saved_placeholder: "•••••••• (Schlüssel gespeichert)"
+      budget_hint: Monatsbudget in USD. Überschreitung zeigt nur eine Warnung.
+      calc_budget: Budget
+      calc_for: Pro Aufgabe
+      calc_per_month: Läufe pro Monat
+      calc_title: Budget-Rechner
+      cost_per_run: Kosten pro Lauf
+      cost_per_task: Kosten nach Aufgabe
+      custom_prompt: Eigener Prompt
+      default_prompt: Standard-Prompt
+      enabled: KI aktiviert
+      fields:
+        api_base_url: API-Endpoint-URL
+        api_key: API-Schlüssel
+        budget: Monatsbudget, USD
+        max_tokens: Token-Limit
+        model: Modell
+        provider: Anbieter
+        proxy: Proxy
+        reasoning: Reasoning-Tiefe
+      max_tokens_hint: Hartes Limit für Output-Tokens. Höhere Werte kosten mehr.
+      no_key: API-Schlüssel nicht gesetzt
+      per_task_hint: Modell pro Aufgabe überschreibbar
+      per_task_title: Einstellungen pro Aufgabe
+      prompt_reset_hint: Feld leeren — Standard-Prompt kehrt zurück
+      prompts_hint: Standard-Prompt für eine spezifische Aufgabe überschreiben
+      prompts_title: System-Prompts
+      provider_hint: 'Beliebiger OpenAI-kompatibler Endpoint: OpenAI / OpenRouter / Together / vLLM / Ollama. Für Anthropic-native: Proxy (LiteLLM).'
+      proxy_hint: Optional, z.B. socks5://127.0.0.1:1080
+      reasoning_hint: Reasoning-Tiefe für o1/gpt-5-Klasse-Modelle
+      runs_per_budget: Läufe innerhalb des Budgets
+      subtitle: OpenAI-Verbindung und Kosten pro Aufgabe
+      task: Aufgabe
+      task_tokens_title: Token-Limits pro Aufgabe
+      tasks:
+        analyze_resume: Lebenslauf-Analyse
+        generate_assignment: Testaufgabe
+        questions_for: Runden-Fragen
+        recommend: Empfehlung
+      test: Verbindung testen
+      test_fail: Verbindungsfehler
+      test_fail_title: Verbindung fehlgeschlagen
+      test_ok: Verbindung OK
+      test_ok_meta: Antwort erhalten
+      test_ok_title: KI bereit
+      title: KI-Assistent
+      updated: KI-Einstellungen gespeichert
+      usage:
+        all_time: Gesamt
+        budget_of: von
+        budget_used: "%{pct}% vom Budget"
+        by_kind: Nach Aufgabe (diesen Monat)
+        by_model: Nach Modell (diesen Monat)
+        cost: Kosten
+        count: Anzahl
+        empty: Noch keine Läufe
+        empty_month: Noch keine Läufe diesen Monat
+        last_month: Letzter Monat
+        model: Modell
+        of_budget: von $%{b}
+        recent_title: Letzte 20 Läufe
+        runs: Läufe diesen Monat
+        scope_hint: Alle Läufe außer Ping. Kosten nur für OpenAI-Modelle mit bekannten Preisen.
+        task: Aufgabe
+        this_month: Diesen Monat
+        this_month_cost: Kosten diesen Monat
+        this_month_runs: Läufe diesen Monat
+        title: Tatsächliche Ausgaben
+        tokens: 'Tokens: %{t}'
+        tokens_short: Tokens
+        total_cost: Gesamtausgaben
+        total_runs: Gesamte Läufe
+        total_tokens: Gesamte Tokens
+        user: Benutzer
+        when: Wann
+      usage_title: Nutzung
+      use_global_model: Globales Modell verwenden
+    careers:
+      api_docs: API-Dokumentation
+      api_docs_apply_intro: Multipart-Formular mit Lebenslauf und Portfolio
+      api_docs_apply_purpose: Bewerbung mit Lebenslauf und Portfolio erstellen
+      api_docs_apply_title: Bewerbung absenden
+      api_docs_auth: Authentifizierung
+      api_docs_config_purpose: Konfiguration der öffentlichen Seite abrufen (Branding, Layout)
+      api_docs_files_subtitle: Lebenslauf und Portfolio — Multipart-Felder
+      api_docs_files_title: Dateien
+      api_docs_intro: API bietet Zugriff auf öffentliche Stellenliste und Bewerbungsformular.
+      api_docs_list_purpose: Aktive Stellen für Einbettung abrufen
+      api_docs_list_title: Stellenliste
+      api_docs_params_apply: Parameter des Bewerbungsformulars
+      api_docs_params_list: Listenparameter
+      api_docs_params_title: Anfrageparameter
+      api_docs_progress_title: Bewerbungsfortschritt
+      api_docs_purpose: Zweck
+      api_docs_response: Antwort
+      api_docs_show_purpose: Details einer einzelnen Stelle nach Code abrufen
+      api_key_copy: Kopieren
+      api_key_hint: Verwende den Schlüssel im X-API-Key-Header für private Endpoints
+      dropzone:
+        upload: Datei ablegen oder klicken zum Auswählen
+      edit_text: Bearbeiten
+      fields:
+        allowed_ips: Erlaubte IPs
+        allowed_ips_hint: Komma-getrennt — IPs, von denen Anfragen erlaubt sind
+        api_key: API-Schlüssel
+        api_require_key_apply: API-Schlüssel für Bewerbung erforderlich
+        cat_preview: Kategorie-Vorschau
+        color_hero_bg: Hero-Hintergrundfarbe
+        color_hero_bg_hint: Hintergrund hinter Seitentitel
+        color_primary: Primärfarbe
+        consent_preview: Einwilligungs-Vorschau
+        contact_email: Kontakt-E-Mail
+        cookie_banner_enabled: Cookie-Banner aktiviert
+        cors_origins: CORS-Origins
+        cors_origins_hint: Komma-getrennt — erlaubte Domains
+        enabled: Seite aktiviert
+        hero_image: Hero-Bild
+        layout: Layout
+        link_kind: Link-Typ
+        link_target: Link-Ziel
+        logo: Logo
+        page_body: Seiteninhalt
+        per_page: Stellen pro Seite
+        remove_hero_image: Hero-Bild entfernen
+        remove_logo: Logo entfernen
+        show_admin_link: Admin-Link anzeigen
+        show_department: Abteilung anzeigen
+        show_employment_type: Beschäftigungsart anzeigen
+        show_salary: Gehalt anzeigen
+      layouts:
+        grid_2: 2-Spalten-Raster
+        grid_3: 3-Spalten-Raster
+        list: Liste
+      manage_languages: Sprachen verwalten
+      open_translations: Übersetzungen öffnen
+      preview: Vorschau öffnen
+      regenerate_api_key: Neuen Schlüssel generieren
+      section_analytics: Analytics und Metriken
+      section_analytics_hint: Yandex.Metrika / Google Analytics auf der öffentlichen Seite
+      section_api: Öffentliche API
+      section_api_hint: Zugriffsparameter für Einbettung von Stellen auf externen Seiten
+      section_branding: Branding
+      section_consents: Einwilligungen und Texte
+      section_consents_hint: Kontrollkästchen und Einwilligungstexte vor Formularabsendung
+      section_cookie_categories: Cookie-Kategorien
+      section_cookie_categories_hint: Namen und Beschreibungen der Kategorien im Cookie-Banner
+      section_cookies: Cookies
+      section_general: Allgemein
+      section_layout: Layout
+      section_pages: Seiten
+      section_pages_hint: Texte für «Danke», «Datenschutz», «Bedingungen»
+      section_security: Sicherheit
+      section_texts: Seitentexte
+      section_texts_hint: Überschriften und Bezeichnungen auf der öffentlichen Stellenseite
+      subtitle: Öffentliche Karriereseite, Brand, Zugriffe
+      tab_analytics: Analytics
+      tab_api: API
+      tab_branding: Branding
+      tab_consents: Einwilligungen
+      tab_cookies: Cookies
+      tab_general: Allgemein
+      tab_layout: Layout
+      tab_pages: Seiten
+      tab_texts: Texte
+      title: Karriereseite
+      updated: Karriere-Einstellungen gespeichert
+    communications:
+      about_text: Hier erscheinen Vorlagen für E-Mails und Kanal-Nachrichten.
+      about_title: Über diesen Bereich
+      coming_soon: Demnächst
+      event: Ereignis
+      subtitle: Nachrichten-Vorlagen für Kandidaten und Mitarbeiter
+      title: Kommunikation
+      updated: Kommunikations-Einstellungen gespeichert
+    notifications:
+      about_text: Aktiviere oder deaktiviere Kanäle für jeden Ereignistyp — gilt für alle Empfänger.
+      about_title: Über die Einstellungen
+      channels:
+        email: E-Mail
+        in_app: In-App
+      event: Ereignis
+      subtitle: Benachrichtigungs-Kanäle und -Ereignisse
+      title: Benachrichtigungen
+      updated: Benachrichtigungs-Einstellungen gespeichert
+    genders:
+      active: Aktiv
+      created: Eintrag erstellt
+      deactivated: Eintrag deaktiviert
+      deleted: Eintrag gelöscht
+      edit: Geschlecht bearbeiten
+      empty: Keine Einträge
+      empty_hint: Füge den ersten Eintrag hinzu
+      fields:
+        avatar_seed: Avatar-Seed
+        avatar_seed_hint: 'DiceBear-Hinweis: Geschlecht beeinflusst das generierte Bild'
+        code: Code
+        name: Name
+        name_placeholder: Männlich
+        pronouns: Pronomen
+        sort_order: Reihenfolge
+      inactive: Inaktiv
+      new: Neues Geschlecht
+      subtitle: Wörterbuch der Geschlechtsidentitäten
+      title: Geschlechter
+      updated: Eintrag aktualisiert
+    languages:
+      add: Sprache hinzufügen
+      cannot_remove_default: Standardsprache kann nicht entfernt werden
+      created: Sprache hinzugefügt
+      default: Standard
+      default_set: Standardsprache geändert
+      disable: Deaktivieren
+      disabled: Deaktiviert
+      enable: Aktivieren
+      enabled: Aktiviert
+      fields:
+        code: Code
+        enabled: Aktiviert
+        english_name: Englischer Name
+        flag: Flagge
+        native_name: Eigener Name
+        position: Reihenfolge
+        state: Status
+      is_default_locked: Dies ist die Standardsprache — nicht änderbar
+      removed: Sprache entfernt
+      set_default: Als Standard festlegen
+      subtitle: Aktive System-Locales verwalten
+      title: Schnittstellen-Sprachen
+      updated: Sprache aktualisiert
+    translations:
+      empty: Keine Überschreibungen
+      key: Schlüssel
+      limit_hit: Längenlimit erreicht
+      locale: Locale
+      saved: Übersetzung gespeichert
+      subtitle: Beliebige Zeichenkette ohne YAML-Bearbeitung überschreiben
+      title: Übersetzungen
+      updated: Übersetzung aktualisiert
+      value: Wert
+      yaml: Aus YAML
+    leaves:
+      flags_subtitle: Modulweite Einstellungen
+      flags_title: Allgemeine Flags
+      perm:
+        ceo_can_force_approve: Geschäftsführer kann jeden Urlaub erzwingen
+        manager_can_quick: Manager kann Urlaub des eigenen Mitarbeiters schnell genehmigen
+        require_doc_for_sick: Nachweis für Krankheit erforderlich
+      rule:
+        active: Aktiv
+        add_user: Bestimmten Benutzer hinzufügen
+        any: Beliebig
+        auto_approve: Auto-Genehmigung ohne Kette
+        auto_approve_label: Automatisch genehmigen
+        chain: Genehmigungskette
+        cond_any: Beliebige Situation
+        cond_dept: Abteilung
+        cond_max_days: Max. Tage
+        cond_min_days: Min. Tage
+        cond_min_grade: Min. Stufe
+        cond_type: Urlaubsart
+        conditions: Bedingungen
+        created: Regel erstellt
+        deleted: Regel gelöscht
+        department: Abteilung
+        description: Beschreibung
+        edit: Regel bearbeiten
+        empty: Noch keine Regeln
+        empty_hint: Erstelle die erste Regel, damit das System weiß, wer Anträge prüft
+        inactive: Inaktiv
+        leave_type: Urlaubsart
+        list_subtitle: Welcher Urlaub geht an wen zur Genehmigung
+        list_title: Genehmigungsregeln
+        max_days: Max. Tage
+        min_days: Min. Tage
+        min_grade: Min. Stufe
+        name: Name
+        name_placeholder: 'Z.B.: «Langer Urlaub 14+ Tage»'
+        new: Neue Regel
+        priority: Priorität
+        section_chain: Genehmiger-Kette
+        section_chain_hint: Wer und in welcher Reihenfolge den Antrag genehmigt
+        section_conditions: Wann diese Regel anwenden
+        section_conditions_hint: Bedingungen, die diese Regel auslösen
+        updated: Regel aktualisiert
+      subtitle: Genehmigungsregeln und modulweite Urlaubseinstellungen
+      title: Urlaube
+      updated: Urlaubseinstellungen gespeichert
+    process_templates:
+      empty: Noch keine Vorlagen
+      fields:
+        active: Aktiv
+        description: Beschreibung
+        kind: Art
+        name: Name
+      items:
+        add: Aufgabe hinzufügen
+        days_short: T
+        description_placeholder: Beschreibung (optional)
+        title: Vorlagen-Aufgaben
+        title_placeholder: Aufgabentitel
+      kinds:
+        offboarding: Offboarding
+        onboarding: Onboarding
+      new: "+ Neue Vorlage"
+      no_description: Keine Beschreibung
+      subtitle: Checklisten für Onboarding/Offboarding — werden beim Start als Aufgaben erstellt
+      task_kinds:
+        access: Zugriffe
+        access_revoke: Zugriffsentzug
+        checkin: Check-in
+        equipment: Ausrüstung
+        equipment_return: Geräterückgabe
+        exit_interview: Exit-Interview
+        farewell: Abschied
+        general: Allgemein
+        intro: Vorstellung
+        kt_session: Wissenstransfer-Sitzung
+        paperwork: Papierkram
+        training: Training
+      tasks_count:
+        one: "%{count} Aufgabe"
+        few: "%{count} Aufgaben"
+        many: "%{count} Aufgaben"
+        other: "%{count} Aufgaben"
+      title: Prozessvorlagen
+    smtp:
+      fields:
+        authentication: Authentifizierung
+        from_address: Absenderadresse
+        host: Host
+        password: Passwort
+        port: Port
+        tls: TLS / STARTTLS
+        username: Benutzername
+      password_hint: App-Passwort, nicht das Postfach-Passwort
+      password_saved_placeholder: "•••••••• (Passwort gespeichert)"
+      preset_hint_short: Klicken — typische Einstellungen werden übernommen
+      quick_presets: Schnell-Presets
+      security_hint: Verwende TLS für Ports 465 / 587
+      subtitle: Ausgehender Mail-Server für Benachrichtigungen
+      test: Test-E-Mail senden
+      test_fail_title: Test fehlgeschlagen
+      test_failed: Test fehlgeschlagen
+      test_ok_meta: E-Mail gesendet · Server antwortete OK
+      test_ok_title: Test erfolgreich
+      test_sent: Test-E-Mail gesendet
+      tips_title: Tipps
+      title: SMTP / E-Mail-Einstellungen
+      updated: SMTP-Einstellungen gespeichert
+  ai_runs:
+    title: KI Audit
+    eyebrow: KI-Log
+    subtitle: 'Alle KI-Aufgaben-Läufe: wer, wann, welches Modell, Erfolg, Tokens, Kosten.'
+    cost_dashboard: Cost Dashboard
+    empty: Keine Ergebnisse für den Filter
+    stats:
+      runs: Gefilterte Läufe
+      cost: Gesamtkosten
+      tokens: Tokens
+      success: Erfolgsquote
+    filters:
+      kind: Aufgabe
+      model: Modell
+      user: Ausgelöst von
+      success: Ergebnis
+      success_only: Nur erfolgreich
+      failed_only: Nur Fehler
+    fields:
+      subject: Objekt
+      no_subject: "(kein Objekt)"
+    show:
+      meta: Details
+      payload: KI-Antwort (payload)
+      linked: Verknüpfte Objekte
+      drilldown: Verlauf
+      same_document: Alle Läufe für dieses Dokument
+      same_dictionary: Alle Läufe für dieses Wörterbuch
+      same_employee: Alle Läufe für diesen Mitarbeiter
+      same_user: Alle Läufe dieses Benutzers
+      same_kind: Alle «%{kind}»

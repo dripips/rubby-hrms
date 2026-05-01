@@ -1,8 +1,14 @@
 <% content_for(:page_title) { t("offboarding.new", default: "Новый офбординг") } %>
 
 <header class="page-header">
-  <h1 class="title-1 m-0">👋 <%= t("offboarding.new", default: "Новый офбординг") %></h1>
-  <p class="footnote text-secondary-apple m-0"><%= t("offboarding.new_hint", default: "Выберите сотрудника, причину и дату последнего дня — задачи материализуются автоматически.") %></p>
+  <div>
+    <div class="page-header__eyebrow">👋 <%= t("offboarding.title") %></div>
+    <h1 class="page-header__title m-0"><%= t("offboarding.new", default: "Новый офбординг") %></h1>
+    <p class="page-header__subtitle"><%= t("offboarding.new_hint", default: "Выберите сотрудника, причину и дату последнего дня — задачи материализуются автоматически.") %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), offboarding_processes_path, class: "btn btn-ghost" %>
+  </div>
 </header>
 
 <%= form_with(model: @process, url: offboarding_processes_path, local: true, class: "card-apple form-apple") do |f| %>
@@ -27,7 +33,8 @@
     <div class="col-md-4">
       <%= f.label :reason, t("offboarding.fields.reason", default: "Причина"), class: "form-label" %>
       <%= f.select :reason,
-                   OffboardingProcess::REASONS.map { |r| [t("offboarding.reasons.#{r}", default: r.humanize), r] },
+                   lookup_options_for("offboarding_reasons",
+                     fallback: OffboardingProcess::REASONS.map { |r| [ t("offboarding.reasons.#{r}", default: r.humanize), r ] }),
                    {},
                    class: "form-select" %>
     </div>

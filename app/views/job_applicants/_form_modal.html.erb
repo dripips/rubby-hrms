@@ -60,7 +60,10 @@
             </div>
             <div class="col-md-4">
               <%= f.label :source, t("job_applicants.fields.source"), class: "form-label" %>
-              <%= f.select :source, %w[manual careers_page hh linkedin referral email].map { |s| [t("job_applicants.sources.#{s}", default: s.humanize), s] }, {}, class: "form-select" %>
+              <%= f.select :source,
+                            lookup_options_for("applicant_sources",
+                              fallback: %w[manual careers_page hh linkedin referral email].map { |s| [ t("job_applicants.sources.#{s}", default: s.humanize), s ] }),
+                            {}, class: "form-select" %>
             </div>
 
             <div class="col-md-6">
@@ -89,6 +92,13 @@
               <%= f.label :summary, t("job_applicants.fields.summary"), class: "form-label" %>
               <%= f.text_area :summary, class: "form-control", rows: 2 %>
             </div>
+          </div>
+
+          <div class="mt-4">
+            <%= render_custom_fields_inputs(f,
+                  target_model: "JobApplicant",
+                  target_scope: applicant.job_opening_id || "default",
+                  values:       applicant.custom_fields) %>
           </div>
         </div>
         <div class="modal-footer">

@@ -30,9 +30,9 @@ module Documents
       else
         empty_result("unsupported_content_type:#{content_type}")
       end
-    rescue StandardError => e
+    rescue StandardError, ScriptError => e
       Rails.logger.warn("[TextExtractor] #{e.class}: #{e.message}")
-      empty_result(e.message.first(200))
+      empty_result("#{e.class.name.demodulize}: #{e.message.first(160)}")
     end
 
     private
@@ -57,8 +57,10 @@ module Documents
 
     def extract_from_image
       with_local_file do |path|
-        text = run_tesseract(path)
-        return { text: text, method: "ocr", error: nil }
+        text, error = run_tesseract(path)
+        return { text: text, method: "ocr", error: nil } if text.present?
+
+        empty_result(error || "ocr_empty_result")
       end
     end
 
@@ -69,12 +71,18 @@ module Documents
       empty_result("ocr_pdf_not_implemented_locally")
     end
 
+    # Returns [text, error]. На Windows без установленного Tesseract.exe сюда
+    # прилетает LoadError (gem не загрузился из-за бинарника) или RTesseract::*.
     def run_tesseract(image_path)
       require "rtesseract"
-      RTesseract.new(image_path, lang: "rus+eng").to_s.strip
+      text = RTesseract.new(image_path, lang: "rus+eng").to_s.strip
+      [ text, nil ]
+    rescue LoadError => e
+      Rails.logger.warn("[TextExtractor#run_tesseract] LoadError: #{e.message}")
+      [ nil, "tesseract_unavailable" ]
     rescue StandardError => e
       Rails.logger.warn("[TextExtractor#run_tesseract] #{e.class}: #{e.message}")
-      ""
+      [ nil, "ocr_failed:#{e.class.name.demodulize}" ]
     end
 
     def with_local_file

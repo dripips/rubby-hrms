@@ -1,0 +1,131 @@
+<% content_for(:page_title) { t("documents.review_title", default: "Применить разбор с правками") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= @document.document_type&.name %></div>
+    <h1 class="page-header__title m-0">
+      <%= t("documents.review_title", default: "Применить разбор с правками") %>
+      <% if @document.extraction_method.present? %>
+        <span class="pill pill--<%= @document.extraction_method == 'ai' ? 'purple' : 'success' %>">
+          <%= @document.extraction_method %>
+        </span>
+      <% end %>
+    </h1>
+    <p class="page-header__subtitle"><%= @document.display_title %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), document_path(@document), class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<div class="review-extracted" data-controller="document-zoom">
+  <div class="review-extracted__split">
+    <%# ── Слева: форма с pre-filled значениями ──────────────────────────── %>
+    <section class="review-extracted__form card-apple">
+      <h2 class="title-3 mb-3"><%= t("documents.review_form_title", default: "Поля документа") %></h2>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("documents.review_hint", default: "Значения подставлены из разбора. Сверь с оригиналом справа, поправь если нужно и сохрани.") %>
+      </p>
+
+      <%= form_with model: @document, url: document_path(@document), method: :patch, class: "d-flex flex-column gap-3" do |f| %>
+        <div>
+          <%= f.label :title, t("documents.fields.title", default: "Название"), class: "form-label" %>
+          <%= f.text_field :title, class: "form-control" %>
+        </div>
+
+        <div>
+          <%= f.label :document_type_id, t("documents.fields.document_type", default: "Тип"), class: "form-label" %>
+          <%= f.collection_select :document_type_id, @document_types, :id, :name, {}, class: "form-select" %>
+        </div>
+
+        <div class="row g-2">
+          <div class="col-md-6">
+            <%= f.label :number, t("documents.fields.number"), class: "form-label" %>
+            <%= f.text_field :number, class: "form-control" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :issuer, t("documents.fields.issuer"), class: "form-label" %>
+            <%= f.text_field :issuer, class: "form-control" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :issued_at, t("documents.fields.issued_at"), class: "form-label" %>
+            <%= f.date_field :issued_at, class: "form-control" %>
+          </div>
+          <div class="col-md-6">
+            <%= f.label :expires_at, t("documents.fields.expires_at"), class: "form-label" %>
+            <%= f.date_field :expires_at, class: "form-control" %>
+          </div>
+        </div>
+
+        <div>
+          <%= f.label :notes, t("documents.fields.notes"), class: "form-label" %>
+          <%= f.text_area :notes, rows: 3, class: "form-control" %>
+        </div>
+
+        <%# Все остальные извлечённые поля — readonly чтобы видно было контекст %>
+        <% extras = @extracted_data.reject { |k, _| %w[number issuer issued_at expires_at valid_until].include?(k.to_s) } %>
+        <% if extras.any? %>
+          <details class="mt-2">
+            <summary class="footnote text-secondary-apple" style="cursor: pointer;">
+              <%= t("documents.review_extras_title", default: "Прочее, что нашёл AI (для справки)") %>
+            </summary>
+            <dl class="row g-2 m-0 mt-2">
+              <% extras.each do |key, value| %>
+                <dt class="col-md-5 footnote text-tertiary">
+                  <%= t("documents.extracted_keys.#{key}", default: key.to_s.humanize) %>
+                </dt>
+                <dd class="col-md-7 m-0 footnote">
+                  <%= value.is_a?(Array) ? value.join(", ") : value.to_s %>
+                </dd>
+              <% end %>
+            </dl>
+          </details>
+        <% end %>
+
+        <div class="d-flex gap-2 mt-2">
+          <%= f.submit t("documents.review_save", default: "Сохранить"), class: "btn btn-primary" %>
+          <%= link_to t("common.cancel", default: "Отмена"), document_path(@document), class: "btn btn-ghost" %>
+        </div>
+      <% end %>
+    </section>
+
+    <%# ── Справа: preview с zoom-контролами ─────────────────────────────── %>
+    <section class="review-extracted__preview">
+      <% if @document.file.attached? %>
+        <div class="review-extracted__preview-toolbar">
+          <button type="button" class="btn btn-soft btn-sm" data-action="document-zoom#zoomOut"
+                  title="<%= t('documents.zoom_out', default: 'Уменьшить') %>">−</button>
+          <span class="footnote text-tertiary" data-document-zoom-target="level">100%</span>
+          <button type="button" class="btn btn-soft btn-sm" data-action="document-zoom#zoomIn"
+                  title="<%= t('documents.zoom_in', default: 'Увеличить') %>">+</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-action="document-zoom#reset"
+                  title="<%= t('documents.zoom_reset', default: 'Сброс') %>">⟲</button>
+          <%= link_to "↗", rails_blob_path(@document.file), target: "_blank", rel: "noopener",
+                      class: "btn btn-ghost btn-sm ms-auto",
+                      title: t("documents.open_original", default: "Открыть оригинал в новой вкладке") %>
+        </div>
+        <div class="review-extracted__preview-stage" data-document-zoom-target="stage">
+          <% if @document.file.image? %>
+            <%= image_tag rails_blob_path(@document.file),
+                          class: "review-extracted__preview-img",
+                          data: { document_zoom_target: "subject" } %>
+          <% elsif @document.file.content_type == "application/pdf" %>
+            <object data="<%= rails_blob_path(@document.file) %>" type="application/pdf"
+                    class="review-extracted__preview-pdf"
+                    data-document-zoom-target="subject">
+              <p><%= link_to t("documents.preview_unavailable", default: "Открыть PDF"),
+                             rails_blob_path(@document.file), target: "_blank" %></p>
+            </object>
+          <% else %>
+            <p class="footnote text-tertiary">
+              <%= @document.file.filename.to_s %>
+              (<%= number_to_human_size(@document.file.byte_size) %>)
+            </p>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="footnote text-tertiary"><%= t("documents.no_file", default: "Файл не приложен") %></p>
+      <% end %>
+    </section>
+  </div>
+</div>

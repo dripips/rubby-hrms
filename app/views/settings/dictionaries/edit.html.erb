@@ -1,0 +1,13 @@
+<% content_for(:page_title) { @dictionary.name } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">📚 <%= t("settings.dictionaries.title", default: "Справочники") %></div>
+    <h1 class="page-header__title m-0"><%= t("common.edit") %>: <%= @dictionary.name %></h1>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_dictionary_path(@dictionary), class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "form", dictionary: @dictionary %>

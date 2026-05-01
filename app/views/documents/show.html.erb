@@ -8,26 +8,31 @@
   days_left = @document.expiring_in_days
 %>
 
-<header class="process-hero">
-  <span class="document-icon document-icon--xl"><%= doc_type&.icon || "📄" %></span>
-  <div class="process-hero__body">
-    <div class="process-hero__title-row">
-      <span class="footnote text-tertiary"><%= doc_type&.name %></span>
-      <span class="status-pill status-pill--<%= state %>"><%= t("documents.states.#{state}", default: state.humanize) %></span>
-      <% if @document.confidentiality == "confidential" %>
-        <span class="pill pill--danger">🔒 <%= t("documents.confidentialities.confidential", default: "Конфиденциально") %></span>
-      <% end %>
-    </div>
-    <h1 class="process-hero__title m-0"><%= @document.display_title %></h1>
-    <div class="process-hero__subtitle">
-      <% if is_emp %>
-        <%= link_to owner.full_name, employee_path(owner), class: "link-plain" %>
-        <% if owner.position %>· <%= owner.position.name %><% end %>
-      <% end %>
+<header class="page-header">
+  <div class="d-flex align-items-center gap-3">
+    <span class="document-icon document-icon--xl"><%= doc_type&.icon || "📄" %></span>
+    <div>
+      <div class="page-header__eyebrow"><%= doc_type&.name %></div>
+      <h1 class="page-header__title m-0">
+        <%= @document.display_title %>
+        <span class="pill pill--<%= state == 'active' ? 'success' : (state == 'expired' ? 'danger' : (state == 'revoked' ? 'neutral' : 'warning')) %>">
+          <%= t("documents.states.#{state}", default: state.humanize) %>
+        </span>
+        <% if @document.confidentiality == "confidential" %>
+          <span class="pill pill--danger">🔒 <%= t("documents.confidentialities.confidential", default: "Конфиденциально") %></span>
+        <% end %>
+      </h1>
+      <p class="page-header__subtitle">
+        <% if is_emp %>
+          <%= link_to owner.full_name, employee_path(owner), class: "link-plain" %>
+          <% if owner.position %> · <%= owner.position.name %><% end %>
+        <% end %>
+      </p>
     </div>
   </div>
 
-  <div class="process-hero__actions">
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), documents_path, class: "btn btn-ghost" %>
     <% if @document.file.attached? %>
       <%= link_to "📥 #{t('documents.download', default: 'Скачать')}", rails_blob_path(@document.file), class: "btn btn-soft", target: "_blank", rel: "noopener" %>
     <% end %>
@@ -87,6 +92,11 @@
         </div>
       <% end %>
     </div>
+
+    <%= render_custom_field_values(
+          (@document.extracted_data || {})["_custom"],
+          target_model: "DocumentType",
+          target_scope: @document.document_type_id) %>
 
   </div>
 

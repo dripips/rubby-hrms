@@ -41,6 +41,7 @@ class EmployeesController < ApplicationController
   def create
     @employee = Employee.new(employee_params.merge(company: @company))
     @employee.personnel_number = next_personnel_number if @employee.personnel_number.blank?
+    apply_custom_fields(@employee, params[:custom_fields])
 
     respond_to do |format|
       if @employee.save
@@ -54,11 +55,22 @@ class EmployeesController < ApplicationController
   end
 
   def update
+    apply_custom_fields(@employee, params[:custom_fields])
     if @employee.update(employee_params)
       redirect_to employees_path, notice: t("employees.updated", default: "Сотрудник обновлён")
     else
       redirect_to employees_path, alert: @employee.errors.full_messages.to_sentence
     end
+  end
+
+  # Сливает значения custom-полей из формы в employee.custom_fields. Не
+  # вытесняет существующие ключи, если соответствующее поле не пришло.
+  def apply_custom_fields(employee, raw)
+    return unless raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
+
+    cleaned = raw.to_unsafe_h.transform_values { |v| v.is_a?(String) ? v.strip : v }
+    cleaned.reject! { |_, v| v.nil? || (v.is_a?(String) && v.empty?) }
+    employee.custom_fields = (employee.custom_fields.to_h || {}).merge(cleaned)
   end
 
   def destroy

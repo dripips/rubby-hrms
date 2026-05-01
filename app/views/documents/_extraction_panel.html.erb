@@ -1,6 +1,31 @@
 <%
-  scope = AiLock.for_document(document)
-  busy  = AiLock.running?(scope)
+  scope         = AiLock.for_document(document)
+  busy          = AiLock.running?(scope)
+  busy_kind     = AiLock.kind_for(scope)
+  raw_data      = document.extracted_data.is_a?(Hash) ? document.extracted_data : {}
+  display_data  = raw_data.reject { |k, _| k.to_s.start_with?("_") }
+  error_reason  = raw_data["_error"].to_s
+  error_label   = case error_reason
+                  when /tesseract_unavailable/      then t("documents.extraction_errors.tesseract_unavailable", default: "OCR недоступен на сервере (Tesseract не установлен).")
+                  when /ocr_pdf_not_implemented/    then t("documents.extraction_errors.ocr_pdf",                default: "PDF без текстового слоя — нужен OCR на сервере.")
+                  when /unsupported_content_type/   then t("documents.extraction_errors.unsupported_format",    default: "Формат файла не поддерживается для авто-разбора.")
+                  when /empty_text/, /ocr_empty/    then t("documents.extraction_errors.empty_text",            default: "Текст из файла извлечь не удалось.")
+                  when /extractor_not_implemented/  then t("documents.extraction_errors.no_extractor",          default: "Для этого типа документа авто-разбор пока не настроен.")
+                  when /no_extractor_kind/          then t("documents.extraction_errors.no_kind",               default: "У типа документа не задан extractor_kind.")
+                  when /no_text_for_ai/             then t("documents.extraction_errors.no_text_for_ai",        default: "AI не получил текст: PDF без текстового слоя. Для картинок AI читает их напрямую через Vision.")
+                  when /image_too_large/            then t("documents.extraction_errors.image_too_large",      default: "Картинка слишком большая для Vision API (макс 18 МБ). Сожми и загрузи заново.")
+                  else                                   error_reason.presence
+                  end
+
+  ai_summary_run = AiRun.where(document_id: document.id, kind: "document_summary").successful.recent.first
+  ai_extract_run = AiRun.where(document_id: document.id, kind: "document_extract_assist").recent.first
+  last_ai_run    = AiRun.where(document_id: document.id, kind: %w[document_summary document_extract_assist]).recent.first
+  show_ai_error  = last_ai_run && !last_ai_run.success && last_ai_run.error.present?
+
+  is_image       = document.file.attached? && document.file.image?
+  extract_assist_label = is_image ?
+    "🪄 #{t('documents.run_extract_image', default: 'AI-разбор картинки (Vision)')}" :
+    "🪄 #{t('documents.run_extract_assist', default: 'AI-помощь с разбором')}"
 %>
 <div id="document-extraction-<%= document.id %>" class="d-flex flex-column gap-3">
 
@@ -11,26 +36,32 @@
     <div class="d-flex flex-column gap-2">
       <% if busy %>
         <button type="button" class="btn btn-soft btn-sm w-100" disabled>
-          <span class="spinner-dot me-2"></span><%= t("documents.extracting", default: "Идёт разбор…") %>
+          <span class="spinner-dot me-2"></span>
+          <%= t("documents.busy.#{busy_kind}", default: t("documents.extracting", default: "Идёт разбор…")) %>
         </button>
       <% else %>
-        <%= button_to "🔍 #{t('documents.run_extraction', default: 'Запустить разбор (gem)')}",
-                      extract_document_path(document),
+        <% unless is_image %>
+          <%= button_to "🔍 #{t('documents.run_extraction', default: 'Запустить разбор (gem)')}",
+                        extract_document_path(document),
+                        method: :post,
+                        class: "btn btn-soft btn-sm w-100",
+                        form: { class: "d-block", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+        <% end %>
+        <%= button_to extract_assist_label,
+                      extract_assist_document_path(document),
                       method: :post,
-                      class: "btn btn-soft btn-sm w-100",
+                      class: "btn btn-#{is_image ? 'primary' : 'soft'} btn-sm w-100",
                       form: { class: "d-block", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
-      <% end %>
-
-      <% if busy %>
-        <button type="button" class="btn btn-soft btn-sm w-100" disabled>
-          <span class="spinner-dot me-2"></span>✨ <%= t("documents.busy_short", default: "AI работает…") %>
-        </button>
-      <% else %>
         <%= button_to "✨ #{t('documents.run_summary', default: 'AI-сводка')}",
                       summarize_document_path(document),
                       method: :post,
                       class: "btn btn-soft btn-sm w-100",
                       form: { class: "d-block", data: { controller: "ai-submit", action: "submit->ai-submit#busy" } } %>
+        <% if is_image %>
+          <p class="footnote text-tertiary m-0 mt-1">
+            <%= t("documents.image_hint", default: "На фото и сканах разбор идёт через AI Vision — модель сама читает картинку и извлекает поля.") %>
+          </p>
+        <% end %>
       <% end %>
     </div>
 
@@ -38,7 +69,7 @@
       <p class="footnote text-tertiary mt-2 mb-0">
         <%= t("documents.last_extracted", default: "Последний разбор") %>: <%= l(document.extracted_at, format: :long) %>
         <% if document.extraction_method.present? %>
-          · <span class="pill pill--neutral"><%= document.extraction_method %></span>
+          · <span class="pill pill--<%= document.extraction_method == 'ai' ? 'purple' : 'neutral' %>"><%= document.extraction_method %></span>
         <% end %>
       </p>
     <% end %>
@@ -48,8 +79,16 @@
   <% if busy %>
     <div class="card-apple ai-leaves-result--loading">
       <div class="d-flex align-items-center gap-2 mb-2">
-        <span class="ai-spark ai-spark--pulse">🔍</span>
-        <strong><%= t("documents.extraction_running", default: "Разбираю документ…") %></strong>
+        <span class="ai-spark ai-spark--pulse">
+          <%= busy_kind == "document_summary" ? "✨" : (busy_kind == "document_extract_assist" ? "🪄" : "🔍") %>
+        </span>
+        <strong>
+          <%= case busy_kind
+              when "document_summary"        then t("documents.summary_running",        default: "Делаю AI-сводку…")
+              when "document_extract_assist" then t("documents.extract_assist_running", default: "AI помогает с разбором…")
+              else                                t("documents.extraction_running",     default: "Разбираю документ…")
+              end %>
+        </strong>
         <span class="footnote text-tertiary ms-auto"><%= t("documents.extracting_hint", default: "PDF/OCR + regex по типу") %></span>
       </div>
       <div class="ai-leaves-skeleton">
@@ -62,7 +101,7 @@
         <%= t("documents.extracting_long_hint", default: "Можно закрыть страницу — результат появится автоматически когда задача завершится.") %>
       </p>
     </div>
-  <% elsif document.extracted_data.is_a?(Hash) && document.extracted_data.any? %>
+  <% elsif display_data.any? %>
     <div class="card-apple">
       <h3 class="title-3 mb-3">
         <%= t("documents.extracted_title", default: "Извлечённые данные") %>
@@ -70,22 +109,78 @@
           <span class="pill pill--<%= document.extraction_method == 'ai' ? 'purple' : 'success' %>"><%= document.extraction_method %></span>
         <% end %>
       </h3>
-      <dl class="row g-2 m-0">
-        <% document.extracted_data.each do |key, value| %>
+      <dl class="row g-2 m-0 mb-3">
+        <% display_data.each do |key, value| %>
           <dt class="col-md-4 footnote text-tertiary"><%= t("documents.extracted_keys.#{key}", default: key.to_s.humanize) %></dt>
           <dd class="col-md-8 m-0"><%= value.is_a?(Array) ? value.join(", ") : value.to_s %></dd>
         <% end %>
       </dl>
+      <div class="d-flex gap-2 flex-wrap">
+        <%= button_to "📋 #{t('documents.apply_extracted', default: 'Применить к документу')}",
+                      apply_extracted_document_path(document),
+                      method: :post,
+                      class: "btn btn-primary btn-sm",
+                      form: { class: "d-inline",
+                              data: { turbo_confirm: t("documents.apply_extracted_confirm",
+                                                        default: "Перезаписать поля документа значениями из разбора?") } } %>
+        <%= link_to "✏️ #{t('documents.review_extracted', default: 'Применить с правками')}",
+                    review_extracted_document_path(document),
+                    class: "btn btn-soft btn-sm" %>
+      </div>
     </div>
   <% elsif document.extracted_at && document.extraction_method == "none" %>
     <div class="card-apple ai-leaves-result--error">
       <strong>⚠ <%= t("documents.extraction_failed_title", default: "Авто-разбор не дал результата") %></strong>
       <p class="footnote m-0 mt-1"><%= t("documents.extraction_failed_hint", default: "Документ может быть сканом без OCR-слоя или нестандартного формата. Попробуй AI-сводку или заполни поля вручную.") %></p>
+      <% if error_label.present? %>
+        <p class="footnote text-tertiary m-0 mt-2">
+          <%= t("documents.extraction_failed_reason", default: "Причина") %>: <%= error_label %>
+        </p>
+      <% end %>
     </div>
   <% end %>
 
-  <%# ── AI summary ───────────────────────────────────────────────────────── %>
-  <% if document.summary.present? %>
+  <%# ── AI summary (structured) ──────────────────────────────────────────── %>
+  <% if !busy && ai_summary_run&.payload.is_a?(Hash) && ai_summary_run.payload.any? %>
+    <% payload = ai_summary_run.payload %>
+    <div class="card-apple">
+      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+        <span class="ai-spark">✨</span>
+        <h3 class="title-3 m-0"><%= t("documents.summary_title", default: "AI-сводка") %></h3>
+        <% if payload["confidence"].present? %>
+          <span class="pill pill--<%= payload['confidence'] == 'high' ? 'success' : (payload['confidence'] == 'medium' ? 'warning' : 'neutral') %>">
+            <%= t("documents.confidence.#{payload['confidence']}", default: payload['confidence']) %>
+          </span>
+        <% end %>
+        <span class="footnote text-tertiary ms-auto">
+          <%= ai_summary_run.model %> · <%= ai_summary_run.cost_display %>
+        </span>
+      </div>
+
+      <% if payload["summary"].present? %>
+        <div class="callout mb-3"><%= simple_format(payload["summary"].to_s) %></div>
+      <% end %>
+
+      <% [
+           ["key_points",   t("documents.ai_summary_sections.key_points",   default: "Ключевые моменты")],
+           ["parties",      t("documents.ai_summary_sections.parties",      default: "Стороны")],
+           ["dates",        t("documents.ai_summary_sections.dates",        default: "Даты")],
+           ["obligations",  t("documents.ai_summary_sections.obligations",  default: "Обязательства")],
+           ["risks",        t("documents.ai_summary_sections.risks",        default: "Риски")],
+           ["action_items", t("documents.ai_summary_sections.action_items", default: "Что сделать")]
+         ].each do |key, label|
+           values = Array(payload[key]).reject(&:blank?)
+           next if values.empty?
+      %>
+        <div class="mb-3">
+          <h4 class="footnote text-tertiary text-uppercase mb-1" style="letter-spacing: 0.05em;"><%= label %></h4>
+          <ul class="m-0 ps-3">
+            <% values.each do |v| %><li><%= v %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  <% elsif !busy && document.summary.present? %>
     <div class="card-apple">
       <div class="d-flex align-items-center gap-2 mb-2">
         <span class="ai-spark">✨</span>
@@ -93,6 +188,14 @@
         <span class="footnote text-tertiary ms-auto"><%= t("documents.summary_meta", default: "Сгенерировано из текста документа") %></span>
       </div>
       <div class="callout"><%= simple_format(document.summary) %></div>
+    </div>
+  <% end %>
+
+  <%# ── AI ошибка (только если последний прогон упал) ──────────────────── %>
+  <% if !busy && show_ai_error %>
+    <div class="card-apple ai-leaves-result--error">
+      <strong>⚠ <%= t("documents.ai_failed_title", default: "AI не справился") %></strong>
+      <p class="footnote m-0 mt-1"><%= last_ai_run.error.to_s.first(400) %></p>
     </div>
   <% end %>
 </div>

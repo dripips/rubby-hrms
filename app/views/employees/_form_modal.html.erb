@@ -48,7 +48,10 @@
             </div>
             <div class="col-md-4">
               <%= f.label :employment_type, t("employees.fields.employment_type"), class: "form-label" %>
-              <%= f.select :employment_type, Employee.employment_types.keys.map { |k| [t("employees.employment_types.#{k}"), k] }, {}, class: "form-select" %>
+              <%= f.select :employment_type,
+                            lookup_options_for("employment_types",
+                              fallback: Employee.employment_types.keys.map { |k| [ t("employees.employment_types.#{k}"), k ] }),
+                            {}, class: "form-select" %>
             </div>
 
             <div class="col-md-4">
@@ -72,6 +75,13 @@
               <%= f.label :personal_email, t("employees.fields.personal_email"), class: "form-label" %>
               <%= f.email_field :personal_email, class: "form-control" %>
             </div>
+          </div>
+
+          <div class="mt-4">
+            <%= render_custom_fields_inputs(f,
+                  target_model: "Employee",
+                  target_scope: "default",
+                  values:       employee_record.custom_fields) %>
           </div>
         </div>
 

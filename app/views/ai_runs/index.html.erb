@@ -1,0 +1,180 @@
+<% content_for(:page_title) { t("ai_runs.title", default: "AI Audit") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🪄 <%= t("ai_runs.eyebrow", default: "Журнал AI") %></div>
+    <h1 class="page-header__title m-0"><%= t("ai_runs.title", default: "AI Audit") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("ai_runs.subtitle", default: "Все запуски AI-задач: кто, когда, какая модель, успех, токены, стоимость.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), dashboard_path, class: "btn btn-ghost" %>
+    <%= link_to t("ai_runs.cost_dashboard", default: "Cost Dashboard"), settings_ai_path, class: "btn btn-soft" %>
+  </div>
+</header>
+
+<%# ── KPI cards для текущего фильтра ─────────────────────────────────── %>
+<section class="row g-3 mb-3 stagger">
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("ai_runs.stats.runs", default: "Запусков по фильтру") %></div>
+      <div class="stat-card__value"><%= number_with_delimiter(@total) %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("ai_runs.stats.cost", default: "Сумма") %></div>
+      <div class="stat-card__value">$<%= format("%.4f", @sum_cost) %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("ai_runs.stats.tokens", default: "Токенов") %></div>
+      <div class="stat-card__value"><%= number_with_delimiter(@sum_tokens) %></div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card card-apple--hover">
+      <div class="stat-card__label"><%= t("ai_runs.stats.success", default: "Успешно") %></div>
+      <div class="stat-card__value"><%= @success_pct %><span class="kpi-card__unit">%</span></div>
+    </div>
+  </div>
+</section>
+
+<%# ── Фильтры ────────────────────────────────────────────────────────── %>
+<%= form_with url: ai_runs_path, method: :get, local: true, html: { class: "card-apple mb-3" } do %>
+  <div class="row g-2">
+    <div class="col-md-3">
+      <label class="form-label footnote text-tertiary"><%= t("ai_runs.filters.kind", default: "Задача") %></label>
+      <%= select_tag :kind,
+                      options_for_select(
+                        [[t("common.all", default: "Все"), ""]] +
+                        @kinds_used.map { |k| [t("ai.actions.#{k}", default: k.humanize), k] },
+                        params[:kind]),
+                      class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label footnote text-tertiary"><%= t("ai_runs.filters.model", default: "Модель") %></label>
+      <%= select_tag :model,
+                      options_for_select([[t("common.all", default: "Все"), ""]] + @models_used.map { |m| [m, m] }, params[:model]),
+                      class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label footnote text-tertiary"><%= t("ai_runs.filters.user", default: "Кто запускал") %></label>
+      <%= select_tag :user_id,
+                      options_for_select(
+                        [[t("common.all", default: "Все"), ""]] +
+                        @users_used.map { |u| [u.email.split("@").first, u.id] },
+                        params[:user_id]),
+                      class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label footnote text-tertiary"><%= t("ai_runs.filters.success", default: "Результат") %></label>
+      <%= select_tag :success,
+                      options_for_select([
+                        [t("common.all", default: "Все"), ""],
+                        [t("ai_runs.filters.success_only", default: "Только успешные"), "true"],
+                        [t("ai_runs.filters.failed_only",  default: "Только ошибки"),    "false"]
+                      ], params[:success]),
+                      class: "form-select" %>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label footnote text-tertiary"><%= t("audit.fields.period", default: "Период") %></label>
+      <%= select_tag :period,
+                      options_for_select([
+                        [t("common.all",        default: "Все время"), ""],
+                        [t("audit.periods.1d",  default: "За день"),    "1d"],
+                        [t("audit.periods.7d",  default: "За 7 дней"),  "7d"],
+                        [t("audit.periods.30d", default: "За 30 дней"), "30d"],
+                        [t("audit.periods.90d", default: "За 90 дней"), "90d"]
+                      ], params[:period]),
+                      class: "form-select" %>
+    </div>
+    <div class="col-md-1 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">→</button>
+    </div>
+  </div>
+<% end %>
+
+<%# ── Таблица ────────────────────────────────────────────────────────── %>
+<section class="card-apple">
+  <% if @runs.empty? %>
+    <p class="footnote text-tertiary m-0"><%= t("ai_runs.empty", default: "По фильтру ничего не найдено") %></p>
+  <% else %>
+    <table class="table-apple m-0">
+      <thead>
+        <tr>
+          <th><%= t("settings.ai.usage.when",  default: "Когда") %></th>
+          <th><%= t("settings.ai.usage.task",  default: "Задача") %></th>
+          <th><%= t("ai_runs.fields.subject",  default: "Объект") %></th>
+          <th><%= t("settings.ai.usage.user",  default: "Кто") %></th>
+          <th><%= t("settings.ai.usage.model", default: "Модель") %></th>
+          <th class="text-end"><%= t("settings.ai.usage.tokens_short", default: "Токены") %></th>
+          <th class="text-end"><%= t("settings.ai.usage.cost", default: "$") %></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @runs.each do |r| %>
+          <%
+            subject =
+              if r.document_id     then ["📄", r.document&.display_title, document_path(r.document_id)]
+              elsif r.dictionary_id then ["📚", r.dictionary&.name,        settings_dictionary_path(r.dictionary_id)]
+              elsif r.job_applicant_id then ["👤", r.job_applicant&.full_name, job_applicant_path(r.job_applicant_id)]
+              elsif r.employee_id  then ["🧑", r.employee&.full_name, employee_path(r.employee_id)]
+              elsif r.onboarding_process_id  then ["🌱", r.onboarding_process&.employee&.full_name, onboarding_process_path(r.onboarding_process_id)]
+              elsif r.offboarding_process_id then ["👋", r.offboarding_process&.employee&.full_name, offboarding_process_path(r.offboarding_process_id)]
+              elsif r.job_opening_id then ["💼", r.job_opening&.title, job_opening_path(r.job_opening_id)]
+              else                       ["—", t("ai_runs.fields.no_subject", default: "(без объекта)"), nil]
+              end
+          %>
+          <tr>
+            <td class="footnote text-tertiary"><%= l(r.created_at, format: :short) %></td>
+            <td class="footnote">
+              <%= t("ai.actions.#{r.kind}", default: r.kind.humanize) %>
+            </td>
+            <td class="footnote">
+              <span><%= subject[0] %></span>
+              <% if subject[2] %>
+                <%= link_to subject[1] || "—", subject[2], class: "link-plain" %>
+              <% else %>
+                <%= subject[1] || "—" %>
+              <% end %>
+            </td>
+            <td class="footnote text-tertiary"><%= r.user&.email&.split("@")&.first || "—" %></td>
+            <td><code class="footnote"><%= r.model %></code></td>
+            <td class="text-end footnote text-tertiary tabular-nums"><%= number_with_delimiter(r.total_tokens.to_i) %></td>
+            <td class="text-end footnote tabular-nums"><%= r.cost_display %></td>
+            <td>
+              <% if r.success %>
+                <span class="pill pill--success">✓</span>
+              <% else %>
+                <span class="pill pill--danger" title="<%= r.error.to_s.first(200) %>">!</span>
+              <% end %>
+              <%= link_to "→", ai_run_path(r), class: "btn btn-ghost btn-sm ms-1" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%# ── Пагинация ─────────────────────────────────────── %>
+    <% total_pages = (@total.to_f / AiRunsController::PER_PAGE).ceil %>
+    <% if total_pages > 1 %>
+      <nav class="d-flex gap-2 align-items-center mt-3 footnote">
+        <% if @page > 1 %>
+          <%= link_to "← #{t("common.prev", default: "Назад")}",
+                      ai_runs_path(request.query_parameters.merge(page: @page - 1)),
+                      class: "btn btn-ghost btn-sm" %>
+        <% end %>
+        <span class="text-tertiary"><%= @page %> / <%= total_pages %></span>
+        <% if @page < total_pages %>
+          <%= link_to "#{t("common.next", default: "Дальше")} →",
+                      ai_runs_path(request.query_parameters.merge(page: @page + 1)),
+                      class: "btn btn-ghost btn-sm" %>
+        <% end %>
+      </nav>
+    <% end %>
+  <% end %>
+</section>

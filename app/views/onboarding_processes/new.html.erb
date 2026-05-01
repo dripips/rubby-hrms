@@ -1,8 +1,14 @@
 <% content_for(:page_title) { t("onboarding.new", default: "Новый онбординг") } %>
 
 <header class="page-header">
-  <h1 class="title-1 m-0">🌱 <%= t("onboarding.new", default: "Новый онбординг") %></h1>
-  <p class="footnote text-secondary-apple m-0"><%= t("onboarding.new_hint", default: "Выберите сотрудника и шаблон — задачи материализуются автоматически.") %></p>
+  <div>
+    <div class="page-header__eyebrow">🌱 <%= t("onboarding.title") %></div>
+    <h1 class="page-header__title m-0"><%= t("onboarding.new", default: "Новый онбординг") %></h1>
+    <p class="page-header__subtitle"><%= t("onboarding.new_hint", default: "Выберите сотрудника и шаблон — задачи материализуются автоматически.") %></p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), onboarding_processes_path, class: "btn btn-ghost" %>
+  </div>
 </header>
 
 <%= form_with(model: @process, url: onboarding_processes_path, local: true, class: "card-apple form-apple") do |f| %>

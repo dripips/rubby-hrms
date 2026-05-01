@@ -2,12 +2,14 @@
 
 <header class="page-header">
   <div>
-    <h1 class="title-1 m-0">📁 <%= t("documents.title", default: "Документы") %></h1>
-    <p class="footnote text-secondary-apple m-0">
+    <div class="page-header__eyebrow">📁 <%= t("documents.eyebrow", default: "HR-архив") %></div>
+    <h1 class="page-header__title m-0"><%= t("documents.title", default: "Документы") %></h1>
+    <p class="page-header__subtitle">
       <%= t("documents.subtitle", default: "Личные документы сотрудников: паспорта, договоры, дипломы, медкнижки. Только для HR.") %>
     </p>
   </div>
   <div class="page-header__actions">
+    <%= link_to t("common.back"), dashboard_path, class: "btn btn-ghost" %>
     <%= link_to t("documents.new", default: "+ Загрузить документ"), new_document_path, class: "btn btn-primary" %>
   </div>
 </header>

@@ -104,6 +104,9 @@
             <p class="callout"><%= @applicant.summary %></p>
           <% end %>
         </div>
+        <%= render_custom_field_values(@applicant.custom_fields,
+              target_model: "JobApplicant",
+              target_scope: @applicant.job_opening_id || "default") %>
       </div>
 
       <div class="col-12 col-xl-5">

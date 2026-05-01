@@ -20,6 +20,7 @@ class JobApplicantsController < ApplicationController
   def create
     authorize JobApplicant
     @applicant = JobApplicant.new(applicant_params.merge(company: @company))
+    apply_custom_fields(@applicant, params[:custom_fields])
     if @applicant.save
       redirect_to job_applicant_path(@applicant), notice: t("job_applicants.created", default: "Кандидат добавлен")
     else
@@ -29,11 +30,21 @@ class JobApplicantsController < ApplicationController
 
   def update
     authorize @applicant
+    apply_custom_fields(@applicant, params[:custom_fields])
     if @applicant.update(applicant_params)
       redirect_to job_applicant_path(@applicant), notice: t("job_applicants.updated", default: "Кандидат обновлён")
     else
       redirect_to job_applicant_path(@applicant), alert: @applicant.errors.full_messages.to_sentence
     end
+  end
+
+  # Сливает значения custom-полей в applicant.custom_fields.
+  def apply_custom_fields(applicant, raw)
+    return unless raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
+
+    cleaned = raw.to_unsafe_h.transform_values { |v| v.is_a?(String) ? v.strip : v }
+    cleaned.reject! { |_, v| v.nil? || (v.is_a?(String) && v.empty?) }
+    applicant.custom_fields = (applicant.custom_fields.to_h || {}).merge(cleaned)
   end
 
   def destroy

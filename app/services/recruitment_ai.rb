@@ -1,5 +1,6 @@
 require "net/http"
 require "json"
+require "base64"
 
 # Тонкая обёртка над OpenAI Chat Completions API. Без зависимостей от
 # гема ruby-openai, чтобы не тащить лишнее.
@@ -10,7 +11,62 @@ require "json"
 #   ai.recommend(applicant)
 #   ai.questions_for(round)
 class RecruitmentAi
-  API_URL = "https://api.openai.com/v1/chat/completions".freeze
+  # Дефолт OpenAI. Реальный URL берётся из setting.data["api_base_url"], что
+  # позволяет подключить любой OpenAI-compatible endpoint: OpenRouter,
+  # Together.ai, Groq, Anthropic-через-proxy, локальный vLLM/Ollama и т.п.
+  DEFAULT_API_URL = "https://api.openai.com/v1/chat/completions".freeze
+  # Алиас для обратной совместимости — нигде в коде больше не используется,
+  # но публичный API сохраняем чтоб ничего извне не сломать.
+  API_URL = DEFAULT_API_URL
+
+  # Пресеты для быстрого выбора в UI. Ключ — id, значение — { label, url }.
+  # Юзер может выбрать пресет → подставится URL → остаётся вписать model + ключ.
+  PROVIDER_PRESETS = {
+    "openai"     => { label: "OpenAI",       url: "https://api.openai.com/v1/chat/completions" },
+    "openrouter" => { label: "OpenRouter",   url: "https://openrouter.ai/api/v1/chat/completions" },
+    "together"   => { label: "Together.ai",  url: "https://api.together.xyz/v1/chat/completions" },
+    "groq"       => { label: "Groq",         url: "https://api.groq.com/openai/v1/chat/completions" },
+    "deepseek"   => { label: "DeepSeek",     url: "https://api.deepseek.com/v1/chat/completions" },
+    "anthropic"  => { label: "Anthropic (compat)", url: "https://api.anthropic.com/v1/messages" },
+    "custom"     => { label: "Свой endpoint",   url: "" }
+  }.freeze
+
+  # Модели OpenAI-семейства, поддерживающие reasoning_effort. Для остальных
+  # параметр опускаем — иначе OpenRouter/Anthropic-compat сервера ругаются.
+  REASONING_MODELS_RE = /\A(gpt-5|o1|o3|o4)/.freeze
+
+  # Популярные модели по провайдерам — для UI-чипов в Settings → AI. Юзер
+  # может выбрать чип или вписать свою (free-form text input).
+  MODEL_PRESETS_BY_PROVIDER = {
+    "openrouter" => [
+      "qwen/qwen-2.5-72b-instruct",
+      "anthropic/claude-3.5-sonnet",
+      "anthropic/claude-3.5-haiku",
+      "meta-llama/llama-3.3-70b-instruct",
+      "deepseek/deepseek-chat",
+      "google/gemini-2.0-flash-001",
+      "mistralai/mistral-large"
+    ].freeze,
+    "together" => [
+      "Qwen/Qwen2.5-72B-Instruct-Turbo",
+      "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+      "deepseek-ai/DeepSeek-V3"
+    ].freeze,
+    "groq" => [
+      "llama-3.3-70b-versatile",
+      "qwen-qwq-32b",
+      "deepseek-r1-distill-llama-70b"
+    ].freeze,
+    "deepseek" => [
+      "deepseek-chat",
+      "deepseek-reasoner"
+    ].freeze,
+    "anthropic" => [
+      "claude-3-5-sonnet-latest",
+      "claude-3-5-haiku-latest"
+    ].freeze,
+    "custom" => [].freeze
+  }.freeze
 
   # Каталог моделей с ценой за 1M токенов (USD).
   # Источник: developers.openai.com/api/docs/models — стандартный tier, апрель 2026.
@@ -93,6 +149,10 @@ class RecruitmentAi
     knowledge_transfer_plan: { input: 2500, output: 2800 },
     exit_interview_brief:   { input: 2500, output: 2200 },
     replacement_brief:      { input: 2500, output: 2400 },
+    document_summary:       { input: 4000, output: 1800 },
+    document_extract_assist: { input: 4000, output: 1500 },
+    dictionary_seed:        { input: 1500, output: 2500 },
+    company_bootstrap:      { input: 3000, output: 4500 },
     ping:                 { input:   30, output:   30 }
   }.freeze
 
@@ -547,6 +607,217 @@ class RecruitmentAi
         "tone_hint": "warm|neutral|formal"
       }
     SYS
+    "document_summary" => <<~SYS.freeze,
+      You are an HR document analyst. You receive raw text extracted from a
+      single HR document (passport, contract, diploma, NDA, medical book, etc.)
+      together with its declared type. The text may be noisy (OCR, scan).
+
+      Produce a SHORT structured summary that a busy HR manager can read in
+      under 30 seconds, plus call out anything that requires action.
+
+      Think in English. All human-readable text translated to OUTPUT_LOCALE.
+
+      Return ONLY valid JSON:
+      {
+        "summary": "1-3 sentences — what this document is, who it concerns, why it matters",
+        "key_points":   ["3-6 most important facts pulled from the text"],
+        "parties":      ["named entities — people, employer, agency, school"],
+        "dates":        ["important dates with labels (e.g. 'Issued 2024-03-12', 'Valid until 2030-03-12')"],
+        "obligations":  ["any duties or restrictions the employee accepts (NDA scope, contract terms)"],
+        "risks":        ["concerns HR should know about (expiring soon, missing field, contradiction)"],
+        "action_items": ["concrete next steps for HR if any"],
+        "confidence":   "high|medium|low"
+      }
+      No markdown, no preamble.
+    SYS
+    "company_bootstrap" => <<~SYS.freeze,
+      You are an HR onboarding consultant helping a brand-new company configure
+      its HRMS. Your goal: produce a COMPLETE initial set of dictionaries (lookup
+      lists + custom field schemas) tailored to THIS company's industry and size.
+
+      ## Discovery checklist — you MUST gather all of these BEFORE proposing
+      Track which are covered by user's messages. Do not propose until all are.
+
+      1. INDUSTRY — what the company actually does (specific words HR uses,
+         not just "tech" or "services"). E.g., «откачка септиков и ЖБО»,
+         «разработка SaaS для логистики», «частная стоматология», «школа танцев».
+      2. SIZE & STRUCTURE — how many employees, what roles dominate, ratio of
+         field workers vs office, any contractors/freelancers.
+      3. OPERATIONAL SPECIFICS — what makes their daily ops unique:
+         vehicles? regulated licences? client-site work? shift schedules?
+         hazardous conditions? client-confidential data? remote/hybrid?
+      4. COMPLIANCE & DOCS — what regulated documents/checks they need:
+         мед.книжки, лицензии, сертификаты, NDA для разработчиков, допуски,
+         152-ФЗ, гос.заказы, etc.
+      5. PEOPLE-OPS QUIRKS — anything HR-specific to the industry:
+         нестандартные отпуска (полевой день / выезд), бенефиты-униформа,
+         корпоратив-отличия (медцентр обязан учитывать смены, IT — конференции).
+
+      ## Loop rules
+
+      - You are in a CHAT. Each turn: read full history + new user message.
+      - Ask ONE focused question at a time — never bullet-list questions.
+      - Each `ask` message has TWO parts: (a) the question itself,
+        (b) brief progress hint like "(собрал: индустрия, размер; осталось: …)".
+        This shows HR how far you are. UPDATE the hint each turn — track
+        what you actually learned, don't just copy-paste the same hint.
+      - Aim for 3-4 ask-turns before proposing. Counting by index from 1.
+      - **Hard rule**: if turn index ≥ 4 — switch to "propose" with whatever
+        info you have. Better imperfect proposal than 7th interrogation.
+      - **Hard rule**: if user says "stop asking", "give me proposal", "это
+        вся информация", "предложи", "propose now" or similar — switch to
+        "propose" immediately, this turn.
+      - In the very FIRST turn (index = 1), ALWAYS ask — never propose on
+        turn 1, even if user's first message looks complete. There's always
+        a useful follow-up about industry-specific quirks.
+
+      Be SPECIFIC, not generic. Septic-pumping company → truck_license_class
+      is essential. Tech startup → github_url. Medical clinic →
+      specialty_code. Tailor everything to industry words THEY use.
+
+      Available extension points (don't deviate from these models/scopes):
+
+      A) Lookups (kind=lookup) — populate at least these where useful:
+         • applicant_sources    — channels they hire from
+         • marital_statuses     — usually fine as default; skip unless special
+         • shirt_sizes          — only if they give uniform/merch
+         • plus any extra lookup that fits, with code in snake_case_latin
+
+      B) Field schemas (kind=field_schema) — propose 0-7 fields per scope:
+         • Employee:default
+         • Department:default
+         • Position:default
+         • JobApplicant:default
+         • LeaveRequest:default
+
+      Field types: string|textarea|integer|decimal|date|boolean|select.
+      Keys: snake_case_latin only. Values/labels/hints/options: OUTPUT_LOCALE.
+
+      Think in English. Translate user-facing strings to OUTPUT_LOCALE.
+
+      Return ONLY valid JSON of EXACTLY ONE of these two shapes:
+
+      Shape A — clarifying question (use this for first 3-5 turns):
+      {
+        "action":  "ask",
+        "message": "Один конкретный вопрос. Затем в скобках прогресс: (собрал: индустрия, размер; осталось: операционная специфика, compliance, кадровые особенности)."
+      }
+
+      Shape B — full proposal:
+      {
+        "action":  "propose",
+        "message": "1-2 предложения: краткое описание что AI собрал, на чём основано.",
+        "lookups": [
+          {
+            "code":    "applicant_sources",
+            "name":    "Источники кандидатов",
+            "entries": [{ "key": "hh", "value": "HeadHunter" }, ...]
+          }
+        ],
+        "schemas": [
+          {
+            "model":  "Employee",
+            "scope":  "default",
+            "name":   "Доп.поля сотрудника",
+            "fields": [
+              {
+                "key":      "truck_license_class",
+                "label":    "Категория ВУ",
+                "type":     "select",
+                "required": true,
+                "hint":     "Без подходящей категории не допускают к технике",
+                "options":  ["B", "C", "D", "E"]
+              }
+            ]
+          }
+        ]
+      }
+
+      No markdown, no preamble, no code fences. JSON object only.
+    SYS
+    "dictionary_seed" => <<~SYS.freeze,
+      You help an HR manager populate a company dictionary in an HRMS.
+      You will get: dictionary type (lookup or field_schema), code, current name,
+      target model + scope (for field_schema), already-existing entries, the
+      company name, and a free-form HINT from the user describing their company
+      and what they want.
+
+      Two cases — produce DIFFERENT shape per kind:
+
+      A) kind=lookup → propose 4-12 ENTRIES that fit this list for THIS specific
+         company. Each entry: machine `key` (snake_case latin only) + display
+         `value` (in OUTPUT_LOCALE).
+
+      B) kind=field_schema → propose 4-10 FIELD DEFINITIONS that this company
+         actually needs (NOT generic — be specific to their industry & hint).
+         Each field: machine `key`, display `label` (OUTPUT_LOCALE), `type`
+         (one of: string|textarea|integer|decimal|date|boolean|select),
+         optional `required`, optional `hint`, optional `options` (array of
+         strings, only when type=select).
+
+      Rules:
+      • Don't repeat entries that already exist (check by `key`).
+      • Be SPECIFIC to industry. Septic-pumping company → "truck_license_class",
+        "tank_capacity_liters". Tech startup → "github_url", "stack_seniority".
+        Medical clinic → "license_number", "specialty_code".
+      • Latin snake_case keys. No CamelCase, no spaces, no Cyrillic in keys.
+      • Each proposal includes `rationale` — 1 short sentence why HR for THIS
+        company would want it.
+      • Set confidence honestly: high if industry is clear, low if hint is vague.
+
+      Think in English. Translate `value`/`label`/`hint`/`options`/`rationale`
+      to OUTPUT_LOCALE.
+
+      Return ONLY valid JSON with this exact shape:
+      {
+        "proposed_entries": [
+          {
+            "key":       "truck_license_class",
+            "value":     "Категория водительского удостоверения",
+            "type":      "select",
+            "required":  true,
+            "hint":      "B / C / D / E (для тяжёлой техники)",
+            "options":   ["B", "C", "D", "E"],
+            "rationale": "Без подходящей категории водитель не может управлять ассенизаторской техникой."
+          }
+        ],
+        "confidence": "high|medium|low",
+        "notes":      "Optional 1-sentence note for the user (caveats, suggestions)"
+      }
+
+      For kind=lookup omit type/required/hint/options — just key, value, rationale.
+      No markdown, no preamble. JSON object only.
+    SYS
+    "document_extract_assist" => <<~SYS.freeze,
+      You are a careful HR data extractor. You receive raw text from a single
+      document plus its declared type (extractor_kind). Your job is to extract
+      structured fields the regex-based extractor missed — fill gaps, normalise
+      dates to ISO YYYY-MM-DD, and only return what is actually in the text.
+
+      Rules:
+      • Never invent values. If a field is not present — omit the key.
+      • Dates: always ISO YYYY-MM-DD. If only year/month is present, omit.
+      • Series/numbers: keep digits only, no separators.
+      • Names of organisations/people — preserve exact case from the text.
+      • Be conservative — false positives are worse than missing fields.
+
+      Common keys per type:
+      • passport: number (10 digits), issued_at, issuer, birth_date, gender, birth_place
+      • snils:   number (11 digits)
+      • inn:     number (12 digits for individuals)
+      • contract: number, issued_at, employer, employee_name, position, start_date, salary
+      • diploma: number, issued_at, institution, degree, specialty, graduation_year
+      • nda:     number, issued_at, parties (array), valid_until
+      • medical: number, issued_at, expires_at, issuer, holder_name
+
+      Think in English. Return ONLY valid JSON with extracted fields:
+      {
+        "fields":    { "key": "value", ... },
+        "confidence": "high|medium|low",
+        "notes":     "1 sentence on what was uncertain (optional)"
+      }
+      No markdown.
+    SYS
     "replacement_brief" => <<~SYS.freeze
       You are a hiring manager. Based on the departing employee's role,
       responsibilities, KPI signals and team — write a brief for a replacement
@@ -589,6 +860,16 @@ class RecruitmentAi
   def model_info = MODELS[model_key] || MODELS["gpt-5-nano"]
 
   def api_key = setting.secret
+
+  # URL endpoint'а: либо явно задан в настройках, либо берётся из пресета
+  # (data["provider"]), либо OpenAI-дефолт.
+  def api_url
+    explicit = setting.data["api_base_url"].to_s.strip
+    return explicit if explicit.match?(%r{\Ahttps?://})
+
+    preset = PROVIDER_PRESETS[setting.data["provider"].to_s]
+    preset&.dig(:url).presence || DEFAULT_API_URL
+  end
 
   def enabled? = setting.data["enabled"] == true && api_key.present?
 
@@ -1337,7 +1618,139 @@ class RecruitmentAi
     ], max_tokens: output_tokens_for("replacement_brief"), task: "replacement_brief", json: true)
   end
 
+  # ── Company Bootstrap ──────────────────────────────────────────────────────
+
+  # Чат-ассистент: AI либо задаёт уточняющий вопрос, либо выдаёт полный пакет
+  # словарей и схем для компании. История — массив [{role, content}] прошлых
+  # реплик. user_message — новое сообщение HR.
+  def company_bootstrap(company, user_message:, history: [])
+    msgs = [ { role: "system", content: prompt_for("company_bootstrap") } ]
+    msgs << { role: "user", content: company_bootstrap_context(company) }
+    Array(history).each do |m|
+      role    = m[:role] || m["role"]
+      content = m[:content] || m["content"]
+      msgs << { role: role, content: content.to_s } if role && content.present?
+    end
+    msgs << { role: "user", content: user_message.to_s.presence || "(пусто) Начинай с первого вопроса для уточнения." }
+
+    chat(msgs, max_tokens: output_tokens_for("company_bootstrap"), task: "company_bootstrap", json: true)
+  end
+
+  def company_bootstrap_context(company)
+    +"## Company\n" \
+      "Name: #{company&.name}\n" \
+      "Country: #{company&.country}\n" \
+      "Default locale: #{company&.default_locale}\n"
+  end
+
+  # ── Dictionaries ───────────────────────────────────────────────────────────
+
+  # Предложить набор записей для словаря с учётом контекста компании. Hint —
+  # свободный текст пользователя про индустрию/что нужно.
+  def dictionary_seed(dictionary, hint: "")
+    chat([
+      { role: "system", content: prompt_for("dictionary_seed") },
+      { role: "user",   content: dictionary_context(dictionary, hint) }
+    ], max_tokens: output_tokens_for("dictionary_seed"), task: "dictionary_seed", json: true)
+  end
+
+  def dictionary_context(dictionary, hint)
+    company = dictionary.company
+    existing = dictionary.entries.kept.map { |e| "  • #{e.key} = #{e.value}" }.join("\n")
+    +"## Dictionary\n" \
+      "Kind: #{dictionary.kind}\n" \
+      "Code: #{dictionary.code}\n" \
+      "Name: #{dictionary.name}\n" \
+      "Description: #{dictionary.description}\n" \
+      "Target model: #{dictionary.target_model || '—'}\n" \
+      "Target scope: #{dictionary.target_scope || '—'}\n\n" \
+      "## Company\n" \
+      "Name: #{company&.name}\n" \
+      "Country: #{company&.country}\n\n" \
+      "## Existing entries (do NOT duplicate)\n" \
+      "#{existing.presence || '(empty — propose initial set)'}\n\n" \
+      "## User hint\n" \
+      "#{hint.to_s.strip.presence || '(no hint — infer from company name and dictionary code)'}"
+  end
+
+  # ── Documents ──────────────────────────────────────────────────────────────
+
+  # Сводка по документу. Если файл — картинка, шлём в OpenAI Vision API
+  # (без OCR на сервере). Если PDF — извлекаем текст через pdf-reader.
+  # Если ни то, ни другое — ok:false, UI покажет внятный fallback.
+  def document_summary(document)
+    return chat_document_vision(document, "document_summary") if document.file.image?
+    chat_document_text(document, "document_summary")
+  end
+
+  # AI-извлечение полей. Image → vision (заменяет Tesseract+regex одним
+  # запросом). PDF/text → стандартный путь по тексту.
+  def document_extract_assist(document)
+    return chat_document_vision(document, "document_extract_assist") if document.file.image?
+    chat_document_text(document, "document_extract_assist")
+  end
+
   private
+
+  # Текстовый путь: PDF → pdf-reader → text → AI.
+  def chat_document_text(document, task)
+    text_result = Documents::TextExtractor.call(document.file.blob)
+    text = text_result[:text].to_s.strip
+    return no_text_error(text_result[:error]) if text.empty?
+
+    chat([
+      { role: "system", content: prompt_for(task) },
+      { role: "user",   content: document_text_context(document, text) }
+    ], max_tokens: output_tokens_for(task), task: task, json: true)
+  end
+
+  # Vision путь: image → base64 → OpenAI Vision. Заменяет связку OCR+regex
+  # одним запросом — лучше работает на скриншотах/фото плохого качества.
+  MAX_VISION_BYTES = 18 * 1024 * 1024
+  def chat_document_vision(document, task)
+    blob = document.file.blob
+    data = blob.download
+    return image_too_large_error(data.bytesize) if data.bytesize > MAX_VISION_BYTES
+
+    data_url = "data:#{blob.content_type};base64,#{Base64.strict_encode64(data)}"
+    chat([
+      { role: "system", content: prompt_for(task) },
+      { role: "user",   content: [
+        { type: "text",      text: document_vision_context(document) },
+        { type: "image_url", image_url: { url: data_url, detail: "high" } }
+      ] }
+    ], max_tokens: output_tokens_for(task), task: task, json: true)
+  end
+
+  def document_text_context(document, text)
+    +"#{document_meta(document)}\n\n## Raw text (length=#{text.length})\n#{text.first(8000)}"
+  end
+
+  def document_vision_context(document)
+    +"#{document_meta(document)}\n\n" \
+      "The image attached is a scan or photo of this document. " \
+      "Read all printed/handwritten text carefully, including stamps and seals. " \
+      "Russian + Latin text both expected."
+  end
+
+  def document_meta(document)
+    +"## Document\n" \
+      "Type: #{document.document_type&.name} (extractor_kind=#{document.document_type&.extractor_kind})\n" \
+      "Title: #{document.title.presence || document.display_title}\n" \
+      "Owner: #{document.documentable.try(:full_name) || document.documentable_type}\n" \
+      "Existing fields: number=#{document.number} issuer=#{document.issuer} " \
+      "issued_at=#{document.issued_at} expires_at=#{document.expires_at}"
+  end
+
+  def no_text_error(reason)
+    { ok: false, error: "no_text_for_ai:#{reason || 'empty'}",
+      tokens: 0, input_tokens: 0, output_tokens: 0 }
+  end
+
+  def image_too_large_error(bytes)
+    { ok: false, error: "image_too_large:#{bytes / 1024 / 1024}MB (max 18MB)",
+      tokens: 0, input_tokens: 0, output_tokens: 0 }
+  end
 
   def tenure_months(employee)
     return 0 unless employee&.hired_at
@@ -1434,17 +1847,31 @@ class RecruitmentAi
     effort           = setting.data["reasoning_effort"].presence || "minimal"
     chosen_model     = task ? model_for(task) : model_key
 
+    # gpt-5/o-series принимают ТОЛЬКО max_completion_tokens (max_tokens бросает
+    # 400 "Unsupported parameter"). Все остальные провайдеры (OpenRouter / vLLM
+    # / Anthropic-compat / Llama-серверы) ждут max_tokens. Поэтому шлём один
+    # ключ в зависимости от семейства модели — нельзя слать оба.
     body = {
-      model:                 chosen_model,
-      messages:              messages,
-      max_completion_tokens: effective_tokens,
-      reasoning_effort:      effort
+      model:    chosen_model,
+      messages: messages
     }
-    body[:response_format]  = { type: "json_object" } if json
+    if chosen_model.match?(REASONING_MODELS_RE)
+      body[:max_completion_tokens] = effective_tokens
+      body[:reasoning_effort]      = effort
+    else
+      body[:max_tokens] = effective_tokens
+    end
+    body[:response_format] = { type: "json_object" } if json
 
-    uri  = URI(API_URL)
+    uri  = URI(api_url)
     req  = Net::HTTP::Post.new(uri, "Content-Type" => "application/json",
                                     "Authorization" => "Bearer #{api_key}")
+    # OpenRouter рекомендует слать HTTP-Referer / X-Title — пробрасываем если
+    # есть в настройках, не падаем если нет.
+    if uri.host&.include?("openrouter")
+      req["HTTP-Referer"] = setting.data["openrouter_referer"].to_s.presence || "https://hrms.local"
+      req["X-Title"]      = setting.data["openrouter_app_title"].to_s.presence || "HRMS"
+    end
     req.body = body.to_json
 
     # Поддержка HTTP-proxy из настроек (для регионов, где OpenAI заблокирован).
@@ -1457,7 +1884,11 @@ class RecruitmentAi
       pu ? Net::HTTP::Proxy(pu.host, pu.port, pu.user, pu.password) : Net::HTTP
     end
 
-    resp = http_class.start(uri.hostname, uri.port, use_ssl: true, read_timeout: 60) { |http| http.request(req) }
+    # Тяжёлые задачи (company_bootstrap, document_summary) с 4000+ токенов
+    # вывода легко превышают 60с на gpt-5-nano. Скейлим лимит по effective_tokens:
+    # 1 token ≈ 0.05с генерации в худшем случае, плюс 30с базы.
+    timeout = (30 + (effective_tokens * 0.05)).clamp(60, 240).to_i
+    resp = http_class.start(uri.hostname, uri.port, use_ssl: true, read_timeout: timeout, open_timeout: 15) { |http| http.request(req) }
     parsed = JSON.parse(resp.body) rescue { "error" => { "message" => "non-json response: #{resp.body.first(200)}" } }
 
     if resp.code.to_i.between?(200, 299)

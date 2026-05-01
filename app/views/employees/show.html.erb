@@ -91,6 +91,8 @@
       </dl>
     </div>
 
+    <%= render_custom_field_values(@employee.custom_fields, target_model: "Employee", target_scope: "default") %>
+
     <div class="card-apple" id="family">
       <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
@@ -449,7 +451,8 @@
               <div class="col-md-6">
                 <%= f.label :marital_status, t("employees.fields.marital_status"), class: "form-label" %>
                 <%= f.select :marital_status,
-                             Employee::MARITAL_STATUSES.map { |s| [t("employees.marital_statuses.#{s}"), s] },
+                             lookup_options_for("marital_statuses",
+                               fallback: Employee::MARITAL_STATUSES.map { |s| [ t("employees.marital_statuses.#{s}"), s ] }),
                              { include_blank: "—" },
                              class: "form-select" %>
               </div>
@@ -484,7 +487,9 @@
               </div>
               <div class="col-md-3">
                 <%= f.label :shirt_size, t("employees.fields.shirt_size"), class: "form-label" %>
-                <%= f.select :shirt_size, %w[XS S M L XL XXL XXXL].map { |s| [s, s] }, { include_blank: "—" }, class: "form-select" %>
+                <%= f.select :shirt_size,
+                             lookup_options_for("shirt_sizes", fallback: %w[XS S M L XL XXL XXXL].map { |s| [ s, s ] }),
+                             { include_blank: "—" }, class: "form-select" %>
               </div>
               <div class="col-md-3">
                 <%= f.label :preferred_language, t("settings.translations.locale"), class: "form-label" %>

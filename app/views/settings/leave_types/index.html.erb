@@ -1,0 +1,63 @@
+<% content_for(:page_title) { t("settings.leave_types.title", default: "Типы отпусков") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🏖 <%= t("settings.title", default: "Настройки") %></div>
+    <h1 class="page-header__title m-0"><%= t("settings.leave_types.title", default: "Типы отпусков") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("settings.leave_types.subtitle", default: "Виды отпусков и больничных. Каждая компания настраивает свои — от командировок водителей до remote-work tech-команд.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_root_path, class: "btn btn-ghost" %>
+    <%= link_to t("settings.leave_types.new", default: "+ Новый тип"), new_settings_leave_type_path, class: "btn btn-primary" %>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" if lookup_context.exists?("shared/settings_tabs", [], true) %>
+
+<section class="card-apple">
+  <% if @leave_types.empty? %>
+    <p class="footnote text-tertiary"><%= t("settings.leave_types.empty", default: "Типов отпусков пока нет") %></p>
+  <% else %>
+    <ul class="list-apple">
+      <% @leave_types.each do |lt| %>
+        <li class="list-apple__item">
+          <% if lt.color.present? %>
+            <span class="d-inline-block radius-pill" style="width: 12px; height: 12px; background: <%= lt.color %>;"></span>
+          <% end %>
+          <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <strong><%= lt.name %></strong>
+              <span class="footnote text-tertiary"><code><%= lt.code %></code></span>
+              <% if lt.paid %>
+                <span class="pill pill--success"><%= t("settings.leave_types.paid_badge", default: "оплачиваемый") %></span>
+              <% else %>
+                <span class="pill pill--neutral"><%= t("settings.leave_types.unpaid_badge", default: "за свой счёт") %></span>
+              <% end %>
+              <% if lt.requires_doc %>
+                <span class="pill pill--warning"><%= t("settings.leave_types.requires_doc_badge", default: "нужна справка") %></span>
+              <% end %>
+              <% unless lt.active %>
+                <span class="pill pill--neutral"><%= I18n.t("common.inactive", default: "выключен") %></span>
+              <% end %>
+            </div>
+            <span class="footnote text-secondary-apple">
+              <% if lt.default_days_per_year %>
+                <%= t("settings.leave_types.default_days", default: "дней в году по умолчанию") %>: <%= lt.default_days_per_year %>
+              <% else %>
+                <%= t("settings.leave_types.no_default_days", default: "квота индивидуально") %>
+              <% end %>
+            </span>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <%= link_to I18n.t("common.edit"), edit_settings_leave_type_path(lt), class: "btn btn-ghost btn-sm" %>
+            <%= button_to I18n.t("common.delete"), settings_leave_type_path(lt), method: :delete,
+                          class: "btn btn-ghost btn-sm", data: { turbo_confirm: I18n.t("common.confirm.delete") },
+                          form: { class: "d-inline" } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

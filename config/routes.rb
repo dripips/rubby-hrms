@@ -171,15 +171,25 @@ Rails.application.routes.draw do
       resources :evaluations, only: %i[index create]
     end
     get "kpi", to: redirect { |_, req| "/#{req.params[:locale]}/kpi/dashboard".sub("//", "/") }, as: :kpi
+
+    # Self-service портал — сотрудник правит свои поля.
+    resource :profile, only: %i[show edit update], controller: "profile"
+
+    # AI Audit log — отдельный аудит для запусков AI-задач (HR/admin only).
+    resources :ai_runs, only: %i[index show]
+
     resources :documents do
       member do
-        post :extract     # запустить авто-разбор (gem)
-        post :summarize   # AI-краткое содержание
+        post :extract           # запустить авто-разбор (gem)
+        post :extract_assist    # AI-помощь с регулярками (fallback к gem)
+        post :summarize         # AI-краткое содержание
+        get  :review_extracted  # форма для применения с правками + preview
+        post :apply_extracted   # перенести extracted_data → основные поля
         post :revoke
         post :reactivate
       end
     end
-    get "dictionaries", to: "stub#show", as: :dictionaries, defaults: { section: "dictionaries" }
+    get "dictionaries", to: redirect { |_, req| "/#{req.params[:locale]}/settings/dictionaries".sub("//", "/") }, as: :dictionaries
     get  "audit",            to: "audit#index",  as: :audit
     post "audit/:id/revert", to: "audit#revert", as: :revert_audit
 
@@ -204,6 +214,20 @@ Rails.application.routes.draw do
       resources :genders, except: [ :show ]
       resources :process_templates, except: [ :show ]
       resources :document_types,    except: [ :show ]
+      resources :positions,         except: [ :show ]
+      resources :leave_types,       except: [ :show ]
+      resources :dictionaries do
+        collection do
+          post :bootstrap_message   # отправить сообщение в чат с AI
+          post :bootstrap_apply     # применить proposed
+          post :bootstrap_reset     # сбросить чат
+        end
+        member do
+          post :suggest             # AI предлагает entries для одного словаря
+          post :apply_suggestions   # создать выбранные entries
+        end
+        resources :entries, controller: "dictionary_entries", only: %i[new create edit update destroy]
+      end
     end
   end
 

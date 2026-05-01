@@ -1,0 +1,52 @@
+<% content_for(:page_title) { t("settings.positions.title", default: "Должности") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">💼 <%= t("settings.title", default: "Настройки") %></div>
+    <h1 class="page-header__title m-0"><%= t("settings.positions.title", default: "Должности") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("settings.positions.subtitle", default: "Справочник должностей: программист, бухгалтер, водитель-ассенизатор. Каждая может иметь компанийные доп.поля.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_root_path, class: "btn btn-ghost" %>
+    <%= link_to t("settings.positions.new", default: "+ Новая должность"), new_settings_position_path, class: "btn btn-primary" %>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" if lookup_context.exists?("shared/settings_tabs", [], true) %>
+
+<section class="card-apple">
+  <% if @positions.empty? %>
+    <p class="footnote text-tertiary"><%= t("settings.positions.empty", default: "Должностей пока нет") %></p>
+  <% else %>
+    <ul class="list-apple">
+      <% @positions.each do |p| %>
+        <li class="list-apple__item">
+          <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <strong><%= p.name %></strong>
+              <span class="footnote text-tertiary"><code><%= p.code %></code></span>
+              <% if p.category.present? %><span class="pill pill--info"><%= p.category %></span><% end %>
+              <% unless p.active %><span class="pill pill--neutral"><%= I18n.t("common.inactive", default: "выключен") %></span><% end %>
+            </div>
+            <% if p.custom_fields.present? && p.custom_fields.any? %>
+              <span class="footnote text-secondary-apple">
+                <%= t("settings.positions.custom_fields_count", default: "доп.поля заполнены: %{n}", n: p.custom_fields.size) %>
+              </span>
+            <% end %>
+            <span class="footnote text-tertiary">
+              <%= t("settings.positions.employees_count", default: "сотрудников: %{n}", n: p.employees.kept.size) %>
+            </span>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <%= link_to I18n.t("common.edit"), edit_settings_position_path(p), class: "btn btn-ghost btn-sm" %>
+            <%= button_to I18n.t("common.delete"), settings_position_path(p), method: :delete,
+                          class: "btn btn-ghost btn-sm", data: { turbo_confirm: I18n.t("common.confirm.delete") },
+                          form: { class: "d-inline" } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

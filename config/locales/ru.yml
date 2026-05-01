@@ -3,6 +3,24 @@ ru:
   app:
     name: HRMS
     tagline: Управление персоналом
+  profile:
+    title: Мой профиль
+    eyebrow: Мой профиль
+    edit: Редактировать
+    edit_title: Редактировать профиль
+    edit_hint: Можно менять контакты, личные предпочтения и экстренный контакт. Должность/отдел/зарплату меняет HR.
+    updated: Данные обновлены
+    no_employee: К аккаунту не привязана карточка сотрудника. Обратись в HR.
+    contact_section: Контакты
+    personal_section: Личное
+    emergency_section: Экстренный контакт
+    emergency_hint: Кому позвонить если с тобой что-то случится на работе или в командировке.
+    no_emergency_contact: Не указан — добавь на случай ЧП.
+    accessibility_section: Доступность
+    accessibility_hint: Используется только если ты сам указал. HR увидит, чтобы учесть.
+    hr_note: Должность, отдел, зарплату и личный номер меняет только HR. Если что-то некорректно — напиши им.
+    dietary_placeholder: Аллергии или диета — пригодится для корпоративов и рабочих обедов
+    special_needs_placeholder: 'Например: адаптированное рабочее место, удалёнка два дня в неделю, ассистент для встреч'
   navigation:
     workspace: Рабочее место
     org: Организация
@@ -17,6 +35,7 @@ ru:
     documents: Документы
     dictionaries: Справочники
     audit: Журнал событий
+    ai_runs: Журнал AI
     settings: Настройки
     profile: Профиль
     sign_out: Выйти
@@ -40,7 +59,9 @@ ru:
     close: Закрыть
     delete: Удалить
     edit: Редактировать
+    open: Открыть
     create: Создать
+    errors: Ошибки
     search: Поиск
     filter: Фильтр
     export: Экспорт
@@ -67,10 +88,13 @@ ru:
       delete: Удалить
     confirm_delete: Удалить?
     default: по умолчанию
+    active: Активно
     inactive: выключен
     no_template: Без шаблона
     show_all: Все
     unassigned: Не назначен
+    prev: Назад
+    next: Дальше
   auth:
     sign_in: Войти
     sign_up: Регистрация
@@ -134,6 +158,12 @@ ru:
     offboarding:
       title: Активные офбординги
       subtitle: Передача знаний и доступов
+    documents_expiring:
+      title: Документы скоро истекают
+      subtitle: Ближайшие 30 дней + просроченные. Уведомление приходит за 30/7/0 дней.
+      expired_title: Уже просрочены
+      expired_days_ago: просрочен %{n} дн
+      days_left: "%{n} дн"
   stub:
     title: Раздел в разработке
     subtitle: Скоро здесь появится полноценный интерфейс.
@@ -183,6 +213,8 @@ ru:
       passport: Паспорт
       education: Образование
       native_city: Родной город
+      gender_other: Другое
+      hobbies_placeholder: 'Например: велосипед, фотография, настолки'
     employment_types:
       full_time: Полная
       part_time: Частичная
@@ -242,6 +274,160 @@ ru:
     columns_help: Выбери, что показывать в таблице
     columns_group_main: Основное
     density_full: Подробный вид
+  custom_fields:
+    title: Доп.поля компании
+    hint: 'Определены в Справочниках. Изменить набор полей: Настройки → Справочники.'
+  documents:
+    title: Документы
+    eyebrow: HR-архив
+    subtitle: 'Личные документы сотрудников: паспорта, договоры, дипломы, медкнижки. Только для HR.'
+    new: "+ Загрузить документ"
+    new_hint: 'После загрузки запустится автоматический разбор: паспорта/снилс/инн/договоры распознаются регулярными выражениями. AI используется только для длинных текстовых документов.'
+    actions_title: Действия
+    file_title: Файл
+    fields_section: Реквизиты
+    download: Скачать
+    no_file: Файл не приложен
+    preview_unavailable: Открыть PDF
+    expired_short: просрочен
+    created: Документ загружен
+    updated: Документ обновлён
+    deleted: Документ удалён
+    revoked: Документ отозван
+    reactivated: Документ активирован
+    revoke: Отозвать
+    revoke_confirm: Точно отозвать документ?
+    reactivate: Активировать
+    summary_pending: AI-сводка появится через минуту
+    last_extracted: Последний разбор
+    run_extraction: Запустить разбор (gem)
+    run_extract_assist: AI-помощь с разбором
+    run_extract_image: AI-разбор картинки (Vision)
+    run_summary: AI-сводка
+    image_hint: На фото и сканах разбор идёт через AI Vision — модель сама читает картинку и извлекает поля.
+    busy_short: AI работает…
+    extracting: Идёт разбор…
+    extracting_hint: PDF/OCR + regex по типу
+    extracting_long_hint: Можно закрыть страницу — результат появится автоматически когда задача завершится.
+    extraction_running: Разбираю документ…
+    extract_assist_running: AI помогает с разбором…
+    summary_running: Делаю AI-сводку…
+    extracted_title: Извлечённые данные
+    summary_title: AI-сводка
+    summary_meta: Сгенерировано из текста документа
+    extraction_failed_title: Авто-разбор не дал результата
+    extraction_failed_hint: Документ может быть сканом без OCR-слоя или нестандартного формата. Попробуй AI-сводку или заполни поля вручную.
+    extraction_failed_reason: Причина
+    ai_failed_title: AI не справился
+    apply_extracted: Применить к документу
+    apply_extracted_confirm: Перезаписать поля документа значениями из разбора?
+    review_extracted: Применить с правками
+    review_title: Применить разбор с правками
+    review_form_title: Поля документа
+    review_extras_title: Прочее, что нашёл AI (для справки)
+    review_hint: Значения подставлены из разбора. Сверь с оригиналом справа, поправь если нужно и сохрани.
+    review_save: Сохранить
+    extracted_applied: 'Поля заполнены из разбора: %{fields}'
+    extracted_not_applicable: В извлечённых данных нет полей, подходящих для документа (number/issuer/issued_at/expires_at).
+    no_extracted_data: Нет данных для применения — сначала запусти разбор.
+    open_original: Открыть оригинал в новой вкладке
+    zoom_in: Увеличить
+    zoom_out: Уменьшить
+    zoom_reset: Сбросить масштаб
+    actions:
+      document_summary: AI-сводка по документу
+      document_extract_assist: AI-разбор документа
+    busy:
+      document_extract: Идёт разбор (gem)…
+      document_summary: Делаю AI-сводку…
+      document_extract_assist: AI помогает с разбором…
+    confidence:
+      high: высокая уверенность
+      medium: средняя уверенность
+      low: низкая уверенность
+    confidentialities:
+      confidential: Конфиденциально
+    states:
+      active: Активен
+      expired: Просрочен
+      revoked: Отозван
+      draft: Черновик
+    fields:
+      title: Название
+      document_type: Тип документа
+      number: Номер
+      issuer: Кем выдан
+      issued_at: Дата выдачи
+      expires_at: Действителен до
+      notes: Примечания
+    extracted_keys:
+      number: Номер
+      series: Серия
+      issuer: Кем выдан
+      issuer_code: Код подразделения
+      issued_at: Дата выдачи
+      expires_at: Действителен до
+      valid_until: Действителен до
+      validity_period: Срок действия
+      birth_date: Дата рождения
+      birth_place: Место рождения
+      birth_year: Год рождения
+      gender: Пол
+      nationality: Гражданство
+      marital_status: Семейное положение
+      holder_name: Владелец
+      full_name: ФИО
+      first_name: Имя
+      last_name: Фамилия
+      middle_name: Отчество
+      employee: Работник
+      employee_name: ФИО работника
+      employer: Работодатель
+      position: Должность
+      department: Отдел
+      start_date: Дата начала
+      end_date: Дата окончания
+      contract_term: Срок договора
+      term: Срок
+      salary: Зарплата
+      salary_amount: Сумма зарплаты
+      salary_currency: Валюта зарплаты
+      currency: Валюта
+      degree: Квалификация
+      qualification: Квалификация
+      specialty: Специальность
+      faculty: Факультет
+      study_form: Форма обучения
+      institution: Учебное заведение
+      institution_type: Тип учреждения
+      graduation_year: Год выпуска
+      enrollment_year: Год поступления
+      parties: Стороны
+      address: Адрес
+      registration_address: Адрес регистрации
+      passport_data: Паспортные данные
+      diagnosis: Диагноз
+      doctor: Врач
+      clinic: Учреждение
+      country: Страна
+      visa_type: Тип визы
+      license_category: Категория
+    ai_summary_sections:
+      key_points: Ключевые моменты
+      parties: Стороны
+      dates: Даты
+      obligations: Обязательства
+      risks: Риски
+      action_items: Что сделать
+    extraction_errors:
+      tesseract_unavailable: OCR недоступен на сервере (Tesseract не установлен).
+      ocr_pdf: PDF без текстового слоя — нужен OCR на сервере.
+      unsupported_format: Формат файла не поддерживается для авто-разбора.
+      empty_text: Текст из файла извлечь не удалось.
+      no_extractor: Для этого типа документа авто-разбор пока не настроен.
+      no_kind: У типа документа не задан extractor_kind.
+      no_text_for_ai: 'AI не получил текст: PDF без текстового слоя. Для картинок AI читает их напрямую через Vision.'
+      image_too_large: Картинка слишком большая для Vision API (макс 18 МБ). Сожми и загрузи заново.
   departments:
     new: Новый отдел
     expand_all: Развернуть все
@@ -437,6 +623,7 @@ ru:
       pending: Ожидает
       approved: Одобрено
       rejected: Отклонено
+    updated: Заявка обновлена
   recruitment:
     kanban_subtitle: Перетаскивайте кандидатов между стадиями. Изменения сохраняются мгновенно.
   job_openings:
@@ -478,6 +665,7 @@ ru:
       open: Опубликовать
       close: Закрыть
       hold: На паузу
+      duplicate: Дублировать
     employment_types:
       full_time: Полная занятость
       part_time: Частичная занятость
@@ -519,6 +707,8 @@ ru:
       owner: Ответственный рекрутер
       candidate: Кандидат
       photo: Фото
+      job_opening: Вакансия
+      summary_placeholder: Что важно про кандидата, почему стоит двигать дальше…
     sources:
       manual: Ручной ввод
       careers_page: Сайт
@@ -549,6 +739,8 @@ ru:
       history: История
     edit: Редактировать кандидата
     confirm_stage_change: Перевести кандидата на этот этап?
+    actions:
+      apply: Откликнуться
   employee_notes:
     title: Заметки
     add: Добавить
@@ -583,8 +775,36 @@ ru:
       failed: AI «%{kind}» по %{name} завершился с ошибкой
       success_employee: AI закончил «%{kind}» по сотруднику %{name}
       failed_employee: AI «%{kind}» по сотруднику %{name} завершился с ошибкой
+      success_document: AI закончил «%{kind}» по документу «%{name}»
+      failed_document: AI «%{kind}» по документу «%{name}» завершился с ошибкой
+      success_dictionary: AI подготовил «%{kind}» для словаря «%{name}»
+      failed_dictionary: AI «%{kind}» для словаря «%{name}» завершился с ошибкой
+      success_company: AI завершил «%{kind}» — компания «%{name}»
+      failed_company: AI «%{kind}» для компании «%{name}» завершился с ошибкой
+    document_expiring:
+      month: Документ «%{title}» (%{owner}) истекает через %{days} дн
+      week: "⏰ «%{title}» (%{owner}) истекает через %{days} дн — пора заняться"
+      today: "⚠ «%{title}» (%{owner}) истекает сегодня"
+      expired: "⚠ «%{title}» (%{owner}) уже просрочен на %{days} дн"
     interview_soon: 'Через 30 мин: %{kind}-интервью с %{name} в %{time}'
     interview_tomorrow: 'Сегодня: %{kind}-интервью с %{name} в %{time}'
+  document_mailer:
+    expiring:
+      subject_month: Документ «%{title}» истекает через %{days} дн
+      subject_week: "⏰ Документ «%{title}» истекает через %{days} дн"
+      subject_today: "⚠ Документ «%{title}» истекает сегодня"
+      subject_expired: "⚠ Документ «%{title}» просрочен на %{days} дн"
+      heading: Документ требует внимания
+      body_month: Документ «%{title}» (%{owner}) истекает через %{days} дн.
+      body_week: Документ «%{title}» (%{owner}) истекает через %{days} дн — пора заняться.
+      body_today: Документ «%{title}» (%{owner}) истекает сегодня.
+      body_expired: Документ «%{title}» (%{owner}) просрочен на %{days} дн.
+      field_title: Документ
+      field_owner: Владелец
+      field_expires_at: Действует до
+      field_type: Тип документа
+      cta: Открыть документ
+      footer: 'Это автоматическое уведомление от HRMS. Управлять подпиской: Профиль → Уведомления.'
   ai:
     run: Запустить
     error: AI не вернул структурированный ответ
@@ -801,6 +1021,10 @@ ru:
       knowledge_transfer_plan: План передачи знаний
       exit_interview_brief: Брифинг exit-interview
       replacement_brief: ТЗ на замену
+      document_summary: AI-сводка по документу
+      document_extract_assist: AI-разбор документа
+      dictionary_seed: AI-подбор записей для словаря
+      company_bootstrap: AI-настройка под компанию
       ping: Ping
     summarize_round: 'AI: резюме раунда'
     fields:
@@ -882,6 +1106,18 @@ ru:
         few: кандидата
         many: кандидатов
         other: кандидатов
+      experience:
+        zero: без опыта
+        one: "%{count} год"
+        few: "%{count} года"
+        many: "%{count} лет"
+        other: "%{count} лет"
+      rounds_count:
+        zero: нет интервью
+        one: "%{count} интервью"
+        few: "%{count} интервью"
+        many: "%{count} интервью"
+        other: "%{count} интервью"
   flash:
     created: Создано
     updated: Обновлено
@@ -893,6 +1129,56 @@ ru:
       hero_lead: Открытые вакансии и наши ценности
       form_title: Отправить отклик
       form_submit: Отправить
+      site_subtitle: Карьера
+      hero_eyebrow: ОТКРЫТЫЕ ВАКАНСИИ
+      card_open_cta: Подробнее и откликнуться
+      card_salary_from: от
+      card_salary_to: до
+      empty_title: Сейчас открытых вакансий нет
+      empty_hint: Заходи позже — мы регулярно публикуем новые роли.
+      back_all: Все вакансии
+      section_description: Описание
+      section_requirements: Требования
+      section_nice: Будет плюсом
+      form_hint: Расскажи о себе и приложи резюме. Все поля кроме мотивации обязательны.
+      form_resume_label: Резюме (PDF / DOC / DOCX)
+      form_portfolio_label: Портфолио (опционально)
+      form_summary_label: Расскажи о себе и почему интересна эта роль
+      form_summary_placeholder: Что важно в работе, чем сейчас занимаешься, проекты которыми гордишься…
+      form_errors_title: Не удалось отправить заявку
+      thank_you_title: Спасибо за отклик!
+      thank_you_text: Мы получили заявку и отправили подтверждение на email. Команда HR посмотрит профиль в течение нескольких рабочих дней.
+      thank_you_back: Посмотреть другие вакансии
+      consent:
+        terms:
+          label: Принимаю условия использования
+        personal_data:
+          label: Согласен на обработку персональных данных
+        marketing:
+          label: Хочу получать письма про новые вакансии и материалы
+      cookie_banner_title: Куки
+      cookie_accept_all: Принять все
+      cookie_only_essential: Только необходимые
+      cookie_customize: Настроить
+      cookie_save: Сохранить выбор
+      cookie_required_label: обязательно
+      cookie_category:
+        essential:
+          label: Необходимые
+          description: Нужны для работы сайта (сессия, безопасность)
+        analytics:
+          label: Аналитика
+          description: Помогают понять как используется сайт
+        marketing:
+          label: Маркетинг
+          description: Используются для показа релевантной рекламы
+      footer_link_privacy: Конфиденциальность
+      footer_link_terms: Условия
+      footer_link_cookies: Куки
+      footer_note: Все права защищены.
+      page_title_privacy: Политика конфиденциальности
+      page_title_terms: Условия использования
+      page_title_cookies: Политика куки
     flash:
       received: Спасибо! Заявка получена
       consents_required: Нужно согласиться с обязательными пунктами
@@ -900,10 +1186,39 @@ ru:
       title: Карьера
       meta_description: Открытые вакансии и форма отклика
       dashboard: Дашборд
+      footer_note: Все права защищены.
+      sign_in: Войти
     show:
       read_more: Подробнее
+      back_all: Все вакансии
+      description: Описание
+      requirements: Требования
+      nice_to_have: Будет плюсом
+      form_title: Откликнуться на вакансию
+      form_hint: Расскажи о себе и приложи резюме. Все поля кроме мотивации обязательны.
+      errors_title: Не удалось отправить заявку
+      summary_label: Расскажи о себе и почему интересна эта роль
+      summary_placeholder: Что важно в работе, чем сейчас занимаешься, проекты которыми гордишься…
+      resume_label: Резюме (PDF / DOC / DOCX)
+      portfolio_files_label: Портфолио (опционально)
+      privacy: Отправляя форму, ты соглашаешься на обработку персональных данных.
+      submit: Отправить заявку
+    index:
+      eyebrow: ОТКРЫТЫЕ ВАКАНСИИ
+      title_company: "%{name} ищет команду"
+      lead: Если хочется работать в сильной команде над важными задачами — оставь заявку. Мы читаем каждую и отвечаем в течение нескольких рабочих дней.
+      empty_title: Сейчас открытых вакансий нет
+      empty_hint: Заходи позже — мы регулярно публикуем новые роли.
+      from: от
+      to: до
+      open: Подробнее и откликнуться
+    thank_you:
+      title: Спасибо за отклик!
+      text: Мы получили заявку и отправили подтверждение на email. Команда HR посмотрит профиль в течение нескольких рабочих дней.
+      back: Посмотреть другие вакансии
   onboarding:
     title: Онбординг
+    eyebrow: HR-процессы
     subtitle: 'Адаптация новых сотрудников: от первого дня до конца испытательного срока'
     new: Новый онбординг
     new_hint: Выберите сотрудника и шаблон — задачи материализуются автоматически
@@ -922,12 +1237,18 @@ ru:
       complete: Отметить готово
       reopen: Переоткрыть
       skip: Пропустить
+      new: "+ Новый онбординг"
     fields:
       employee: Сотрудник
       template: Шаблон
       mentor: Наставник
       started: Старт
       target: План завершения
+      due: Срок
+      kind: Тип
+      notes: Заметки
+      task_title: Название задачи
+      completed_at: Завершено
     section:
       active: Активные процессы
       drafts: Черновики
@@ -936,6 +1257,7 @@ ru:
       active: Активные
       drafts: Черновики
       completed: Завершено
+      completed_30d: Завершено (30 дн)
     progress:
       tasks_done: задач завершено
       overdue:
@@ -957,8 +1279,22 @@ ru:
       active: Активен
       completed: Завершён
       cancelled: Отменён
+    kinds:
+      paperwork: Документы
+      equipment: Оборудование
+      access: Доступы
+      training: Обучение
+      intro: Знакомство
+      checkin: Check-in
+      general: Общее
+    task_states:
+      pending: Ожидает
+      done: Готово
+      skipped: Пропущено
+    no_template_help: Создай шаблон в Настройки → Шаблоны процессов
   offboarding:
     title: Офбординг
+    eyebrow: HR-процессы
     subtitle: Передача знаний, отзыв доступов, exit-interview
     new: Новый офбординг
     new_hint: Выберите сотрудника, причину и дату последнего дня — задачи материализуются автоматически
@@ -978,11 +1314,16 @@ ru:
       complete_process: Завершить
       cancel_process: Отменить
       skip: Пропустить
+      new: "+ Новый офбординг"
     fields:
       employee: Сотрудник
       template: Шаблон
       reason: Причина
       last_day: Последний день
+      notes: Заметки
+      kind: Тип
+      completed_at: Завершено
+      task_title: Название задачи
     section:
       active: Активные
       drafts: Черновики
@@ -991,6 +1332,8 @@ ru:
       active: Активные
       drafts: Черновики
       completed: Завершено
+      completed_30d: Завершено (30 дн)
+      high_risk: Высокий риск
     progress:
       tasks_done: задач завершено
       overdue:
@@ -1016,6 +1359,24 @@ ru:
       involuntary: По инициативе работодателя
       retirement: Выход на пенсию
       contract_end: Истечение контракта
+      layoff: Сокращение
+      end_of_contract: Истечение контракта
+      dismissal: Увольнение
+      relocation: Релокация
+      other: Другое
+    kinds:
+      paperwork: Документы
+      equipment_return: Возврат оборудования
+      access_revoke: Отзыв доступов
+      kt: Передача знаний
+      exit_interview: Exit interview
+      legal: Юридическое
+      general: Общее
+    task_states:
+      pending: Ожидает
+      done: Готово
+      skipped: Пропущено
+    no_template_help: Создай шаблон в Настройки → Шаблоны процессов
   settings:
     tabs:
       languages: Языки
@@ -1027,6 +1388,167 @@ ru:
       leaves: Отпуска
       genders: Гендеры
       process_templates: Шаблоны процессов
+      document_types: Типы документов
+      positions: Должности
+      leave_types: Типы отпусков
+      dictionaries: Справочники
+    dictionaries:
+      title: Справочники
+      subtitle: 'Списки и доп.поля для модулей: документы, сотрудники, отпуска. Все справочники привязаны к компании.'
+      new: Новый справочник
+      new_lookup: "+ Список"
+      new_field_schema: "+ Схема полей"
+      create_schema: "+ Создать схему"
+      create_lookup: "+ Создать список"
+      discovery_title: Точки расширения, доступные в коде
+      discovery_hint: Здесь перечислено, куда система уже умеет подцепить компанийную кастомизацию. Создай словарь — поля и значения сразу заработают на формах. ✓ — словарь уже настроен.
+      discovery_more: 'Кроме default-схем, можно создать схему под конкретный экземпляр: «DocumentType:5», «JobApplicant:8», «LeaveRequest:3». Тогда поля появятся только для этого типа/вакансии/типа отпуска.'
+      points:
+        employee: Сотрудники
+        employee_hint: Доп.поля для всех сотрудников (например, GitHub URL для разработчиков или категория ВУ для водителей).
+        department: Отделы
+        department_hint: Доп.поля для отделов (бюджет, локация, ответственный за безопасность).
+        position: Должности
+        position_hint: Доп.поля для должностей (требуемая лицензия, уровень, грейд).
+        applicant: Кандидаты
+        applicant_hint: Доп.поля для всех кандидатов независимо от вакансии.
+        leave: Отпуски / заявки
+        leave_hint: Доп.поля для всех заявок на отпуск (страна назначения, контактный телефон в отпуске и т.п.).
+      lookups:
+        applicant_sources: Источники кандидатов
+        applicant_sources_hint: 'Где взялся кандидат: HH / LinkedIn / По району / Сарафан / Авито'
+        marital_statuses: Семейное положение
+        marital_statuses_hint: Используется в карточке сотрудника. По умолчанию — стандартный список.
+        shirt_sizes: Размеры одежды
+        shirt_sizes_hint: Для подарков, корпоративной униформы.
+        confidentialities: Уровни конфиденциальности документов
+        confidentialities_hint: Метки видны на документах. Ключи (public/internal/confidential) фиксированы — можно переименовать только лейблы под лексику компании.
+        employment_types: Типы занятости
+        employment_types_hint: Метки для Полная/Частичная/Контракт и т.п. Только переименование лейблов под лексику компании.
+        offboarding_reasons: Причины увольнения
+        offboarding_reasons_hint: 'Метки причин: «По собственному», «По соглашению» и т.п. Только переименование лейблов.'
+      bootstrap:
+        title: Настроить всё под мою компанию
+        subtitle: AI-консультант поможет настроить все словари под специфику твоей компании. Расскажи про индустрию, размер, особенности — он либо задаст уточняющие вопросы, либо сразу предложит полный пакет. Ничего не сохранится без твоего согласия.
+        example_title: Что лучше написать в первом сообщении
+        example_1: 'Чем компания занимается: «септик-сервис», «backend-разработка», «частная медклиника», «школа танцев»'
+        example_2: 'Размер: «10 водителей + 2 диспетчера», «команда из 25 разработчиков»'
+        example_3: 'Особенности: «работаем по 152-ФЗ», «есть удалённые», «требуем мед.книжки», «работаем с гос-заказами»'
+        thinking: AI обдумывает…
+        proposal_ready: AI собрал предложение — отметь что применять
+        lookups_title: Списки
+        schemas_title: Схемы доп.полей
+        apply: "✓ Применить отмеченные"
+        apply_hint: Можно ещё спросить уточнение ниже — AI пересчитает.
+        applied: 'Создано словарей: %{dicts}, записей: %{entries}'
+        no_proposal: Пока нет proposal от AI — продолжи диалог.
+        empty_message: Напиши хотя бы пару слов про компанию.
+        busy: AI ещё думает над прошлым сообщением — подожди немного.
+        send: Отправить
+        send_first: "\U0001F680 Начать"
+        reset: Начать сначала
+        reset_confirm: Очистить весь диалог?
+        reset_done: Диалог очищен. Можно начать заново.
+        turns: 'обмен сообщениями: %{n}'
+        input_placeholder: 'Опиши компанию: чем занимаемся, размер, особенности. Например: «Септик-сервис в Подмосковье, 12 водителей, нужны категории ВУ, мед.книжки, графики выезда»'
+        input_placeholder_continue: Уточни / поправь / скажи что добавить
+      ai:
+        title: AI-помощь со словарём
+        run: "✨ Спросить AI"
+        running: AI подбирает записи под вашу компанию…
+        empty: Опиши свою компанию — AI предложит конкретные записи под её специфику. Ничего не сохранится без твоего одобрения.
+        all_applied: Все предложенные записи уже добавлены в словарь.
+        apply: "✓ Применить выбранные"
+        apply_hint: Только отмеченные галочками будут добавлены
+        applied: 'Добавлено записей: %{n}'
+        skipped: 'пропущено: %{list}'
+        no_suggestions: Нет предложений AI — сначала запусти подбор.
+        nothing_selected: Ничего не выбрано.
+        hint_placeholder: 'Расскажите про компанию: индустрия, размер, что нужно. Например: «Септик-сервис, 10 водителей, нужны категории ВУ и допуски»'
+      lookups_title: Списки (lookup)
+      lookups_empty: Списков пока нет. Они нужны для select'ов в формах — например, источники найма или причины увольнения.
+      field_schemas_title: Схемы доп.полей
+      field_schemas_hint: Каждая схема описывает доп.поля для конкретной сущности. Например, «DocumentType:5» — поля для документов этого типа.
+      field_schemas_empty: Схем пока нет. Создай первую схему, чтобы добавить компании-специфичные поля документам или сотрудникам.
+      no_description: Без описания
+      entries_title: Записи списка
+      entries_count: 'записей: %{n}'
+      fields_count: 'полей: %{n}'
+      entries_empty: Записей пока нет — добавь ниже.
+      fields_in_schema: Поля схемы
+      add_entry: "+ Добавить запись"
+      required_badge: обязательное
+      options_label: Варианты
+      default_field_schema_name: Доп.поля для %{target}
+      kinds:
+        lookup: Список
+        field_schema: Схема полей
+      fields:
+        kind: Тип
+        name: Название
+        code: Код
+        description: Описание
+      name_placeholder: Источники найма / Причины увольнения / …
+      code_placeholder_lookup: applicant_sources
+      code_placeholder_schema: DocumentType:5  или  Employee:default
+      code_hint_lookup: Машинное имя списка. Используется в коде при подгрузке.
+      code_hint_schema: 'Формат: TargetModel:scope. Schema-словарь работает для соответствующей сущности при рендере формы.'
+    positions:
+      title: Должности
+      subtitle: 'Справочник должностей: программист, бухгалтер, водитель-ассенизатор. Каждая может иметь компанийные доп.поля.'
+      new: "+ Новая должность"
+      empty: Должностей пока нет
+      employees_count: 'сотрудников: %{n}'
+      custom_fields_count: 'доп.поля заполнены: %{n}'
+      name_placeholder: Senior Software Engineer / Водитель-ассенизатор
+      category_placeholder: tech / ops / sales / driver
+      category_hint: Группировка для отчётов. Любая строка.
+      fields:
+        name: Название
+        code: Код
+        category: Категория
+        sort_order: Порядок
+    leave_types:
+      title: Типы отпусков
+      subtitle: Виды отпусков и больничных. Каждая компания настраивает свои — от командировок водителей до remote-work tech-команд.
+      new: "+ Новый тип"
+      empty: Типов отпусков пока нет
+      paid_badge: оплачиваемый
+      unpaid_badge: за свой счёт
+      requires_doc_badge: нужна справка
+      default_days: дней в году по умолчанию
+      no_default_days: квота индивидуально
+      default_days_hint: Оставь пустым если квота индивидуальная.
+      name_placeholder: Очередной отпуск / Командировка / Remote-day
+      fields:
+        name: Название
+        code: Код
+        paid: Оплачиваемый
+        requires_doc: Нужна справка
+        default_days_per_year: Дней в году по умолчанию
+        color: Цвет
+        sort_order: Порядок
+    dictionary_entries:
+      new: Новая запись
+      key_hint: Латиница, цифры, _. Не меняется после создания.
+      fields:
+        key: Ключ
+        value: Значение
+        label: Метка для UI
+        type: Тип поля
+        required: Обязательное
+        hint: Подсказка под полем
+        options: Варианты для select (через запятую или с новой строки)
+        sort_order: Порядок
+        active: Активно
+      field_types:
+        string: Текст
+        textarea: Длинный текст
+        integer: Целое число
+        decimal: Дробное число
+        date: Дата
+        boolean: Чек-бокс
+        select: Список вариантов
     languages:
       title: Языки интерфейса
       subtitle: Управляй активными локалями системы
@@ -1087,8 +1609,10 @@ ru:
       test_ok_meta: Ответ от OpenAI получен
       test_fail: Ошибка подключения
       test_fail_title: Подключение не удалось
-      api_key_hint: Создаётся в OpenAI, начинается на sk-
+      api_key_hint: 'Для OpenAI: platform.openai.com. Для OpenRouter: openrouter.ai/keys. Для своего сервера — Bearer-токен. Хранится в БД (MVP без шифрования).'
       api_key_saved_placeholder: "•••••••• (ключ сохранён)"
+      provider_hint: 'Любой OpenAI-compatible endpoint: OpenAI / OpenRouter / Together / vLLM / Ollama. Анти-OpenAI клиентам нужен прокси (LiteLLM).'
+      api_base_url_hint: Полный URL до /chat/completions. Кнопка провайдера выше подставит автоматически. Можно вписать свой (vLLM, Ollama, прокси).
       proxy_hint: Опционально, например socks5://127.0.0.1:1080
       reasoning_hint: Глубина «размышлений» модели для reasoning-моделей (o1/gpt-5)
       max_tokens_hint: Жёсткий лимит на токены вывода. Большие значения дороже.
@@ -1114,6 +1638,8 @@ ru:
       usage_title: Использование
       fields:
         api_key: API-ключ
+        provider: Провайдер
+        api_base_url: API endpoint URL
         model: Модель
         proxy: Proxy
         reasoning: Глубина reasoning
@@ -1125,12 +1651,27 @@ ru:
         questions_for: Вопросы для раунда
         generate_assignment: Тестовое задание
       usage:
+        title: Фактический расход
+        scope_hint: Все запуски кроме ping. Стоимость считается только для OpenAI-моделей с известными расценками.
         empty: Запусков ещё не было
-        runs: запусков
-        tokens: токенов
-        cost: стоимость
-        all_time: Всё время
-        budget_used: Использовано бюджета
+        empty_month: Запусков в этом месяце ещё не было
+        runs: Запусков в месяце
+        count: Кол-во
+        tokens: 'токенов: %{t}'
+        tokens_short: Токены
+        cost: Стоимость
+        all_time: Всего за всё время
+        this_month: Этот месяц
+        last_month: Прошлый месяц
+        of_budget: из $%{b}
+        budget_used: "%{pct}% бюджета"
+        by_kind: По задачам (этот месяц)
+        by_model: По моделям (этот месяц)
+        recent_title: Последние 20 запусков
+        when: Когда
+        task: Задача
+        user: Кто
+        model: Модель
         budget_of: из
         this_month_runs: Запусков в этом месяце
         this_month_cost: Стоимость в этом месяце
@@ -1383,9 +1924,23 @@ ru:
       headline: Здесь ничего нет
       hint: Запись могла быть удалена или ссылка устарела
       back: Вернуться на дашборд
+    messages:
+      not_saved:
+        one: 'Не удалось сохранить %{resource}: %{count} ошибка'
+        few: 'Не удалось сохранить %{resource}: %{count} ошибки'
+        many: 'Не удалось сохранить %{resource}: %{count} ошибок'
+        other: 'Не удалось сохранить %{resource}: %{count} ошибок'
+    server_error:
+      title: Что-то пошло не так
+      hint: Уже разбираемся. Попробуй обновить страницу.
   audit:
     title: Журнал событий
-    subtitle: История действий в системе
+    subtitle:
+      zero: по выбранным фильтрам ничего не найдено
+      one: 1 событие по выбранным фильтрам
+      few: "%{count} события по выбранным фильтрам"
+      many: "%{count} событий по выбранным фильтрам"
+      other: "%{count} событий по выбранным фильтрам"
     empty: Пока нет событий
     empty_hint: События появятся, когда кто-то выполнит действие
     last_24h: За последние 24 часа
@@ -1403,6 +1958,7 @@ ru:
       event: Событие
       model: Объект
       changes: Изменения
+      period: Период
     filters:
       user: Пользователь
       event: Событие
@@ -1431,12 +1987,38 @@ ru:
       dictionary: Справочник
       dictionary_entry: Запись справочника
       app_setting: Настройка
+      onboarding_process: Онбординг
+      onboarding_task: Задача онбординга
+      offboarding_process: Офбординг
+      offboarding_task: Задача офбординга
+      employee_child: Ребёнок сотрудника
+      employee_note: Заметка о сотруднике
+      gender: Гендер
+      leave_approval_rule: Правило согласования отпуска
+      process_template: Шаблон процесса
+      user: Пользователь
     periods:
       1d: За день
       7d: За 7 дней
       30d: За 30 дней
       90d: За 90 дней
       all: Всё время
+    events:
+      auth_sign_in: Вход
+      auth_sign_out: Выход
+      create: Создано
+      update: Изменено
+      destroy: Удалено
+      data_exported: Экспорт данных
+    metadata_keys:
+      file: Файл
+      format: Формат
+      ip: IP
+      reason: Причина
+      request_id: Request ID
+      rows: Строк
+      target: Объект
+      user_agent: User agent
   kpi:
     dashboard:
       title: KPI дашборд
@@ -1445,8 +2027,18 @@ ru:
         company_avg: Средний KPI компании
         team_avg: Средний KPI команды
         my_avg: Мой средний KPI
-        team_size: Размер команды
-        my_assignments_count: Моих метрик активно
+        team_size:
+          zero: никого в команде
+          one: 1 человек в команде
+          few: "%{count} человека в команде"
+          many: "%{count} человек в команде"
+          other: "%{count} человек в команде"
+        my_assignments_count:
+          zero: нет назначений
+          one: 1 назначение
+          few: "%{count} назначения"
+          many: "%{count} назначений"
+          other: "%{count} назначений"
         across_all_metrics: по всем метрикам
       trend:
         title: Тренд по неделям
@@ -1496,6 +2088,9 @@ ru:
       target_directions:
         higher_is_better: Больше — лучше
         lower_is_better: Меньше — лучше
+        maximize: Максимизировать
+        minimize: Минимизировать
+        target: Целевое значение
     assignments:
       title: Назначения метрик
       subtitle: Кому какую метрику и в каком периоде измеряем
@@ -1527,13 +2122,14 @@ ru:
         period: Период
         reset: Сбросить
       periods:
-        current_week:    Текущая неделя
-        current_month:   Текущий месяц
+        current_week: Текущая неделя
+        current_month: Текущий месяц
         current_quarter: Текущий квартал
-        all:             Все периоды
+        all: Все периоды
+        custom: Свой период
       quick:
-        this_week:    На этой неделе
-        this_month:   В этом месяце
+        this_week: На этой неделе
+        this_month: В этом месяце
         this_quarter: В этом квартале
     evaluations:
       title: Оценки KPI
@@ -1601,11 +2197,11 @@ ru:
       interviews: Интервью
       hired: Нанято
     periods:
-      "30":  30 дней
-      "90":  90 дней
-      "180": 180 дней
-      "365": Год
-      all:   Всё время
+      '30': 30 дней
+      '90': 90 дней
+      '180': 180 дней
+      '365': Год
+      all: Всё время
   interview_rounds:
     subtitle: Все раунды интервью
     new: Новый раунд
@@ -1680,12 +2276,14 @@ ru:
       cancel: Раунд отменён
       no_show: Кандидат не пришёл
       reopen: Раунд переоткрыт
+      mark_no_show: Помечен как «не пришёл»
+      start_now: Начато
     periods:
-      today:    Сегодня
-      week:     Неделя
+      today: Сегодня
+      week: Неделя
       upcoming: Предстоящие
-      past:     Прошедшие
-      all:      Всё время
+      past: Прошедшие
+      all: Всё время
   test_assignments:
     new: Новое тестовое
     empty: Тестовых заданий пока нет
@@ -1709,6 +2307,8 @@ ru:
       submission_files: Файлы сдачи
       score: Балл
       reviewer_notes: Заметки ревьюера
+      brief: Бриф
+      payment: Оплата
     actions:
       start: Начать
       submit_work: Сдать работу
@@ -1723,3 +2323,59 @@ ru:
       submitted: Сдано
       reviewed: Проверено
       cancelled: Отменено
+    created: Тестовое задание создано
+    updated: Задание обновлено
+    transitioned:
+      start: Кандидат начал выполнение
+      submit_work: Работа сдана, ждём проверки
+      review: Оценка зафиксирована
+      cancel: Задание отменено
+      reopen: Задание переоткрыто
+  date:
+    formats:
+      long: "%-d %B %Y"
+      short: "%-d %b"
+  time:
+    formats:
+      default: "%-d %b %Y, %H:%M"
+      long: "%-d %B %Y, %H:%M %Z"
+      short: "%-d %b, %H:%M"
+      audit: "%-d %b %Y · %H:%M:%S %Z"
+  activerecord:
+    errors:
+      models:
+        kpi_assignment:
+          attributes:
+            period_end:
+              must_be_after_start: должно быть не раньше даты начала
+  ai_runs:
+    title: AI Audit
+    eyebrow: Журнал AI
+    subtitle: 'Все запуски AI-задач: кто, когда, какая модель, успех, токены, стоимость.'
+    cost_dashboard: Cost Dashboard
+    empty: По фильтру ничего не найдено
+    stats:
+      runs: Запусков по фильтру
+      cost: Сумма
+      tokens: Токенов
+      success: Успешно
+    filters:
+      kind: Задача
+      model: Модель
+      user: Кто запускал
+      success: Результат
+      success_only: Только успешные
+      failed_only: Только ошибки
+    fields:
+      subject: Объект
+      no_subject: "(без объекта)"
+    show:
+      meta: Детали
+      payload: Ответ AI (payload)
+      linked: Связанные объекты
+      drilldown: История
+      same_document: Все запуски по этому документу
+      same_dictionary: Все запуски по этому словарю
+      same_employee: Все запуски по этому сотруднику
+      same_user: Все запуски этого пользователя
+      same_kind: Все «%{kind}»

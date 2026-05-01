@@ -1,97 +1,144 @@
-# HRMS — Human Resources Management System
+# HRMS
 
-[English](README.md) | [Русский](README.ru.md)
+[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md)
 
-A modern, opinionated HRMS built on Rails 8 with Apple-HIG design language and 22 AI agents covering the full employee lifecycle — from a candidate's resume to their last day.
+**Universal HRMS for any industry — from a tech startup to a septic-pumping company.** Open source, self-hostable, AI-powered, regulator-friendly (152-FZ, GDPR-aware).
 
-This is the first project in the [`rubby`](https://github.com/dripips?tab=repositories&q=rubby) learning umbrella — five progressively serious Ruby/Rails projects exploring real-world domains, not toy apps.
+Rails 8 · Hotwire · 24 AI agents · Apple-HIG · Three locales · One-command Docker install.
+
+![Status](https://img.shields.io/badge/status-beta-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Ruby](https://img.shields.io/badge/ruby-4.0.3-red) ![Rails](https://img.shields.io/badge/rails-8.1-cc0000)
+
+---
+
+## Why this exists
+
+Most HR systems hardcode one industry's vocabulary. A hire is a "developer", a leave is "PTO", a document is a "passport". Real companies are messier — a septic-pumping company needs to track driver license categories and ADR clearances; a private clinic needs licence numbers; a tech startup wants GitHub URLs. Every company is *its* version of HR.
+
+**HRMS makes the system bend to the company, not the company to the system.** Every entity (Employee, Position, Document, LeaveRequest, JobApplicant, Department) has a universal **Custom Fields** mechanism through Dictionaries. HR defines the schema once — forms, validation, AI extraction, and audit pick it up automatically.
 
 ## Highlights
 
-- **Full employee lifecycle:** recruitment → onboarding → KPI → leaves → offboarding
-- **22 AI agents** powered by OpenAI: resume analysis, candidate ranking, mentor matching, burnout detection, exit risk scoring, knowledge transfer planning, and more
-- **Live UI** — every action streams via Turbo + ActionCable. No page reloads anywhere.
-- **Apple-HIG design system** — shared SCSS submodule [`rubby-design-system`](https://github.com/dripips/rubby-design-system) with system colors, SF Pro typography, spring animations
-- **Three locales** — Russian (primary), English, German with automatic fallback chain
-- **Multi-company ready** — companies → departments → employees, even though only one is seeded by default
-- **Audit log** with paper_trail + revert capability for any tracked event
-- **Pundit RBAC** with four roles (superadmin / hr / manager / employee)
+- 🌍 **Universal across industries.** Custom fields per entity, configurable lookup lists, all company-scoped.
+- 🪄 **24 AI agents** for the full employee lifecycle, working on **any OpenAI-compatible endpoint** — OpenAI, OpenRouter, Together, Groq, DeepSeek, vLLM, Ollama, your own server.
+- 📄 **Documents subsystem** with auto-parsing (pdf-reader + Tesseract OCR + OpenAI Vision fallback), AI summary, expiry tracking, email notifications.
+- 🤖 **AI Company Bootstrap chat** — describe your company in plain language, AI proposes the full set of fields and dictionaries tailored to your industry. Approve what you want.
+- ⚡ **Live UI** — every change streams via Turbo + ActionCable. No page reloads.
+- 🎨 **Apple-HIG design system** — system colors, SF Pro typography, spring animations.
+- 🌐 **Three locales (RU / EN / DE)** with automatic fallback chain. Locale-aware AI output.
+- 📊 **Cost dashboard** — real-time AI spend by task, model, user.
+- 🔐 **Audit log** + Pundit RBAC + soft-delete + revert.
+- 📧 **Email notifications** with runtime-configurable SMTP from Settings UI.
+- 🐳 **One-command Docker install** with auto-generated secrets.
 
-## Stack
+## Quick install (Docker)
 
-- **Rails 8.1** + Hotwire (Turbo, Stimulus) + Bootstrap 5.3 (overridden by Apple design tokens)
-- **PostgreSQL 18** + Solid Queue (jobs) + Solid Cable (WebSocket)
-- **Devise** for auth, **Pundit** for authorization
-- **paper_trail** + **Discard** for soft-delete and history
-- **AASM** for state machines (leaves, interviews, processes)
-- **noticed** for in-app notifications + email
-- **OpenAI Chat Completions** for AI agents (configurable per task)
-- **dartsass-rails** + custom design system submodule
-- **RSpec** + FactoryBot + Capybara for testing
+```bash
+git clone https://github.com/dripips/hrms.git
+cd hrms
+./scripts/install.sh
+```
+
+That's it. The installer:
+
+1. Generates random `RAILS_MASTER_KEY` and PostgreSQL password
+2. Builds the image (Tesseract OCR + poppler + libvips included)
+3. Starts `db + app + worker` containers
+4. Creates the first superadmin
+5. Prints the URL and credentials
+
+Open http://localhost:3000 and sign in.
 
 ## Modules
 
 | Module | What it does |
 |---|---|
+| **Documents** | Upload, auto-parse (gem regex + AI Vision), apply with edits, expiry notifications |
 | **Recruitment** | Openings, applicants, kanban pipeline, interview rounds with scorecards, public careers page, calendar, analytics |
 | **KPI** | Weekly metric assignments, evaluations, leaderboard, trend dashboard |
-| **Leaves** | Configurable approval rules with priority-driven chains, balance tracking, burnout analytics |
-| **Onboarding / Offboarding** | Process templates with milestone-grouped tasks, AI-augmented plans, exit risk assessment |
-| **Audit log** | Every change tracked, revertable, filterable by user / event / model / period |
-| **Settings** | Languages, SMTP, AI providers, notifications, careers page, leaves rules, genders dictionary, process templates |
+| **Leaves** | Configurable approval rules with priority chains, balance tracking, burnout analytics |
+| **Onboarding / Offboarding** | Process templates with milestone-grouped tasks, AI-augmented plans, exit risk |
+| **Dictionaries** | Universal company-scoped lookup lists + custom field schemas + AI seed |
+| **Audit log** | Every change tracked + revertable; AI run history with drill-downs |
+| **Profile** | Self-service portal — employees edit their own contacts, emergency contact, accessibility |
+| **Settings** | Languages, SMTP, AI providers (OpenAI / OpenRouter / Anthropic / Custom), notifications, careers, leave rules, document types, positions, leave types |
+
+## The Custom Fields system
+
+Each entity supports `custom_fields` (jsonb). Schemas are defined as **Dictionaries** with `kind: field_schema` and `code: "<Model>:<scope>"`.
+
+Example flow for a septic-pumping company:
+
+```
+HR opens /settings/dictionaries
+  → "+ Schema" → Code: Employee:default
+  → AI helper: "septic service in Moscow region, 12 drivers, mandatory medical book"
+  → AI proposes 5 fields:
+      - driver_license_class (select: B, C, D, E)
+      - adr_license_until (date)
+      - medical_book_until (date, required)
+      - hazardous_work_clearance (boolean)
+      - uniform_size (select)
+  → Approve all → fields appear on every Employee form immediately.
+```
+
+The same mechanism works for `Document:N` (one schema per document type), `JobApplicant:opening_id` (per-vacancy fields), `LeaveRequest:leave_type_id`, `Department:default`, `Position:default`, `LeaveType:default`.
 
 ## AI agents
 
-All 22 agents go through a unified pipeline: `RunAiTaskJob` (async) → `RecruitmentAi` service → `AiRun` record → live broadcast to UI.
+24 agents across the lifecycle. Two newest:
 
-**Recruitment side:**
-- `analyze_resume` — extract skills, experience, strengths, red flags
-- `recommend` — hiring recommendation (strong_yes / yes / maybe / no / strong_no) + score
-- `generate_assignment` — tailored test assignment matching candidate level
-- `questions_for` — interview round questions targeted to candidate profile
-- `summarize_interview` — round summary with verdict
-- `compare_candidates` — rank multiple candidates for one role
-- `offer_letter` — full offer letter with negotiation notes
+- **`company_bootstrap`** — chat-style consultant that interviews HR about the company and proposes the full dictionary configuration
+- **`dictionary_seed`** — seeds entries for one specific dictionary
 
-**Employee retention:**
-- `burnout_brief` — burnout risk analysis from KPI + leaves + tenure
-- `suggest_leave_window` — optimal leave window suggestion
-- `kpi_brief` — performance brief for managers
-- `meeting_agenda` — 1:1 meeting prep
-- `kpi_team_brief` — strategic team performance overview
-- `compensation_review` — fair-comp assessment with raise / hold / review_band verdict
-- `exit_risk_brief` — proactive 0–100 exit risk score with retention actions
+Plus the lifecycle:
 
-**Onboarding:**
-- `onboarding_plan` — personalized task plan augmenting the template
-- `welcome_letter` — warm welcome email
-- `mentor_match` — top-3 mentor candidates with fit reasoning
-- `probation_review` — probation review brief
+| Domain | Agents |
+|---|---|
+| Recruitment | `analyze_resume`, `recommend`, `generate_assignment`, `questions_for`, `summarize_interview`, `compare_candidates`, `offer_letter` |
+| Employee retention | `burnout_brief`, `suggest_leave_window`, `kpi_brief`, `meeting_agenda`, `kpi_team_brief`, `compensation_review`, `exit_risk_brief` |
+| Onboarding | `onboarding_plan`, `welcome_letter`, `mentor_match`, `probation_review` |
+| Offboarding | `knowledge_transfer_plan`, `exit_interview_brief`, `replacement_brief` |
+| Documents | `document_summary`, `document_extract_assist` (with Vision API for images) |
 
-**Offboarding:**
-- `knowledge_transfer_plan` — KT areas, recipients, session structure
-- `exit_interview_brief` — personalized exit interview questions
-- `replacement_brief` — job opening draft for the replacement
+A server-side **AiLock** prevents duplicate runs across browser tabs.
 
-A server-side **AiLock** prevents duplicate runs on the same subject across browser tabs and sessions, with automatic UI rollback when the worker finishes.
+### AI providers
 
-## Quickstart
+Switch providers in **Settings → AI**. Pre-configured presets:
 
-Prerequisites: **Ruby 4.0.3**, **PostgreSQL 18**, **Bundler 4.0.6**.
+- OpenAI (default) — `gpt-5-nano`, `gpt-5-mini`, `gpt-5`, `o3`
+- OpenRouter — Qwen, Claude, Llama, DeepSeek, Gemini
+- Together.ai — Qwen-Turbo, Llama-Turbo, DeepSeek-V3
+- Groq — Llama-3.3, Qwen-QwQ, DeepSeek-R1
+- DeepSeek (native)
+- Anthropic (via LiteLLM proxy)
+- Custom — any OpenAI-compatible endpoint (vLLM, Ollama, your inference server)
+
+Per-task model override: pick `gpt-5-mini` for `company_bootstrap` (better at multi-step reasoning) and `gpt-5-nano` for everything else (cheap and fast).
+
+## Stack
+
+- **Rails 8.1** + Hotwire (Turbo, Stimulus) + Bootstrap 5.3 (overridden by Apple design tokens)
+- **PostgreSQL 18** + Solid Queue + Solid Cable
+- **Devise** + **Pundit** + **paper_trail** + **Discard** + **AASM**
+- **noticed** for in-app notifications + email mailers
+- **pdf-reader** + **rtesseract** for document parsing
+- **dartsass-rails** + custom design system submodule
+- **RSpec** + FactoryBot + Capybara
+
+## Manual install (without Docker)
+
+Prerequisites: **Ruby 4.0.3**, **PostgreSQL 18**, **Tesseract OCR** (with `tesseract-ocr-rus` and `tesseract-ocr-eng`), **Poppler** (`pdftoppm` for scan-PDF OCR).
 
 ```bash
-# Clone with the design-system submodule
-git clone --recurse-submodules git@github.com:dripips/rubby-hrms.git
-cd rubby-hrms
+git clone https://github.com/dripips/hrms.git
+cd hrms
 
-# Install dependencies
+# Configure database in config/database.yml or .env.development.local
 bundle install
-
-# Configure database
 bin/rails db:create db:migrate db:seed
 
-# Run dev server (Rails + dartsass watcher + Solid Queue)
-bin/dev
+bin/dev   # Rails + dartsass watcher + Solid Queue
 ```
 
 Default seeded users (password: `password123`):
@@ -100,22 +147,31 @@ Default seeded users (password: `password123`):
 - `manager@hrms.local` — manager
 - `alice@hrms.local` — regular employee
 
-The seed creates a realistic team of 27 employees with hierarchy, KPI history, leave records, active recruitment pipelines, and 7 onboarding/offboarding processes in different stages.
-
-## Configuration
-
-AI providers, models, and per-task token limits are configurable through **Settings → AI Assistant** (HR/superadmin only). The OpenAI API key is stored encrypted in `app_settings`.
-
 ## Architecture notes
 
-- **Live UI**: every controller action broadcasts via `Turbo::StreamsChannel`. No `redirect_to` after AJAX — all updates are turbo-streams.
-- **i18n**: Russian is primary; en/de fall back to ru via `config.i18n.fallbacks = { en: [:ru], de: [:ru] }`. Translations are added one locale at a time.
-- **Cyrillic paths break things on Windows.** The project lives at `C:\rubby\01_hrms\` — moving it under a Cyrillic directory caused Bootsnap, file I/O, and SSH known_hosts failures.
+- **Live UI**: controller actions broadcast via `Turbo::StreamsChannel`. AI jobs use `AiLock` + `broadcast_controls` for per-tab in-flight indicators.
+- **i18n**: Russian primary; EN/DE fall back to RU. All three locales kept at exact key parity (2094 keys each as of v1.0).
+- **AI cost ceiling**: every AiRun records token usage and dollar cost. Settings → AI shows per-task / per-model breakdown for the current month.
+- **SMTP runtime config**: `ApplicationMailer#apply_runtime_smtp` reads `AppSetting(category: "smtp")` per request — change SMTP in UI without restarting.
+- **No 2FA** by design (yet) — relies on strong passwords + RBAC. Add via Devise extension if needed for production.
+
+## Roadmap
+
+- ☐ Multi-tenant routing (subdomain per company)
+- ☐ Mobile-first review screen
+- ☐ Slack/Telegram delivery channel for notifications
+- ☐ Public job board enhancements
+- ☐ RSpec coverage push to >80%
+- ☐ PDF scan→OCR pipeline (poppler + Tesseract for image-PDFs)
+
+## Contributing
+
+Pull requests welcome. The project follows Apple-HIG SCSS tokens — no naked Bootstrap. Animations must use spring easing. New i18n keys go to all three locales (`tmp/sync_locales.rb` is a helper script for bulk additions).
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
 
 ## Author
 
-[Vadim Bobkov](https://github.com/dripips) — building this as part of a Ruby learning journey while shipping production code in PHP, Java, Python, and TypeScript elsewhere.
+[Vadim Bobkov](https://github.com/dripips) — built this as part of the [`rubby`](https://github.com/dripips?tab=repositories&q=rubby) learning umbrella while shipping production code in PHP, Java, Python, and TypeScript elsewhere.

@@ -33,6 +33,8 @@ class AiLock
     def for_onboarding(process)   = "onboarding:#{id_for(process)}"
     def for_offboarding(process)  = "offboarding:#{id_for(process)}"
     def for_document(document)    = "document:#{id_for(document)}"
+    def for_dictionary(dictionary) = "dictionary:#{id_for(dictionary)}"
+    def for_company_bootstrap(company) = "company_bootstrap:#{id_for(company)}"
 
     def for_kpi_team(scope_type:, scope_id: nil)
       "kpi_team:#{scope_type}:#{scope_id.presence || 'all'}"
@@ -60,7 +62,9 @@ class AiLock
       "kpi_team"    => :broadcast_kpi_team_controls,
       "onboarding"  => :broadcast_onboarding_controls,
       "offboarding" => :broadcast_offboarding_controls,
-      "document"    => :broadcast_document_controls
+      "document"           => :broadcast_document_controls,
+      "dictionary"         => :broadcast_dictionary_controls,
+      "company_bootstrap"  => :broadcast_company_bootstrap_controls
     }.freeze
 
     def key(scope) = "ai:running:#{scope}"
@@ -134,6 +138,26 @@ class AiLock
         target:  "document-extraction-#{document.id}",
         partial: "documents/extraction_panel",
         locals:  { document: document }
+      )
+    end
+
+    def broadcast_dictionary_controls(id, *)
+      dictionary = Dictionary.kept.find_by(id: id.to_i) or return
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ dictionary, "ai_seed" ],
+        target:  "dictionary-ai-#{dictionary.id}",
+        partial: "settings/dictionaries/ai_panel",
+        locals:  { dictionary: dictionary }
+      )
+    end
+
+    def broadcast_company_bootstrap_controls(id, *)
+      company = Company.kept.find_by(id: id.to_i) or return
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ company, "company_bootstrap" ],
+        target:  "company-bootstrap",
+        partial: "settings/dictionaries/bootstrap_panel",
+        locals:  { company: company }
       )
     end
 

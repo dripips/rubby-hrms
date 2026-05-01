@@ -6,6 +6,9 @@ class AiRunCompletedNotifier < ApplicationNotifier
   HR_KINDS          = %w[burnout_brief suggest_leave_window kpi_brief meeting_agenda compensation_review exit_risk_brief].freeze
   ONBOARDING_KINDS  = %w[onboarding_plan welcome_letter mentor_match probation_review].freeze
   OFFBOARDING_KINDS = %w[knowledge_transfer_plan exit_interview_brief replacement_brief].freeze
+  DOCUMENT_KINDS    = %w[document_summary document_extract_assist].freeze
+  DICTIONARY_KINDS  = %w[dictionary_seed].freeze
+  COMPANY_KINDS     = %w[company_bootstrap].freeze
 
   notification_methods do
     def message
@@ -14,11 +17,21 @@ class AiRunCompletedNotifier < ApplicationNotifier
       target_name = subject_name_for(ar)
 
       base = ar.success ? "notifications.ai_run.success" : "notifications.ai_run.failed"
-      # Use employee phrasing for HR/onboarding/offboarding runs (по сотруднику ...).
-      employee_kind = AiRunCompletedNotifier::HR_KINDS.include?(ar.kind) ||
-                      AiRunCompletedNotifier::ONBOARDING_KINDS.include?(ar.kind) ||
-                      AiRunCompletedNotifier::OFFBOARDING_KINDS.include?(ar.kind)
-      key  = employee_kind ? "#{base}_employee" : base
+
+      # Phrasing: «по сотруднику …» / «по документу …» / по умолчанию «по кандидату …»
+      key = if AiRunCompletedNotifier::DOCUMENT_KINDS.include?(ar.kind)
+              "#{base}_document"
+            elsif AiRunCompletedNotifier::DICTIONARY_KINDS.include?(ar.kind)
+              "#{base}_dictionary"
+            elsif AiRunCompletedNotifier::COMPANY_KINDS.include?(ar.kind)
+              "#{base}_company"
+            elsif AiRunCompletedNotifier::HR_KINDS.include?(ar.kind) ||
+                  AiRunCompletedNotifier::ONBOARDING_KINDS.include?(ar.kind) ||
+                  AiRunCompletedNotifier::OFFBOARDING_KINDS.include?(ar.kind)
+              "#{base}_employee"
+            else
+              base
+            end
       I18n.t(key, kind: kind_label, name: target_name, locale: recipient_locale)
     end
 
@@ -37,6 +50,12 @@ class AiRunCompletedNotifier < ApplicationNotifier
         helpers.onboarding_process_path(ai_run.onboarding_process_id, locale: recipient_locale)
       when *AiRunCompletedNotifier::OFFBOARDING_KINDS
         helpers.offboarding_process_path(ai_run.offboarding_process_id, locale: recipient_locale)
+      when *AiRunCompletedNotifier::DOCUMENT_KINDS
+        helpers.document_path(ai_run.document_id, locale: recipient_locale)
+      when *AiRunCompletedNotifier::DICTIONARY_KINDS
+        helpers.settings_dictionary_path(ai_run.dictionary_id, locale: recipient_locale)
+      when *AiRunCompletedNotifier::COMPANY_KINDS
+        helpers.settings_dictionaries_path(locale: recipient_locale)
       else
         helpers.job_applicant_path(ai_run.job_applicant_id, anchor: "ai", locale: recipient_locale)
       end
@@ -59,6 +78,12 @@ class AiRunCompletedNotifier < ApplicationNotifier
         I18n.t("ai.leaves.kinds.#{ar.kind}",
                default: I18n.t("ai.actions.#{ar.kind}", default: ar.kind.humanize, locale: recipient_locale),
                locale: recipient_locale)
+      elsif AiRunCompletedNotifier::DOCUMENT_KINDS.include?(ar.kind)
+        I18n.t("documents.actions.#{ar.kind}",
+               default: I18n.t("ai.actions.#{ar.kind}", default: ar.kind.humanize, locale: recipient_locale),
+               locale: recipient_locale)
+      elsif AiRunCompletedNotifier::DICTIONARY_KINDS.include?(ar.kind)
+        I18n.t("ai.actions.#{ar.kind}", default: ar.kind.humanize, locale: recipient_locale)
       else
         I18n.t("ai.actions.#{ar.kind}", default: ar.kind.humanize, locale: recipient_locale)
       end
@@ -73,6 +98,12 @@ class AiRunCompletedNotifier < ApplicationNotifier
         ar.onboarding_process&.employee&.full_name || ar.employee&.full_name || "—"
       elsif AiRunCompletedNotifier::OFFBOARDING_KINDS.include?(ar.kind)
         ar.offboarding_process&.employee&.full_name || ar.employee&.full_name || "—"
+      elsif AiRunCompletedNotifier::DOCUMENT_KINDS.include?(ar.kind)
+        ar.document&.display_title || "—"
+      elsif AiRunCompletedNotifier::DICTIONARY_KINDS.include?(ar.kind)
+        ar.dictionary&.name || "—"
+      elsif AiRunCompletedNotifier::COMPANY_KINDS.include?(ar.kind)
+        Company.kept.first&.name || "—"
       else
         ar.job_applicant&.full_name || "—"
       end

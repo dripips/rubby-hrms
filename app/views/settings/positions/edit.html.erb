@@ -1,0 +1,13 @@
+<% content_for(:page_title) { @position.name } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">💼 <%= t("settings.positions.title", default: "Должности") %></div>
+    <h1 class="page-header__title m-0"><%= t("common.edit") %>: <%= @position.name %></h1>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_positions_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "form", position: @position %>

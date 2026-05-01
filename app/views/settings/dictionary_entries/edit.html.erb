@@ -1,0 +1,16 @@
+<% content_for(:page_title) { @entry.value } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow"><%= @dictionary.name %></div>
+    <h1 class="page-header__title m-0"><%= t("common.edit") %>: <%= @entry.value %></h1>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_dictionary_path(@dictionary), class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<div class="card-apple">
+  <%= render "form", dictionary: @dictionary, entry: @entry,
+             url: settings_dictionary_entry_path(@dictionary, @entry) %>
+</div>

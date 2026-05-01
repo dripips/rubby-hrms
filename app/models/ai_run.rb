@@ -5,6 +5,8 @@ class AiRun < ApplicationRecord
   belongs_to :employee,             optional: true
   belongs_to :onboarding_process,   optional: true
   belongs_to :offboarding_process,  optional: true
+  belongs_to :document,             optional: true
+  belongs_to :dictionary,           optional: true
   belongs_to :user
 
   KINDS = %w[
@@ -12,6 +14,8 @@ class AiRun < ApplicationRecord
     burnout_brief suggest_leave_window kpi_brief meeting_agenda kpi_team_brief
     onboarding_plan welcome_letter mentor_match probation_review offer_letter
     compensation_review exit_risk_brief knowledge_transfer_plan exit_interview_brief replacement_brief
+    document_summary document_extract_assist
+    dictionary_seed company_bootstrap
     ping
   ].freeze
 
@@ -28,6 +32,9 @@ class AiRun < ApplicationRecord
   after_create_commit :broadcast_kpi_team,      if: -> { kind == "kpi_team_brief" && user&.id.present? }
   after_create_commit :broadcast_to_onboarding, if: -> { onboarding_process_id.present? }
   after_create_commit :broadcast_to_offboarding, if: -> { offboarding_process_id.present? }
+  after_create_commit :broadcast_to_document,   if: -> { document_id.present? }
+  after_create_commit :broadcast_to_dictionary, if: -> { dictionary_id.present? }
+  after_create_commit :broadcast_company_bootstrap, if: -> { kind == "company_bootstrap" }
 
   validates :kind,  inclusion: { in: KINDS }
   validates :model, presence: true
@@ -40,7 +47,7 @@ class AiRun < ApplicationRecord
   # Сохраняет результат вызова RecruitmentAi#analyze_resume / recommend / etc.
   # Получает hash из chat-метода: { ok:, content:, tokens:, raw:, error:,
   #                                 input_tokens:, output_tokens: }
-  def self.record!(kind:, model:, user:, result:, job_applicant: nil, interview_round: nil, job_opening: nil, employee: nil, onboarding_process: nil, offboarding_process: nil)
+  def self.record!(kind:, model:, user:, result:, job_applicant: nil, interview_round: nil, job_opening: nil, employee: nil, onboarding_process: nil, offboarding_process: nil, document: nil, dictionary: nil)
     in_tok  = result[:input_tokens].to_i
     out_tok = result[:output_tokens].to_i
     info    = RecruitmentAi::MODELS[model] || {}
@@ -63,6 +70,8 @@ class AiRun < ApplicationRecord
       employee:             employee,
       onboarding_process:   onboarding_process,
       offboarding_process:  offboarding_process,
+      document:             document,
+      dictionary:           dictionary,
       user:                 user,
       kind:                 kind,
       model:                model,
@@ -145,6 +154,40 @@ class AiRun < ApplicationRecord
         target:  "ai-leaves-panel-#{employee_id}",
         partial: "ai/leaves/result",
         locals:  { employee: employee, run: self, history: history }
+      )
+    end
+  end
+
+  def broadcast_to_document
+    safe_broadcast("broadcast_to_document") do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ document, "extraction" ],
+        target:  "document-extraction-#{document_id}",
+        partial: "documents/extraction_panel",
+        locals:  { document: document }
+      )
+    end
+  end
+
+  def broadcast_to_dictionary
+    safe_broadcast("broadcast_to_dictionary") do
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ dictionary, "ai_seed" ],
+        target:  "dictionary-ai-#{dictionary_id}",
+        partial: "settings/dictionaries/ai_panel",
+        locals:  { dictionary: dictionary }
+      )
+    end
+  end
+
+  def broadcast_company_bootstrap
+    safe_broadcast("broadcast_company_bootstrap") do
+      company = Company.kept.first or return
+      Turbo::StreamsChannel.broadcast_replace_to(
+        [ company, "company_bootstrap" ],
+        target:  "company-bootstrap",
+        partial: "settings/dictionaries/bootstrap_panel",
+        locals:  { company: company }
       )
     end
   end

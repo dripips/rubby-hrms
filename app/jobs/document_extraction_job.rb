@@ -72,12 +72,20 @@ class DocumentExtractionJob < ApplicationJob
   end
 
   def mark_skipped(document, reason)
-    document.update_columns(extraction_method: "none", extracted_at: Time.current)
+    document.update_columns(
+      extracted_data:    document.extracted_data.to_h.merge("_error" => reason.to_s),
+      extraction_method: "none",
+      extracted_at:      Time.current
+    )
     Rails.logger.info("[DocumentExtractionJob] #{document.id}: skipped (#{reason})")
   end
 
   def mark_failed(document, reason)
-    document.update_columns(extraction_method: "none", extracted_at: Time.current)
+    document.update_columns(
+      extracted_data:    document.extracted_data.to_h.merge("_error" => reason.to_s),
+      extraction_method: "none",
+      extracted_at:      Time.current
+    )
     Rails.logger.warn("[DocumentExtractionJob] #{document.id}: failed (#{reason})")
   end
 end

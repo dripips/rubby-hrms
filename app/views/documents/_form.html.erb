@@ -59,7 +59,8 @@
     <div class="col-md-3">
       <%= f.label :confidentiality, t("documents.fields.confidentiality", default: "Конфиденциальность"), class: "form-label" %>
       <%= f.select :confidentiality,
-                   Document::CONFIDENTIALITIES.map { |c| [t("documents.confidentialities.#{c}", default: c.humanize), c] },
+                   lookup_options_for("document_confidentialities",
+                     fallback: Document::CONFIDENTIALITIES.map { |c| [ t("documents.confidentialities.#{c}", default: c.humanize), c ] }),
                    {}, class: "form-select" %>
     </div>
 
@@ -80,6 +81,15 @@
       <%= f.file_field :file, accept: "application/pdf,image/jpeg,image/png", class: "form-control" %>
     </div>
   </div>
+
+  <% if document.document_type_id.present? %>
+    <div class="mt-4">
+      <%= render_custom_fields_inputs(f,
+            target_model: "DocumentType",
+            target_scope: document.document_type_id,
+            values:       (document.extracted_data || {})["_custom"]) %>
+    </div>
+  <% end %>
 
   <div class="d-flex gap-2 mt-3">
     <%= f.submit (document.persisted? ? t("common.save") : t("documents.upload", default: "Загрузить")), class: "btn btn-primary" %>

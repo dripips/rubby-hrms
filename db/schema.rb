@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_30_030005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -55,6 +55,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
   create_table "ai_runs", force: :cascade do |t|
     t.decimal "cost_usd", precision: 10, scale: 6, default: "0.0"
     t.datetime "created_at", null: false
+    t.bigint "dictionary_id"
+    t.bigint "document_id"
     t.bigint "employee_id"
     t.text "error"
     t.integer "input_tokens", default: 0
@@ -71,6 +73,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
     t.integer "total_tokens", default: 0
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["dictionary_id"], name: "index_ai_runs_on_dictionary_id"
+    t.index ["document_id"], name: "index_ai_runs_on_document_id"
     t.index ["employee_id"], name: "index_ai_runs_on_employee_id"
     t.index ["interview_round_id", "created_at"], name: "index_ai_runs_on_interview_round_id_and_created_at"
     t.index ["interview_round_id"], name: "index_ai_runs_on_interview_round_id"
@@ -172,6 +176,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
     t.string "code", limit: 32
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
+    t.jsonb "custom_fields", default: {}
     t.datetime "discarded_at"
     t.bigint "head_employee_id"
     t.string "name", null: false
@@ -191,10 +196,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
     t.datetime "created_at", null: false
     t.text "description"
     t.datetime "discarded_at"
+    t.string "kind", default: "lookup", null: false
     t.string "name", null: false
     t.boolean "system", default: false, null: false
     t.datetime "updated_at", null: false
     t.index ["company_id", "code"], name: "index_dictionaries_on_company_id_and_code", unique: true
+    t.index ["company_id", "kind"], name: "index_dictionaries_on_company_id_and_kind"
     t.index ["company_id"], name: "index_dictionaries_on_company_id"
   end
 
@@ -295,6 +302,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
     t.date "birth_date"
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
+    t.jsonb "custom_fields", default: {}
     t.bigint "department_id"
     t.text "dietary_restrictions"
     t.datetime "discarded_at"
@@ -438,6 +446,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
     t.string "currency", limit: 3, default: "RUB"
     t.string "current_company"
     t.string "current_position"
+    t.jsonb "custom_fields", default: {}
     t.datetime "discarded_at"
     t.string "email"
     t.decimal "expected_salary", precision: 12, scale: 2
@@ -623,6 +632,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
   create_table "leave_requests", force: :cascade do |t|
     t.datetime "applied_at"
     t.datetime "created_at", null: false
+    t.jsonb "custom_fields", default: {}
     t.decimal "days", precision: 6, scale: 2, null: false
     t.datetime "discarded_at"
     t.bigint "employee_id", null: false
@@ -645,6 +655,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
     t.string "color", limit: 8, default: "#007AFF"
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
+    t.jsonb "custom_fields", default: {}
     t.integer "default_days_per_year", default: 0
     t.datetime "discarded_at"
     t.string "name", null: false
@@ -766,6 +777,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
     t.string "code", limit: 32
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
+    t.jsonb "custom_fields", default: {}
     t.datetime "discarded_at"
     t.string "name", null: false
     t.integer "sort_order", default: 0, null: false
@@ -896,6 +908,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_30_010001) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "ai_runs", "dictionaries"
+  add_foreign_key "ai_runs", "documents"
   add_foreign_key "ai_runs", "employees"
   add_foreign_key "ai_runs", "interview_rounds"
   add_foreign_key "ai_runs", "job_applicants"

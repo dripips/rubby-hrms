@@ -32,6 +32,11 @@
             <%= f.label :head_employee_id, t("departments.fields.head", default: "Руководитель"), class: "form-label" %>
             <%= f.collection_select :head_employee_id, employees, :id, :full_name, { include_blank: "—" }, class: "form-select" %>
           </div>
+
+          <%= render_custom_fields_inputs(f,
+                target_model: "Department",
+                target_scope: "default",
+                values:       department.custom_fields) %>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-ghost" data-bs-dismiss="modal"><%= t("common.cancel") %></button>

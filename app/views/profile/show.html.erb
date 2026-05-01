@@ -1,0 +1,100 @@
+<% content_for(:page_title) { t("profile.title", default: "Мой профиль") } %>
+
+<header class="page-header">
+  <div class="d-flex align-items-center gap-3">
+    <% if @employee.avatar_url.present? %>
+      <span class="avatar-apple avatar-apple--xl avatar-apple--photo" style="background-image: url(<%= @employee.avatar_url %>);"></span>
+    <% else %>
+      <span class="avatar-apple avatar-apple--xl"><%= @employee.initials %></span>
+    <% end %>
+    <div>
+      <div class="page-header__eyebrow">👤 <%= t("profile.eyebrow", default: "Мой профиль") %></div>
+      <h1 class="page-header__title m-0"><%= @employee.full_name %></h1>
+      <p class="page-header__subtitle">
+        <% if @employee.position %><%= @employee.position.name %><% end %>
+        <% if @employee.department %> · <%= @employee.department.name %><% end %>
+      </p>
+    </div>
+  </div>
+
+  <div class="page-header__actions">
+    <%= link_to t("profile.edit", default: "Редактировать"), edit_profile_path, class: "btn btn-primary" %>
+  </div>
+</header>
+
+<section class="row g-3">
+  <div class="col-lg-7">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("profile.contact_section", default: "Контакты") %></h3>
+      <dl class="row g-2 m-0">
+        <dt class="col-md-4 form-label"><%= t("employees.fields.phone", default: "Телефон") %></dt>
+        <dd class="col-md-8"><%= @employee.phone.presence || "—" %></dd>
+        <dt class="col-md-4 form-label"><%= t("employees.fields.personal_email", default: "Личный email") %></dt>
+        <dd class="col-md-8"><%= @employee.personal_email.presence || "—" %></dd>
+        <dt class="col-md-4 form-label"><%= t("employees.fields.address", default: "Адрес") %></dt>
+        <dd class="col-md-8"><%= @employee.address.presence || "—" %></dd>
+        <dt class="col-md-4 form-label"><%= t("employees.fields.preferred_language", default: "Предпочитаемый язык") %></dt>
+        <dd class="col-md-8"><%= @employee.preferred_language.presence || "—" %></dd>
+      </dl>
+    </div>
+
+    <div class="card-apple mt-3">
+      <h3 class="card-apple__title mb-3"><%= t("profile.personal_section", default: "Личное") %></h3>
+      <dl class="row g-2 m-0">
+        <dt class="col-md-4 form-label"><%= t("employees.fields.marital_status", default: "Семейное положение") %></dt>
+        <dd class="col-md-8">
+          <% if @employee.marital_status.present? %>
+            <%= t("employees.marital_statuses.#{@employee.marital_status}", default: @employee.marital_status.humanize) %>
+          <% else %>—<% end %>
+        </dd>
+        <dt class="col-md-4 form-label"><%= t("employees.fields.gender", default: "Пол") %></dt>
+        <dd class="col-md-8"><%= @employee.gender_ref&.name.presence || "—" %></dd>
+        <dt class="col-md-4 form-label"><%= t("employees.fields.hobbies", default: "Хобби") %></dt>
+        <dd class="col-md-8"><%= @employee.hobbies.presence || "—" %></dd>
+        <dt class="col-md-4 form-label"><%= t("employees.fields.shirt_size", default: "Размер одежды") %></dt>
+        <dd class="col-md-8"><%= @employee.shirt_size.presence || "—" %></dd>
+        <dt class="col-md-4 form-label"><%= t("employees.fields.dietary_restrictions", default: "Диета / аллергии") %></dt>
+        <dd class="col-md-8"><%= @employee.dietary_restrictions.presence || "—" %></dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card-apple">
+      <h3 class="card-apple__title mb-3"><%= t("profile.emergency_section", default: "Экстренный контакт") %></h3>
+      <% if @employee.emergency_contact_name.present? %>
+        <p class="m-0"><strong><%= @employee.emergency_contact_name %></strong></p>
+        <% if @employee.emergency_contact_relation.present? %>
+          <p class="footnote text-secondary-apple m-0"><%= @employee.emergency_contact_relation %></p>
+        <% end %>
+        <% if @employee.emergency_contact_phone.present? %>
+          <p class="m-0 mt-1">📞 <%= @employee.emergency_contact_phone %></p>
+        <% end %>
+      <% else %>
+        <p class="footnote text-tertiary m-0"><%= t("profile.no_emergency_contact", default: "Не указан — добавь на случай ЧП.") %></p>
+      <% end %>
+    </div>
+
+    <div class="card-apple mt-3">
+      <h3 class="card-apple__title mb-3"><%= t("profile.accessibility_section", default: "Доступность") %></h3>
+      <dl class="row g-2 m-0">
+        <dt class="col-md-6 form-label"><%= t("employees.fields.has_disability", default: "ОВЗ") %></dt>
+        <dd class="col-md-6"><%= @employee.has_disability ? "✓" : "—" %></dd>
+        <% if @employee.special_needs.present? %>
+          <dt class="col-md-6 form-label"><%= t("employees.fields.special_needs", default: "Особые потребности") %></dt>
+          <dd class="col-md-6"><%= @employee.special_needs %></dd>
+        <% end %>
+      </dl>
+      <p class="footnote text-tertiary m-0 mt-2">
+        <%= t("profile.accessibility_hint", default: "Используется только если ты сам указал. HR увидит, чтобы учесть.") %>
+      </p>
+    </div>
+
+    <%= render_custom_field_values(@employee.custom_fields,
+          target_model: "Employee", target_scope: "default") %>
+
+    <p class="footnote text-tertiary mt-3 mb-0">
+      <%= t("profile.hr_note", default: "Должность, отдел, зарплату и личный номер меняет только HR. Если что-то некорректно — напиши им.") %>
+    </p>
+  </div>
+</section>

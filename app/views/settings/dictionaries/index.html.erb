@@ -1,0 +1,190 @@
+<% content_for(:page_title) { t("settings.dictionaries.title", default: "Справочники") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">📚 <%= t("settings.title", default: "Настройки") %></div>
+    <h1 class="page-header__title m-0"><%= t("settings.dictionaries.title", default: "Справочники") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("settings.dictionaries.subtitle", default: "Списки и доп.поля для модулей: документы, сотрудники, отпуска. Все справочники привязаны к компании.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_root_path, class: "btn btn-ghost" %>
+    <%= link_to t("settings.dictionaries.new_lookup", default: "+ Список"),
+                new_settings_dictionary_path(kind: "lookup"), class: "btn btn-soft" %>
+    <%= link_to t("settings.dictionaries.new_field_schema", default: "+ Схема полей"),
+                new_settings_dictionary_path(kind: "field_schema"), class: "btn btn-primary" %>
+  </div>
+</header>
+
+<%= render "shared/settings_tabs" if lookup_context.exists?("shared/settings_tabs", [], true) %>
+
+<%= render "bootstrap_panel", company: @company %>
+
+<section class="card-apple mb-3">
+  <h2 class="title-3 mb-2"><%= t("settings.dictionaries.discovery_title", default: "Точки расширения, доступные в коде") %></h2>
+  <p class="footnote text-secondary-apple mb-3">
+    <%= t("settings.dictionaries.discovery_hint",
+          default: "Здесь перечислено, куда система уже умеет подцепить компанийную кастомизацию. Создай словарь — поля и значения сразу заработают на формах. ✓ — словарь уже настроен.") %>
+  </p>
+
+  <div class="row g-3">
+    <div class="col-lg-6">
+      <h3 class="footnote text-tertiary text-uppercase mb-2" style="letter-spacing: 0.05em;">
+        🧩 <%= t("settings.dictionaries.field_schemas_title", default: "Схемы доп.полей") %>
+      </h3>
+      <ul class="list-apple m-0">
+        <% @schema_points.each do |p| %>
+          <li class="list-apple__item">
+            <span class="me-2 fs-5"><%= p[:dictionary] ? "✓" : "⚙" %></span>
+            <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <strong><%= t(p[:label_key], default: p[:model]) %></strong>
+                <span class="footnote text-tertiary"><code><%= p[:code] %></code></span>
+                <% if p[:dictionary] %>
+                  <span class="footnote text-tertiary">·
+                    <%= t("settings.dictionaries.fields_count", default: "полей: %{n}", n: p[:dictionary].entries.kept.size) %>
+                  </span>
+                <% end %>
+              </div>
+              <span class="footnote text-secondary-apple"><%= t(p[:hint_key], default: "") %></span>
+            </div>
+            <div class="ms-auto">
+              <% if p[:dictionary] %>
+                <%= link_to t("common.open", default: "Открыть"), settings_dictionary_path(p[:dictionary]), class: "btn btn-soft btn-sm" %>
+              <% else %>
+                <%= link_to t("settings.dictionaries.create_schema", default: "+ Создать"),
+                            new_settings_dictionary_path(kind: "field_schema",
+                                                         target_model: p[:model],
+                                                         target_scope: p[:scope],
+                                                         default_name: t(p[:label_key], default: p[:model])),
+                            class: "btn btn-primary btn-sm" %>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="col-lg-6">
+      <h3 class="footnote text-tertiary text-uppercase mb-2" style="letter-spacing: 0.05em;">
+        📋 <%= t("settings.dictionaries.lookups_title", default: "Списки (lookup)") %>
+      </h3>
+      <ul class="list-apple m-0">
+        <% @lookup_points.each do |p| %>
+          <li class="list-apple__item">
+            <span class="me-2 fs-5"><%= p[:dictionary] ? "✓" : "⚙" %></span>
+            <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <strong><%= t(p[:label_key], default: p[:code].humanize) %></strong>
+                <span class="footnote text-tertiary"><code><%= p[:code] %></code></span>
+                <% if p[:dictionary] %>
+                  <span class="footnote text-tertiary">·
+                    <%= t("settings.dictionaries.entries_count", default: "записей: %{n}", n: p[:dictionary].entries.kept.size) %>
+                  </span>
+                <% end %>
+              </div>
+              <span class="footnote text-secondary-apple"><%= t(p[:hint_key], default: "") %></span>
+            </div>
+            <div class="ms-auto">
+              <% if p[:dictionary] %>
+                <%= link_to t("common.open", default: "Открыть"), settings_dictionary_path(p[:dictionary]), class: "btn btn-soft btn-sm" %>
+              <% else %>
+                <%= link_to t("settings.dictionaries.create_lookup", default: "+ Создать"),
+                            new_settings_dictionary_path(kind: "lookup",
+                                                         code: p[:code],
+                                                         default_name: t(p[:label_key], default: p[:code].humanize)),
+                            class: "btn btn-primary btn-sm" %>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+
+  <p class="footnote text-tertiary mt-3 mb-0">
+    <%= t("settings.dictionaries.discovery_more",
+          default: "Кроме default-схем, можно создать схему под конкретный экземпляр: «DocumentType:5», «JobApplicant:8», «LeaveRequest:3». Тогда поля появятся только для этого типа/вакансии/типа отпуска.") %>
+  </p>
+</section>
+
+<section class="row g-3">
+  <div class="col-lg-6">
+    <div class="card-apple">
+      <h2 class="title-3 mb-3">
+        📋 <%= t("settings.dictionaries.lookups_title", default: "Списки (lookup)") %>
+        <span class="footnote text-tertiary">· <%= @lookups.size %></span>
+      </h2>
+      <% if @lookups.empty? %>
+        <p class="footnote text-tertiary m-0">
+          <%= t("settings.dictionaries.lookups_empty", default: "Списков пока нет. Они нужны для select'ов в формах — например, источники найма или причины увольнения.") %>
+        </p>
+      <% else %>
+        <ul class="list-apple m-0">
+          <% @lookups.each do |d| %>
+            <li class="list-apple__item">
+              <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+                <div class="d-flex align-items-center gap-2">
+                  <strong><%= d.name %></strong>
+                  <span class="footnote text-tertiary"><code><%= d.code %></code></span>
+                </div>
+                <span class="footnote text-secondary-apple">
+                  <%= d.description.presence || t("settings.dictionaries.no_description", default: "Без описания") %>
+                </span>
+                <span class="footnote text-tertiary">
+                  <%= t("settings.dictionaries.entries_count", default: "записей: %{n}", n: d.entries.kept.size) %>
+                </span>
+              </div>
+              <div class="ms-auto d-flex gap-2">
+                <%= link_to t("common.open", default: "Открыть"), settings_dictionary_path(d), class: "btn btn-soft btn-sm" %>
+                <%= link_to t("common.edit"),  edit_settings_dictionary_path(d), class: "btn btn-ghost btn-sm" %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card-apple">
+      <h2 class="title-3 mb-3">
+        🧩 <%= t("settings.dictionaries.field_schemas_title", default: "Схемы доп.полей") %>
+        <span class="footnote text-tertiary">· <%= @field_schemas.size %></span>
+      </h2>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("settings.dictionaries.field_schemas_hint", default: "Каждая схема описывает доп.поля для конкретной сущности. Например, «DocumentType:5» — поля для документов этого типа.") %>
+      </p>
+      <% if @field_schemas.empty? %>
+        <p class="footnote text-tertiary m-0">
+          <%= t("settings.dictionaries.field_schemas_empty", default: "Схем пока нет. Создай первую схему, чтобы добавить компании-специфичные поля документам или сотрудникам.") %>
+        </p>
+      <% else %>
+        <ul class="list-apple m-0">
+          <% @field_schemas.each do |d| %>
+            <li class="list-apple__item">
+              <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+                <div class="d-flex align-items-center gap-2">
+                  <strong><%= d.name %></strong>
+                  <span class="pill pill--purple"><%= d.target_model %></span>
+                  <span class="footnote text-tertiary"><code><%= d.target_scope %></code></span>
+                </div>
+                <span class="footnote text-secondary-apple">
+                  <%= d.description.presence || t("settings.dictionaries.no_description", default: "Без описания") %>
+                </span>
+                <span class="footnote text-tertiary">
+                  <%= t("settings.dictionaries.fields_count", default: "полей: %{n}", n: d.entries.kept.size) %>
+                </span>
+              </div>
+              <div class="ms-auto d-flex gap-2">
+                <%= link_to t("common.open", default: "Открыть"), settings_dictionary_path(d), class: "btn btn-soft btn-sm" %>
+                <%= link_to t("common.edit"),  edit_settings_dictionary_path(d), class: "btn btn-ghost btn-sm" %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  </div>
+</section>

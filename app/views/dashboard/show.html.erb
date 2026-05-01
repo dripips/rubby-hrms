@@ -147,3 +147,71 @@
     </section>
   <% end %>
 <% end %>
+
+<%# ── Документы: истекающие ──────────────────────────────────────────────── %>
+<% if current_user&.role_superadmin? || current_user&.role_hr? %>
+  <%
+    expiring_30 = Document.kept.expiring_soon(30).includes(:document_type, :documentable).order(:expires_at).limit(8)
+    expired_now = Document.kept.where(state: "active").where("expires_at < ?", Date.current).includes(:document_type, :documentable).order(:expires_at).limit(5)
+  %>
+  <% if expiring_30.any? || expired_now.any? %>
+    <section class="row g-3 mt-2">
+      <div class="col-12">
+        <div class="card-apple">
+          <div class="card-apple__header">
+            <div>
+              <h3 class="card-apple__title">📁 <%= t("dashboard.documents_expiring.title", default: "Документы скоро истекают") %></h3>
+              <p class="card-apple__subtitle">
+                <%= t("dashboard.documents_expiring.subtitle", default: "Ближайшие 30 дней + просроченные. Уведомление приходит за 30/7/0 дней.") %>
+              </p>
+            </div>
+            <%= link_to t("common.show_all", default: "Все"), documents_path, class: "btn btn-ghost btn-sm" %>
+          </div>
+
+          <% if expired_now.any? %>
+            <div class="callout callout--danger mb-3">
+              <strong>⚠ <%= t("dashboard.documents_expiring.expired_title", default: "Уже просрочены") %> · <%= expired_now.size %></strong>
+              <ul class="list-apple m-0 mt-2">
+                <% expired_now.each do |doc| %>
+                  <li class="list-apple__item">
+                    <span class="document-icon"><%= doc.document_type&.icon || "📄" %></span>
+                    <div class="d-flex flex-column flex-fill min-w-0">
+                      <%= link_to doc.display_title, document_path(doc), class: "link-plain" %>
+                      <span class="footnote text-tertiary">
+                        <%= doc.documentable.try(:full_name) %>
+                        · <%= t("dashboard.documents_expiring.expired_days_ago", default: "просрочен %{n} дн", n: (Date.current - doc.expires_at).to_i) %>
+                      </span>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <% if expiring_30.any? %>
+            <ul class="list-apple m-0">
+              <% expiring_30.each do |doc| %>
+                <% days = doc.expiring_in_days %>
+                <% tone = days <= 7 ? "danger" : (days <= 14 ? "warning" : "info") %>
+                <li class="list-apple__item">
+                  <span class="document-icon"><%= doc.document_type&.icon || "📄" %></span>
+                  <div class="d-flex flex-column flex-fill min-w-0">
+                    <%= link_to doc.display_title, document_path(doc), class: "link-plain" %>
+                    <span class="footnote text-tertiary">
+                      <%= doc.documentable.try(:full_name) %>
+                      <% if doc.document_type %> · <%= doc.document_type.name %><% end %>
+                    </span>
+                  </div>
+                  <div class="ms-auto d-flex flex-column align-items-end gap-1">
+                    <span class="pill pill--<%= tone %>"><%= t("dashboard.documents_expiring.days_left", default: "%{n} дн", n: days) %></span>
+                    <span class="footnote text-tertiary"><%= l(doc.expires_at, format: :long) %></span>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+<% end %>

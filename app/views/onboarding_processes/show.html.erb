@@ -22,27 +22,31 @@
   stage_order = %w[day_zero first_week first_month probation later]
 %>
 
-<header class="process-hero process-hero--onboarding">
-  <% if emp.avatar_url.present? %>
-    <span class="avatar-apple avatar-apple--xl avatar-apple--photo process-hero__avatar" style="background-image: url(<%= emp.avatar_url %>);"></span>
-  <% else %>
-    <span class="avatar-apple avatar-apple--xl process-hero__avatar"><%= emp.initials %></span>
-  <% end %>
-
-  <div class="process-hero__body">
-    <div class="process-hero__title-row">
-      <span class="footnote text-tertiary">🌱 <%= t("onboarding.title") %></span>
-      <span class="status-pill status-pill--<%= state %>"><%= t("onboarding.states.#{state}") %></span>
-    </div>
-    <%= link_to emp.full_name, employee_path(emp), class: "process-hero__title link-plain" %>
-    <div class="process-hero__subtitle">
-      <% if emp.position %><span><%= emp.position.name %></span><% end %>
-      <% if emp.department %>· <span><%= emp.department.name %></span><% end %>
-      <% if @process.mentor %>· 🧑‍🏫 <%= link_to @process.mentor.short_name, employee_path(@process.mentor), class: "link-plain" %><% end %>
+<header class="page-header">
+  <div class="d-flex align-items-center gap-3">
+    <% if emp.avatar_url.present? %>
+      <span class="avatar-apple avatar-apple--xl avatar-apple--photo" style="background-image: url(<%= emp.avatar_url %>);"></span>
+    <% else %>
+      <span class="avatar-apple avatar-apple--xl"><%= emp.initials %></span>
+    <% end %>
+    <div>
+      <div class="page-header__eyebrow">🌱 <%= t("onboarding.title") %></div>
+      <h1 class="page-header__title m-0">
+        <%= link_to emp.full_name, employee_path(emp), class: "link-plain" %>
+        <span class="pill pill--<%= state == 'active' ? 'success' : (state == 'completed' ? 'info' : (state == 'cancelled' ? 'neutral' : 'warning')) %>">
+          <%= t("onboarding.states.#{state}") %>
+        </span>
+      </h1>
+      <p class="page-header__subtitle">
+        <% if emp.position %><span><%= emp.position.name %></span><% end %>
+        <% if emp.department %> · <span><%= emp.department.name %></span><% end %>
+        <% if @process.mentor %> · 🧑‍🏫 <%= link_to @process.mentor.short_name, employee_path(@process.mentor), class: "link-plain" %><% end %>
+      </p>
     </div>
   </div>
 
-  <div class="process-hero__actions">
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), onboarding_processes_path, class: "btn btn-ghost" %>
     <% if @process.may_activate? %>
       <%= button_to t("onboarding.actions.activate"), activate_onboarding_process_path(@process),
                     method: :post, class: "btn btn-primary", form: { class: "d-inline" } %>

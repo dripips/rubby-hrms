@@ -24,6 +24,11 @@ production:
     queue: default
     schedule: every day at 0:05
 
+  document_expiry_check:
+    class: DocumentExpiryCheckJob
+    queue: default
+    schedule: every day at 9:00
+
 development:
   interview_notifications_soon:
     class: ScheduleInterviewNotificationsJob
@@ -34,3 +39,8 @@ development:
     class: LeaveLifecycleJob
     queue: default
     schedule: every day at 0:05
+
+  document_expiry_check:
+    class: DocumentExpiryCheckJob
+    queue: default
+    schedule: every day at 9:00

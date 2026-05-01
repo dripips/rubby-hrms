@@ -1,0 +1,177 @@
+<%
+  scope = AiLock.for_company_bootstrap(company)
+  busy  = AiLock.running?(scope)
+
+  thread = AiRun.where(kind: "company_bootstrap").successful.order(:created_at).to_a
+  last   = thread.last
+  last_payload = last&.payload.is_a?(Hash) ? last.payload : {}
+  pending_proposal = last_payload["action"] == "propose"
+%>
+<div id="company-bootstrap" class="card-apple ai-leaves-result mb-3">
+  <%= turbo_stream_from company, "company_bootstrap" %>
+
+  <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+    <span class="ai-spark"><%= busy ? "✨" : "🚀" %></span>
+    <h2 class="title-3 m-0"><%= t("settings.dictionaries.bootstrap.title", default: "Настроить всё под мою компанию") %></h2>
+    <% if thread.any? %>
+      <span class="footnote text-tertiary">·
+        <%= t("settings.dictionaries.bootstrap.turns", default: "обмен сообщениями: %{n}", n: thread.size) %>
+      </span>
+    <% end %>
+    <% if thread.any? %>
+      <%= button_to "🔄 #{t('settings.dictionaries.bootstrap.reset', default: 'Начать сначала')}",
+                    bootstrap_reset_settings_dictionaries_path, method: :post,
+                    class: "btn btn-ghost btn-sm ms-auto", form: { class: "d-inline" },
+                    data: { turbo_confirm: t("settings.dictionaries.bootstrap.reset_confirm", default: "Очистить весь диалог?") } %>
+    <% end %>
+  </div>
+
+  <p class="footnote text-secondary-apple mb-3">
+    <%= t("settings.dictionaries.bootstrap.subtitle",
+          default: "AI-консультант поможет настроить все словари под специфику твоей компании. Расскажи про индустрию, размер, особенности — он либо задаст уточняющие вопросы, либо сразу предложит полный пакет. Ничего не сохранится без твоего согласия.") %>
+  </p>
+
+  <%# ── Чат-история ───────────────────────────────────────────────────── %>
+  <% if thread.empty? %>
+    <div class="callout mb-3">
+      <strong>💡 <%= t("settings.dictionaries.bootstrap.example_title", default: "Что лучше написать в первом сообщении") %></strong>
+      <ul class="m-0 mt-2 ps-3">
+        <li><%= t("settings.dictionaries.bootstrap.example_1", default: "Чем компания занимается: «септик-сервис», «backend-разработка», «частная медклиника», «школа танцев»") %></li>
+        <li><%= t("settings.dictionaries.bootstrap.example_2", default: "Размер: «10 водителей + 2 диспетчера», «команда из 25 разработчиков»") %></li>
+        <li><%= t("settings.dictionaries.bootstrap.example_3", default: "Особенности: «работаем по 152-ФЗ», «есть удалённые», «требуем мед.книжки», «работаем с гос-заказами»") %></li>
+      </ul>
+    </div>
+  <% else %>
+    <div class="bootstrap-chat mb-3" style="max-height: 400px; overflow-y: auto;">
+      <% thread.each do |run| %>
+        <% pl = run.payload.is_a?(Hash) ? run.payload : {} %>
+        <% user_msg = pl["user_message"].to_s %>
+        <% ai_action = pl["action"] %>
+        <% ai_msg = pl["message"].to_s %>
+
+        <% if user_msg.present? %>
+          <div class="bootstrap-chat__bubble bootstrap-chat__bubble--user mb-2">
+            <%= simple_format(user_msg) %>
+          </div>
+        <% end %>
+
+        <% if ai_msg.present? %>
+          <div class="bootstrap-chat__bubble bootstrap-chat__bubble--ai mb-2">
+            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+              <span><%= ai_action == "ask" ? "❓" : "🪄" %></span>
+              <span class="footnote text-tertiary"><%= run.model %> · <%= run.cost_display %></span>
+            </div>
+            <%= simple_format(ai_msg) %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# ── Скелетон если AI думает ───────────────────────────────────────── %>
+  <% if busy %>
+    <div class="bootstrap-chat__bubble bootstrap-chat__bubble--ai mb-3">
+      <span class="spinner-dot me-2"></span>
+      <%= t("settings.dictionaries.bootstrap.thinking", default: "AI обдумывает…") %>
+    </div>
+  <% end %>
+
+  <%# ── Proposed-блок если последний AiRun = propose ──────────────────── %>
+  <% if !busy && pending_proposal %>
+    <% lookups = Array(last_payload["lookups"]) %>
+    <% schemas = Array(last_payload["schemas"]) %>
+    <%= form_with url: bootstrap_apply_settings_dictionaries_path, method: :post,
+                  local: true, class: "d-flex flex-column gap-3 mt-3" do |f| %>
+      <div class="callout callout--success">
+        <strong>✓ <%= t("settings.dictionaries.bootstrap.proposal_ready", default: "AI собрал предложение — отметь что применять") %></strong>
+      </div>
+
+      <% if lookups.any? %>
+        <div>
+          <h4 class="footnote text-tertiary text-uppercase mb-2" style="letter-spacing: 0.05em;">
+            📋 <%= t("settings.dictionaries.bootstrap.lookups_title", default: "Списки") %>
+          </h4>
+          <ul class="list-apple m-0">
+            <% lookups.each do |lk| %>
+              <li class="list-apple__item align-items-start">
+                <input type="checkbox" name="lookups[]" value="<%= lk["code"] %>"
+                       id="bs-l-<%= lk["code"] %>" class="form-check-input mt-1" checked>
+                <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+                  <label for="bs-l-<%= lk["code"] %>" class="d-flex align-items-center gap-2 m-0">
+                    <strong><%= lk["name"] %></strong>
+                    <span class="footnote text-tertiary"><code><%= lk["code"] %></code></span>
+                    <span class="footnote text-tertiary">·
+                      <%= t("settings.dictionaries.entries_count", default: "записей: %{n}", n: Array(lk["entries"]).size) %>
+                    </span>
+                  </label>
+                  <span class="footnote text-secondary-apple">
+                    <%= Array(lk["entries"]).first(8).map { |e| e["value"] }.compact.join(" · ") %>
+                    <% if Array(lk["entries"]).size > 8 %> …<% end %>
+                  </span>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <% if schemas.any? %>
+        <div>
+          <h4 class="footnote text-tertiary text-uppercase mb-2" style="letter-spacing: 0.05em;">
+            🧩 <%= t("settings.dictionaries.bootstrap.schemas_title", default: "Схемы доп.полей") %>
+          </h4>
+          <ul class="list-apple m-0">
+            <% schemas.each do |sc| %>
+              <% code = "#{sc["model"]}:#{sc["scope"]}" %>
+              <li class="list-apple__item align-items-start">
+                <input type="checkbox" name="schemas[]" value="<%= code %>"
+                       id="bs-s-<%= sc["model"] %>" class="form-check-input mt-1" checked>
+                <div class="d-flex flex-column gap-1 flex-fill min-w-0">
+                  <label for="bs-s-<%= sc["model"] %>" class="d-flex align-items-center gap-2 flex-wrap m-0">
+                    <strong><%= sc["name"] %></strong>
+                    <span class="pill pill--purple"><%= sc["model"] %></span>
+                    <span class="footnote text-tertiary">·
+                      <%= t("settings.dictionaries.fields_count", default: "полей: %{n}", n: Array(sc["fields"]).size) %>
+                    </span>
+                  </label>
+                  <% Array(sc["fields"]).each do |fld| %>
+                    <span class="footnote text-secondary-apple">
+                      • <strong><%= fld["label"] %></strong>
+                      <span class="text-tertiary"><code><%= fld["key"] %></code> · <%= fld["type"] %><% if fld["required"] %> · обязательное<% end %></span>
+                      <% if fld["hint"].present? %>— <%= fld["hint"] %><% end %>
+                    </span>
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="d-flex gap-2 align-items-center">
+        <%= f.submit t("settings.dictionaries.bootstrap.apply", default: "✓ Применить отмеченные"), class: "btn btn-primary" %>
+        <span class="footnote text-tertiary">
+          <%= t("settings.dictionaries.bootstrap.apply_hint", default: "Можно ещё спросить уточнение ниже — AI пересчитает.") %>
+        </span>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%# ── Input для нового сообщения ────────────────────────────────────── %>
+  <% unless busy %>
+    <%= form_with url: bootstrap_message_settings_dictionaries_path, method: :post,
+                  data: { turbo_stream: true }, class: "d-flex gap-2 mt-3" do |f| %>
+      <%= text_area_tag :user_message, "",
+                        rows: 2, class: "form-control flex-fill",
+                        placeholder: thread.empty? ?
+                          t("settings.dictionaries.bootstrap.input_placeholder",
+                            default: "Опиши компанию: чем занимаемся, размер, особенности. Например: «Септик-сервис в Подмосковье, 12 водителей, нужны категории ВУ, мед.книжки, графики выезда»") :
+                          t("settings.dictionaries.bootstrap.input_placeholder_continue",
+                            default: "Уточни / поправь / скажи что добавить") %>
+      <%= f.submit thread.empty? ?
+                     t("settings.dictionaries.bootstrap.send_first", default: "🚀 Начать") :
+                     t("settings.dictionaries.bootstrap.send", default: "Отправить"),
+                   class: "btn btn-primary align-self-end" %>
+    <% end %>
+  <% end %>
+</div>

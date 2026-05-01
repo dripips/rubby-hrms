@@ -21,6 +21,7 @@ class DepartmentsController < ApplicationController
 
   def create
     @department = Department.new(department_params.merge(company: @company))
+    apply_custom_fields(@department, params[:custom_fields])
     if @department.save
       redirect_to departments_path, notice: t("departments.created", default: "Отдел добавлен")
     else
@@ -29,11 +30,20 @@ class DepartmentsController < ApplicationController
   end
 
   def update
+    apply_custom_fields(@department, params[:custom_fields])
     if @department.update(department_params)
       redirect_to departments_path, notice: t("departments.updated", default: "Отдел обновлён")
     else
       redirect_to departments_path, alert: @department.errors.full_messages.to_sentence
     end
+  end
+
+  def apply_custom_fields(department, raw)
+    return unless raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
+
+    cleaned = raw.to_unsafe_h.transform_values { |v| v.is_a?(String) ? v.strip : v }
+    cleaned.reject! { |_, v| v.nil? || (v.is_a?(String) && v.empty?) }
+    department.custom_fields = (department.custom_fields.to_h || {}).merge(cleaned)
   end
 
   def destroy

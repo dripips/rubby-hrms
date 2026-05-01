@@ -3,7 +3,7 @@
 class DocumentsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_company
-  before_action :set_document, only: %i[show edit update destroy extract summarize revoke reactivate]
+  before_action :set_document, only: %i[show edit update destroy extract extract_assist summarize apply_extracted review_extracted revoke reactivate]
 
   def index
     authorize Document
@@ -35,6 +35,7 @@ class DocumentsController < ApplicationController
   def create
     @document = Document.new(document_params)
     @document.created_by = current_user
+    apply_custom_fields(@document, params[:custom_fields])
     authorize @document
 
     if @document.save
@@ -54,6 +55,7 @@ class DocumentsController < ApplicationController
 
   def update
     authorize @document
+    apply_custom_fields(@document, params[:custom_fields])
     if @document.update(document_params)
       redirect_to document_path(@document), notice: t("documents.updated", default: "Документ обновлён")
     else
@@ -92,11 +94,53 @@ class DocumentsController < ApplicationController
 
   def summarize
     authorize @document, :summarize?
-    scope = AiLock.for_document(@document)
+    enqueue_ai_task("document_summary")
+    respond_to_extraction_panel
+  end
 
-    # Phase 4 — AI summary будет реализован отдельным job'ом.
-    # Сейчас просто разблокируем и отправим UI обратно.
-    redirect_to document_path(@document), notice: t("documents.summary_pending", default: "AI-сводка появится через минуту")
+  def extract_assist
+    authorize @document, :summarize?
+    enqueue_ai_task("document_extract_assist")
+    respond_to_extraction_panel
+  end
+
+  # Полноэкранный preview-форма: pre-filled значения из extracted_data слева,
+  # большая картинка/PDF справа. Юзер правит и нажимает Сохранить — улетает в
+  # стандартный update.
+  def review_extracted
+    authorize @document, :update?
+
+    data    = @document.extracted_data.to_h.reject { |k, _| k.to_s.start_with?("_") }
+    prefill = build_updates_from_extracted(data)
+    @document.assign_attributes(prefill)
+    @extracted_data = data
+    @document_types = DocumentType.active.where(company: @company)
+  end
+
+  # Переносит данные из extracted_data в основные поля документа.
+  # Перезаписывает существующие значения — пользователь сам нажал кнопку.
+  # Невалидные даты молча пропускаются. Возвращаем краткую сводку: что
+  # заполнили / что не подошло.
+  def apply_extracted
+    authorize @document, :update?
+
+    data = @document.extracted_data.to_h.reject { |k, _| k.to_s.start_with?("_") }
+    if data.empty?
+      redirect_to document_path(@document),
+                  alert: t("documents.no_extracted_data", default: "Нет данных для применения — сначала запусти разбор.")
+      return
+    end
+
+    updates = build_updates_from_extracted(data)
+
+    if updates.any? && @document.update(updates)
+      changed = updates.keys.map { |k| t("documents.fields.#{k}", default: k.to_s.humanize) }.join(", ")
+      redirect_to document_path(@document),
+                  notice: t("documents.extracted_applied", default: "Поля заполнены из разбора: %{fields}", fields: changed)
+    else
+      redirect_to document_path(@document),
+                  alert: t("documents.extracted_not_applicable", default: "В извлечённых данных нет полей, подходящих для документа (number/issuer/issued_at/expires_at).")
+    end
   end
 
   def revoke
@@ -151,10 +195,103 @@ class DocumentsController < ApplicationController
     }
   end
 
+  # Сливает значения custom-полей из формы в extracted_data["_custom"], не
+  # затрагивая ключи, которые наполняет gem/AI-extractor (number, issuer, ...).
+  def apply_custom_fields(document, raw)
+    return unless raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
+
+    cleaned = raw.to_unsafe_h.transform_values { |v| v.is_a?(String) ? v.strip : v }
+    cleaned.reject! { |_, v| v.nil? || v.is_a?(String) && v.empty? }
+
+    data = document.extracted_data.to_h
+    data["_custom"] = (data["_custom"].to_h || {}).merge(cleaned)
+    document.extracted_data = data
+  end
+
+  # Маппинг extracted_data → колонки Document. Учитывает синонимы которые
+  # шлёт AI (valid_until → expires_at, employer → issuer для контрактов и т.д.).
+  def build_updates_from_extracted(data)
+    updates = {}
+    updates[:number]     = data["number"].to_s.strip       if data["number"].present?
+    updates[:issuer]     = (data["issuer"] || data["employer"] || data["institution"]).to_s.strip.presence
+    updates[:issued_at]  = parse_extracted_date(data["issued_at"] || data["start_date"])
+    updates[:expires_at] = parse_extracted_date(data["expires_at"] || data["valid_until"] || data["end_date"])
+
+    updates.compact.reject { |_, v| v.is_a?(String) && v.empty? }
+  end
+
+  def parse_extracted_date(value)
+    return nil if value.blank?
+    return value if value.is_a?(Date)
+    Date.parse(value.to_s)
+  rescue ArgumentError, TypeError
+    nil
+  end
+
   def enqueue_extraction(document, lock_scope: nil)
     return unless document.file.attached?
     return if document.document_type&.extractor_kind == "free"
 
-    DocumentExtractionJob.perform_later(document.id, lock_scope: lock_scope)
+    # Картинки/сканы — сразу через AI Vision (Tesseract на сканах ненадёжен,
+    # одного запроса хватает и на OCR, и на извлечение полей). PDF и прочее —
+    # дешёвый gem-путь, AI остаётся ручным fallback'ом.
+    if document.file.image? && ai_enabled?
+      auto_enqueue_ai(document, kind: "document_extract_assist")
+    else
+      DocumentExtractionJob.perform_later(document.id, lock_scope: lock_scope)
+    end
+  end
+
+  def auto_enqueue_ai(document, kind:)
+    scope = AiLock.for_document(document)
+    return if AiLock.running?(scope)
+
+    AiLock.lock!(scope, kind: kind)
+    RunAiTaskJob.perform_later(
+      kind:        kind,
+      user_id:     current_user.id,
+      document_id: document.id,
+      lock_scope:  scope
+    )
+  end
+
+  def ai_enabled?
+    setting = AppSetting.fetch(company: @company, category: "ai")
+    RecruitmentAi.new(setting: setting).enabled?
+  rescue StandardError => e
+    Rails.logger.warn("[DocumentsController#ai_enabled?] #{e.class}: #{e.message}")
+    false
+  end
+
+  # Общий путь для summarize / extract_assist: лок на документе, ставим job
+  # с lock_scope, чтобы UI знал про in-flight task. broadcast_controls в
+  # ensure-блоке job ререндерит панель.
+  def enqueue_ai_task(kind)
+    return redirect_to document_path(@document), alert: t("documents.no_file", default: "Файл не приложен") unless @document.file.attached?
+
+    scope = AiLock.for_document(@document)
+    return if AiLock.running?(scope)
+
+    AiLock.lock!(scope, kind: kind)
+    RunAiTaskJob.perform_later(
+      kind:        kind,
+      user_id:     current_user.id,
+      document_id: @document.id,
+      lock_scope:  scope
+    )
+    AiLock.broadcast_controls(scope)
+  end
+
+  def respond_to_extraction_panel
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          "document-extraction-#{@document.id}",
+          partial: "documents/extraction_panel",
+          locals:  { document: @document }
+        )
+      end
+      format.html { redirect_to document_path(@document) }
+    end
   end
 end

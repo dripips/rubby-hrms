@@ -31,7 +31,8 @@ class User < ApplicationRecord
     "interview_tomorrow"     => { in_app: true,  email: false },
     "interview_scheduled"    => { in_app: true,  email: true  },
     "interview_cancelled"    => { in_app: true,  email: true  },
-    "applicant_stage_change" => { in_app: true,  email: false }
+    "applicant_stage_change" => { in_app: true,  email: false },
+    "document_expiring"      => { in_app: true,  email: true  }
   }.freeze
 
   def display_name

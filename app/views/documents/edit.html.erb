@@ -1,8 +1,13 @@
 <% content_for(:page_title) { @document.display_title } %>
 
 <header class="page-header">
-  <h1 class="title-1 m-0"><%= @document.display_title %></h1>
-  <p class="footnote text-secondary-apple m-0"><%= @document.document_type&.name %></p>
+  <div>
+    <div class="page-header__eyebrow"><%= @document.document_type&.name %></div>
+    <h1 class="page-header__title m-0"><%= t("common.edit") %>: <%= @document.display_title %></h1>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), document_path(@document), class: "btn btn-ghost" %>
+  </div>
 </header>
 
 <%= render "form", document: @document %>

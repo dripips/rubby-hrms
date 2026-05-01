@@ -66,6 +66,9 @@
   </div>
 
   <div class="col-12 col-xl-5">
+    <%= render_custom_field_values(@department.custom_fields,
+          target_model: "Department", target_scope: "default") %>
+
     <div class="card-apple">
       <h3 class="card-apple__title mb-3"><%= t("departments.subdepartments", default: "Подотделы") %></h3>
       <% if @children.any? %>

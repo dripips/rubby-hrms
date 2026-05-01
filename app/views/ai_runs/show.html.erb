@@ -1,0 +1,131 @@
+<% content_for(:page_title) { "AiRun ##{@run.id}" } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🪄 <%= t("ai_runs.eyebrow", default: "Журнал AI") %></div>
+    <h1 class="page-header__title m-0">
+      <%= t("ai.actions.#{@run.kind}", default: @run.kind.humanize) %>
+      <% if @run.success %>
+        <span class="pill pill--success">✓</span>
+      <% else %>
+        <span class="pill pill--danger">⚠ <%= t("documents.ai_failed_title", default: "AI не справился") %></span>
+      <% end %>
+    </h1>
+    <p class="page-header__subtitle">
+      <%= l(@run.created_at, format: :long) %> · <%= @run.user&.email %> · <code><%= @run.model %></code>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), ai_runs_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<section class="row g-3">
+  <div class="col-lg-7">
+    <%# ── Детали запуска ────────────────────────────────────────────── %>
+    <div class="card-apple">
+      <h3 class="title-3 mb-3"><%= t("ai_runs.show.meta", default: "Детали") %></h3>
+      <dl class="row g-2 m-0">
+        <dt class="col-md-4 form-label"><%= t("settings.ai.usage.when", default: "Когда") %></dt>
+        <dd class="col-md-8"><%= l(@run.created_at, format: :long) %></dd>
+        <dt class="col-md-4 form-label"><%= t("settings.ai.usage.user", default: "Кто") %></dt>
+        <dd class="col-md-8"><%= @run.user&.email || "—" %></dd>
+        <dt class="col-md-4 form-label"><%= t("settings.ai.usage.model", default: "Модель") %></dt>
+        <dd class="col-md-8"><code><%= @run.model %></code></dd>
+        <dt class="col-md-4 form-label"><%= t("settings.ai.usage.tokens_short", default: "Токены") %></dt>
+        <dd class="col-md-8 tabular-nums">
+          <%= number_with_delimiter(@run.input_tokens.to_i) %> in /
+          <%= number_with_delimiter(@run.output_tokens.to_i) %> out =
+          <strong><%= number_with_delimiter(@run.total_tokens.to_i) %></strong>
+        </dd>
+        <dt class="col-md-4 form-label"><%= t("settings.ai.usage.cost", default: "Стоимость") %></dt>
+        <dd class="col-md-8 tabular-nums"><%= @run.cost_display %></dd>
+      </dl>
+    </div>
+
+    <%# ── Payload (response от AI) ─────────────────────────────────── %>
+    <div class="card-apple mt-3">
+      <h3 class="title-3 mb-3"><%= t("ai_runs.show.payload", default: "Ответ AI (payload)") %></h3>
+      <% if @run.payload.present? %>
+        <pre class="callout text-mono" style="font-size: 12px; max-height: 480px; overflow: auto; white-space: pre-wrap;"><%= JSON.pretty_generate(@run.payload) rescue @run.payload.inspect %></pre>
+      <% else %>
+        <p class="footnote text-tertiary m-0">—</p>
+      <% end %>
+    </div>
+
+    <%# ── Ошибка (если упал) ──────────────────────────────────────── %>
+    <% if @run.error.present? %>
+      <div class="card-apple ai-leaves-result--error mt-3">
+        <h3 class="title-3 mb-2"><%= t("documents.extraction_failed_reason", default: "Причина") %></h3>
+        <p class="m-0"><%= @run.error %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-lg-5">
+    <%# ── Связанный объект ─────────────────────────────────────────── %>
+    <%
+      links = []
+      links << ["📄", "Document", @run.document&.display_title, (document_path(@run.document_id) if @run.document_id)]
+      links << ["📚", "Dictionary", @run.dictionary&.name, (settings_dictionary_path(@run.dictionary_id) if @run.dictionary_id)]
+      links << ["👤", "Кандидат", @run.job_applicant&.full_name, (job_applicant_path(@run.job_applicant_id) if @run.job_applicant_id)]
+      links << ["🧑", "Сотрудник", @run.employee&.full_name, (employee_path(@run.employee_id) if @run.employee_id)]
+      links << ["🌱", "Онбординг", @run.onboarding_process&.employee&.full_name, (onboarding_process_path(@run.onboarding_process_id) if @run.onboarding_process_id)]
+      links << ["👋", "Офбординг", @run.offboarding_process&.employee&.full_name, (offboarding_process_path(@run.offboarding_process_id) if @run.offboarding_process_id)]
+      links << ["💼", "Вакансия", @run.job_opening&.title, (job_opening_path(@run.job_opening_id) if @run.job_opening_id)]
+      links_present = links.select { |_, _, name, url| url && name }
+    %>
+    <% if links_present.any? %>
+      <div class="card-apple">
+        <h3 class="title-3 mb-3"><%= t("ai_runs.show.linked", default: "Связанные объекты") %></h3>
+        <ul class="list-apple m-0">
+          <% links_present.each do |emoji, label, name, url| %>
+            <li class="list-apple__item">
+              <span class="me-2 fs-5"><%= emoji %></span>
+              <div class="d-flex flex-column flex-fill min-w-0">
+                <span class="footnote text-tertiary"><%= label %></span>
+                <%= link_to name, url, class: "link-plain" %>
+              </div>
+              <%= link_to "→", url, class: "btn btn-ghost btn-sm" %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%# ── Drill-down: фильтр по объекту/пользователю ──────────────── %>
+    <div class="card-apple mt-3">
+      <h3 class="title-3 mb-3"><%= t("ai_runs.show.drilldown", default: "История") %></h3>
+      <ul class="list-apple m-0">
+        <% if @run.document_id %>
+          <li class="list-apple__item">
+            <%= link_to t("ai_runs.show.same_document", default: "Все запуски по этому документу"),
+                        ai_runs_path(document_id: @run.document_id), class: "link-plain" %>
+          </li>
+        <% end %>
+        <% if @run.dictionary_id %>
+          <li class="list-apple__item">
+            <%= link_to t("ai_runs.show.same_dictionary", default: "Все запуски по этому словарю"),
+                        ai_runs_path(dictionary_id: @run.dictionary_id), class: "link-plain" %>
+          </li>
+        <% end %>
+        <% if @run.employee_id %>
+          <li class="list-apple__item">
+            <%= link_to t("ai_runs.show.same_employee", default: "Все запуски по этому сотруднику"),
+                        ai_runs_path(employee_id: @run.employee_id), class: "link-plain" %>
+          </li>
+        <% end %>
+        <% if @run.user_id %>
+          <li class="list-apple__item">
+            <%= link_to t("ai_runs.show.same_user", default: "Все запуски этого пользователя"),
+                        ai_runs_path(user_id: @run.user_id), class: "link-plain" %>
+          </li>
+        <% end %>
+        <li class="list-apple__item">
+          <%= link_to t("ai_runs.show.same_kind", default: "Все «%{kind}»", kind: t("ai.actions.#{@run.kind}", default: @run.kind.humanize)),
+                      ai_runs_path(kind: @run.kind), class: "link-plain" %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>

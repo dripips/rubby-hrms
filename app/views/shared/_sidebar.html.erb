@@ -41,6 +41,7 @@
           { key: :dictionaries, path: dictionaries_path, icon: "book"     },
           { key: :audit,        path: audit_path,        icon: "shield"   },
           *(current_user&.role_superadmin? || current_user&.role_hr? ? [
+            { key: :ai_runs,    path: ai_runs_path,      icon: "trending" },
             { key: :settings,   path: settings_languages_path, icon: "settings" }
           ] : [])
         ] }
@@ -88,13 +89,13 @@
           <li><hr class="dropdown-divider"></li>
 
           <li>
-            <%= link_to "#", class: "dropdown-item" do %>
+            <%= link_to profile_path, class: "dropdown-item" do %>
               <span class="dropdown-item__icon"><%= render "shared/icons/user" %></span>
               <span><%= t("user_menu.profile", default: "Профиль") %></span>
             <% end %>
           </li>
           <li>
-            <%= link_to "#", class: "dropdown-item" do %>
+            <%= link_to settings_root_path, class: "dropdown-item" do %>
               <span class="dropdown-item__icon"><%= render "shared/icons/settings" %></span>
               <span><%= t("user_menu.settings", default: "Настройки") %></span>
             <% end %>

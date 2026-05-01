@@ -1,10 +1,16 @@
 <% content_for(:page_title) { t("documents.new", default: "Загрузить документ") } %>
 
 <header class="page-header">
-  <h1 class="title-1 m-0">📁 <%= t("documents.new", default: "Загрузить документ") %></h1>
-  <p class="footnote text-secondary-apple m-0">
-    <%= t("documents.new_hint", default: "После загрузки запустится автоматический разбор: paspol/snils/inn/договоры распознаются регулярными выражениями. AI используется только для длинных текстовых документов.") %>
-  </p>
+  <div>
+    <div class="page-header__eyebrow">📁 <%= t("documents.title", default: "Документы") %></div>
+    <h1 class="page-header__title m-0"><%= t("documents.new", default: "Загрузить документ") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("documents.new_hint", default: "После загрузки запустится автоматический разбор: паспорта/снилс/инн/договоры распознаются регулярными выражениями. AI используется только для длинных текстовых документов.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), documents_path, class: "btn btn-ghost" %>
+  </div>
 </header>
 
 <%= render "form", document: @document %>
