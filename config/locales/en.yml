@@ -282,6 +282,11 @@ en:
       s_hint: 1 column — compact
       m_hint: 2 columns — medium
       l_hint: 4 columns — wide
+    edit_layout: Edit
+    edit_hint: Drag widgets, tap S/M/L, ● to hide.
+    toggle_visibility: Hide/show
+    saved: Saved
+    save_failed: Could not save
   stub:
     title: Section under construction
     subtitle: A full UI will land here soon.

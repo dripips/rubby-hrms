@@ -1,27 +1,87 @@
 <% content_for :page_title, t("navigation.dashboard") %>
 
-<header class="page-header">
-  <div>
-    <div class="page-header__eyebrow"><%= l(Date.current, format: :long) %></div>
-    <h1 class="page-header__title"><%= @greeting %>, <%= current_user.display_name %></h1>
-    <p class="page-header__subtitle"><%= t("dashboard.subtitle") %></p>
-  </div>
-  <div class="page-header__actions">
-    <%= link_to t("dashboard.customize", default: "⚙ Настроить"),
-                customize_dashboard_path, class: "btn btn-soft" %>
-    <% if current_user&.role_superadmin? || current_user&.role_hr? %>
-      <%= link_to t("dashboard.actions.new_employee"), employees_path, class: "btn btn-primary" %>
+<div data-controller="dashboard-live-edit"
+     data-dashboard-live-edit-save-url-value="<%= update_dashboard_widgets_path %>">
+
+  <header class="page-header">
+    <div>
+      <div class="page-header__eyebrow"><%= l(Date.current, format: :long) %></div>
+      <h1 class="page-header__title"><%= @greeting %>, <%= current_user.display_name %></h1>
+      <p class="page-header__subtitle"><%= t("dashboard.subtitle") %></p>
+    </div>
+    <div class="page-header__actions">
+      <button type="button" class="btn btn-soft"
+              data-dashboard-live-edit-target="enterButton"
+              data-action="click->dashboard-live-edit#enter">
+        ✎ <%= t("dashboard.edit_layout", default: "Изменить") %>
+      </button>
+      <%= link_to t("dashboard.customize", default: "⚙ Настроить"),
+                  customize_dashboard_path, class: "btn btn-ghost" %>
+      <% if current_user&.role_superadmin? || current_user&.role_hr? %>
+        <%= link_to t("dashboard.actions.new_employee"), employees_path, class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </header>
+
+  <%# Скрытый блок с локализованными строками для toast'ов и a11y %>
+  <span hidden data-i18n="saved"><%= t("dashboard.saved", default: "Сохранено") %></span>
+  <span hidden data-i18n="save_failed"><%= t("dashboard.save_failed", default: "Не получилось сохранить") %></span>
+
+  <%# ── iOS-style grid ──────────────────────────────────────────────── %>
+  <div class="dashboard-grid" data-dashboard-live-edit-target="grid">
+    <% DashboardWidgets.for_user(current_user).each do |w| %>
+      <div class="dashboard-widget dashboard-widget--<%= w[:size] %><%= ' is-hidden' if w[:hidden] %>"
+           data-widget-key="<%= w[:key] %>"
+           data-size="<%= w[:size] %>"
+           data-hidden="<%= w[:hidden] %>"
+           draggable="true">
+
+        <%# Edit-overlay появляется ТОЛЬКО когда грид в режиме is-edit-mode (CSS) %>
+        <div class="dashboard-widget__edit-overlay" aria-hidden="true">
+          <button type="button" class="dashboard-widget__visibility"
+                  data-action="click->dashboard-live-edit#toggleVisibility"
+                  aria-pressed="<%= w[:hidden] %>"
+                  title="<%= t("dashboard.toggle_visibility", default: "Скрыть/показать") %>">
+            <span class="dashboard-widget__eye"><%= w[:hidden] ? "○" : "●" %></span>
+          </button>
+
+          <div class="size-segment size-segment--floating" role="radiogroup"
+               aria-label="<%= t("dashboard.widget_size", default: "Размер виджета") %>">
+            <% %w[s m l].each do |size| %>
+              <label class="size-segment__pip <%= 'is-active' if w[:size] == size %>" title="<%= size.upcase %>">
+                <input type="radio"
+                       name="live_size_<%= w[:key] %>"
+                       value="<%= size %>"
+                       <%= 'checked' if w[:size] == size %>
+                       data-action="change->dashboard-live-edit#resize">
+                <span class="size-segment__icon size-segment__icon--<%= size %>" aria-hidden="true"></span>
+                <span class="size-segment__label"><%= size.upcase %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <%= render "dashboard/widgets/#{w[:key]}", widget_size: w[:size] %>
+      </div>
     <% end %>
   </div>
-</header>
 
-<%# ── iOS-style grid: 4 cols (lg) → 2 cols (md) → 1 col (sm) ──────────── %>
-<div class="dashboard-grid">
-  <% DashboardWidgets.for_user(current_user).each do |widget| %>
-    <% next if widget[:hidden] %>
-    <div class="dashboard-widget dashboard-widget--<%= widget[:size] %>"
-         data-widget-key="<%= widget[:key] %>">
-      <%= render "dashboard/widgets/#{widget[:key]}", widget_size: widget[:size] %>
+  <%# ── Sticky edit-bar ─────────────────────────────────────────────── %>
+  <div class="dashboard-edit-bar" data-dashboard-live-edit-target="editBar" hidden>
+    <div class="dashboard-edit-bar__inner">
+      <span class="dashboard-edit-bar__hint">
+        <%= t("dashboard.edit_hint", default: "Тащи виджеты, кликай S/M/L, ● — скрыть.") %>
+      </span>
+      <div class="dashboard-edit-bar__actions">
+        <button type="button" class="btn btn-ghost"
+                data-action="click->dashboard-live-edit#cancel">
+          <%= t("common.cancel", default: "Отмена") %>
+        </button>
+        <button type="button" class="btn btn-primary"
+                data-action="click->dashboard-live-edit#save">
+          <%= t("common.save", default: "Сохранить") %>
+        </button>
+      </div>
     </div>
-  <% end %>
+  </div>
 </div>

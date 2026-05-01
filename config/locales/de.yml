@@ -282,6 +282,11 @@ de:
       s_hint: 1 Spalte — kompakt
       m_hint: 2 Spalten — mittel
       l_hint: 4 Spalten — breit
+    edit_layout: Bearbeiten
+    edit_hint: Widgets ziehen, S/M/L tippen, ● zum Ausblenden.
+    toggle_visibility: Ein-/ausblenden
+    saved: Gespeichert
+    save_failed: Speichern fehlgeschlagen
   stub:
     title: Bereich im Aufbau
     subtitle: Eine vollständige Oberfläche kommt bald.
