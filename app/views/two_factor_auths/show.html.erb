@@ -1,0 +1,128 @@
+<% content_for(:page_title) { t("profile.two_factor.title", default: "Двухфакторная аутентификация") } %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">🛡️ <%= t("profile.eyebrow", default: "Мой профиль") %></div>
+    <h1 class="page-header__title m-0"><%= t("profile.two_factor.title", default: "Двухфакторная аутентификация") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("profile.two_factor.hint", default: "Дополнительный код из приложения-аутентификатора (Google Authenticator, 1Password, Authy) при каждом входе.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), security_profile_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= render "profile/tabs" %>
+
+<% if current_user.two_factor_enabled? %>
+  <%# ── 2FA уже включена: статус + backup-codes + disable-форма ─────────── %>
+  <div class="card-apple mb-3">
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <span class="status-dot status-dot--success"></span>
+      <div>
+        <h3 class="title-3 m-0"><%= t("profile.two_factor.enabled_title", default: "2FA активна") %></h3>
+        <p class="footnote text-tertiary m-0">
+          <%= t("profile.two_factor.enabled_hint", default: "При входе будет запрашиваться код из приложения.") %>
+        </p>
+      </div>
+    </div>
+
+    <% if @recently_generated_codes.present? %>
+      <%# Только что сгенерили — показываем 1 раз %>
+      <div class="alert alert-warning mb-3">
+        <strong><%= t("profile.two_factor.codes_one_time_title", default: "Сохрани эти коды СЕЙЧАС") %></strong>
+        <p class="m-0 footnote"><%= t("profile.two_factor.codes_one_time_hint", default: "Они показываются ОДИН раз. Каждый код одноразовый — используется если потеряешь телефон.") %></p>
+      </div>
+      <pre class="card-apple card-apple--inset mb-3" style="font-family: var(--ds-font-mono, monospace); font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-all;"><%= @recently_generated_codes.join("\n") %></pre>
+      <button type="button" class="btn btn-ghost btn-sm mb-3"
+              data-controller="clipboard"
+              data-clipboard-text-value="<%= @recently_generated_codes.join("\n") %>"
+              data-action="click->clipboard#copy">
+        📋 <%= t("common.copy", default: "Скопировать") %>
+      </button>
+    <% else %>
+      <p class="footnote">
+        <%= t("profile.two_factor.backup_remaining", default: "Осталось backup-кодов: %{n}", n: @remaining_backup_codes) %>
+      </p>
+    <% end %>
+  </div>
+
+  <%# Регенерация backup-кодов %>
+  <div class="card-apple mb-3">
+    <h3 class="title-3 mb-2"><%= t("profile.two_factor.regenerate_title", default: "Перевыпустить backup-коды") %></h3>
+    <p class="footnote text-secondary-apple mb-3">
+      <%= t("profile.two_factor.regenerate_hint", default: "Старые коды станут невалидны. Введи текущий TOTP-код для подтверждения.") %>
+    </p>
+    <%= form_with url: regenerate_backup_codes_profile_path, method: :post, local: true, html: { class: "d-flex gap-2 align-items-end" } do %>
+      <div class="flex-grow-1" style="max-width: 200px;">
+        <%= label_tag :otp_code, t("profile.two_factor.code_label", default: "Код 2FA"), class: "form-label" %>
+        <%= text_field_tag :otp_code, nil, class: "form-control", inputmode: "numeric", autocomplete: "off", maxlength: 8, placeholder: "000000" %>
+      </div>
+      <%= submit_tag t("profile.two_factor.regenerate_btn", default: "Перевыпустить"), class: "btn btn-primary" %>
+    <% end %>
+  </div>
+
+  <%# Отключение 2FA %>
+  <div class="card-apple">
+    <h3 class="title-3 mb-2"><%= t("profile.two_factor.disable_title", default: "Выключить 2FA") %></h3>
+    <p class="footnote text-secondary-apple mb-3">
+      <%= t("profile.two_factor.disable_hint", default: "Снизит уровень защиты аккаунта. Введи TOTP или backup-код для подтверждения.") %>
+    </p>
+    <%= form_with url: disable_two_factor_profile_path, method: :delete, local: true, html: { class: "d-flex gap-2 align-items-end" } do %>
+      <div class="flex-grow-1" style="max-width: 200px;">
+        <%= label_tag :otp_code, t("profile.two_factor.code_label", default: "Код 2FA"), class: "form-label" %>
+        <%= text_field_tag :otp_code, nil, class: "form-control", inputmode: "text", autocomplete: "off", maxlength: 8, placeholder: "000000" %>
+      </div>
+      <%= submit_tag t("profile.two_factor.disable_btn", default: "Выключить"), class: "btn btn-danger",
+                    data: { confirm: t("profile.two_factor.disable_confirm", default: "Точно выключить 2FA?") } %>
+    <% end %>
+  </div>
+
+<% else %>
+  <%# ── Setup-flow: показываем QR + поле для verify-кода ──────────────── %>
+  <div class="card-apple">
+    <div class="row g-4">
+      <div class="col-md-5 d-flex flex-column align-items-center justify-content-center">
+        <% if @qr_svg %>
+          <div class="card-apple card-apple--inset" style="background: white; padding: 16px; border-radius: 12px;">
+            <%= @qr_svg %>
+          </div>
+        <% end %>
+        <p class="footnote text-tertiary m-0 mt-2 text-center" style="max-width: 240px;">
+          <%= t("profile.two_factor.scan_hint", default: "Отсканируй QR в Google Authenticator, 1Password, Authy или любом TOTP-клиенте.") %>
+        </p>
+      </div>
+
+      <div class="col-md-7">
+        <h3 class="title-3 mb-2"><%= t("profile.two_factor.setup_title", default: "Шаг 2 — введи код из приложения") %></h3>
+        <p class="footnote text-secondary-apple mb-3">
+          <%= t("profile.two_factor.setup_hint", default: "Введи 6-значный код, который показывает приложение, чтобы подтвердить настройку.") %>
+        </p>
+
+        <%= form_with url: enable_two_factor_profile_path, method: :post, local: true, html: { class: "form-apple d-flex flex-column gap-3" } do %>
+          <div>
+            <%= label_tag :otp_code, t("profile.two_factor.code_label", default: "Код 2FA"), class: "form-label" %>
+            <%= text_field_tag :otp_code, nil, class: "form-control form-control-lg", inputmode: "numeric",
+                              autocomplete: "off", maxlength: 6, placeholder: "000000",
+                              autofocus: true, required: true %>
+          </div>
+          <div class="d-flex gap-2">
+            <%= submit_tag t("profile.two_factor.enable_btn", default: "Включить 2FA"), class: "btn btn-primary" %>
+            <%= link_to t("common.cancel"), security_profile_path, class: "btn btn-ghost" %>
+          </div>
+        <% end %>
+
+        <details class="mt-4">
+          <summary class="footnote" style="cursor: pointer;"><%= t("profile.two_factor.cant_scan", default: "Не получается отсканировать?") %></summary>
+          <p class="footnote text-tertiary mt-2 mb-0">
+            <%= t("profile.two_factor.manual_entry", default: "Введи секрет вручную:") %>
+          </p>
+          <code class="d-block mt-1" style="background: var(--ds-fill-3); padding: 8px 12px; border-radius: 8px; word-break: break-all;">
+            <%= current_user.otp_secret %>
+          </code>
+        </details>
+      </div>
+    </div>
+  </div>
+<% end %>

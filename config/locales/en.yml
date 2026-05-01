@@ -54,6 +54,36 @@ en:
       delete_confirm_required: Type DELETE in caps to confirm.
       delete_btn: Delete forever
       deleted: Account deleted. Goodbye.
+    two_factor:
+      title: Two-Factor Authentication
+      hint: Extra code from an authenticator app (Google Authenticator, 1Password, Authy) on every sign-in.
+      enable: Enable
+      manage: Manage
+      enabled: 2FA enabled. Save your backup codes!
+      disabled: 2FA disabled.
+      invalid_code: Invalid code. Try again.
+      codes_regenerated: New backup codes generated.
+      enabled_title: 2FA is active
+      enabled_hint: Sign-in will require a code from your app.
+      codes_one_time_title: Save these codes NOW
+      codes_one_time_hint: Shown ONCE only. Each code is single-use — for emergencies if you lose your phone.
+      backup_remaining: 'Backup codes remaining: %{n}'
+      regenerate_title: Regenerate backup codes
+      regenerate_hint: Old codes become invalid. Enter your current TOTP code to confirm.
+      regenerate_btn: Regenerate
+      disable_title: Disable 2FA
+      disable_hint: Lowers your account security. Enter TOTP or backup code to confirm.
+      disable_btn: Disable
+      disable_confirm: Really disable 2FA?
+      setup_title: Step 2 — enter code from your app
+      setup_hint: Enter the 6-digit code your app shows to confirm setup.
+      scan_hint: Scan the QR in Google Authenticator, 1Password, Authy or any TOTP client.
+      code_label: 2FA code
+      enable_btn: Enable 2FA
+      cant_scan: Can't scan?
+      manual_entry: 'Enter the secret manually:'
+      status_on: 'Enabled. Backup codes left: %{n}'
+      status_off: Not enabled — recommended for account protection.
   navigation:
     workspace: Workspace
     org: Organization
@@ -128,6 +158,7 @@ en:
     unassigned: Unassigned
     prev: Prev
     next: Next
+    copy: Copy
   auth:
     sign_in: Sign in
     sign_up: Sign up
@@ -149,6 +180,12 @@ en:
       slogan_2: From hiring to KPI — all in one place.
       slogan_3: Happy employees. A growing business.
       slogan_4: Less Excel. More results.
+    two_factor:
+      title: Two-factor verification
+      subtitle: Enter the 6-digit code from your authenticator app. Lost access? Enter a backup code.
+      code_label: Code
+      verify_btn: Verify
+      back_to_login: Sign in again
   roles:
     superadmin: Super-admin
     hr: HR specialist

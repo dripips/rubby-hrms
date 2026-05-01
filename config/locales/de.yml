@@ -54,6 +54,36 @@ de:
       delete_confirm_required: Tippe DELETE in Großbuchstaben zur Bestätigung.
       delete_btn: Endgültig löschen
       deleted: Konto gelöscht. Auf Wiedersehen.
+    two_factor:
+      title: Zwei-Faktor-Authentifizierung
+      hint: Zusätzlicher Code aus einer Authenticator-App (Google Authenticator, 1Password, Authy) bei jeder Anmeldung.
+      enable: Aktivieren
+      manage: Verwalten
+      enabled: 2FA aktiviert. Speichere die Backup-Codes!
+      disabled: 2FA deaktiviert.
+      invalid_code: Ungültiger Code. Versuche es erneut.
+      codes_regenerated: Neue Backup-Codes generiert.
+      enabled_title: 2FA ist aktiv
+      enabled_hint: Bei der Anmeldung wird ein Code aus deiner App verlangt.
+      codes_one_time_title: Speichere diese Codes JETZT
+      codes_one_time_hint: Werden nur EINMAL angezeigt. Jeder Code ist einmalig — bei Verlust deines Handys.
+      backup_remaining: 'Verbleibende Backup-Codes: %{n}'
+      regenerate_title: Backup-Codes neu generieren
+      regenerate_hint: Alte Codes werden ungültig. Gib deinen aktuellen TOTP-Code zur Bestätigung ein.
+      regenerate_btn: Neu generieren
+      disable_title: 2FA deaktivieren
+      disable_hint: Senkt die Sicherheit deines Kontos. Gib TOTP- oder Backup-Code ein.
+      disable_btn: Deaktivieren
+      disable_confirm: 2FA wirklich deaktivieren?
+      setup_title: Schritt 2 — Code aus der App eingeben
+      setup_hint: Gib den 6-stelligen Code aus deiner App ein, um die Einrichtung zu bestätigen.
+      scan_hint: Scanne den QR-Code in Google Authenticator, 1Password, Authy oder einem anderen TOTP-Client.
+      code_label: 2FA-Code
+      enable_btn: 2FA aktivieren
+      cant_scan: Kannst du nicht scannen?
+      manual_entry: 'Gib das Secret manuell ein:'
+      status_on: 'Aktiviert. Verbleibende Backup-Codes: %{n}'
+      status_off: Nicht aktiviert — empfohlen zum Schutz deines Kontos.
   navigation:
     workspace: Arbeitsbereich
     org: Organisation
@@ -128,6 +158,7 @@ de:
     unassigned: Nicht zugewiesen
     prev: Zurück
     next: Weiter
+    copy: Kopieren
   auth:
     sign_in: Anmelden
     sign_up: Registrieren
@@ -149,6 +180,12 @@ de:
       slogan_2: Vom Recruiting bis zum KPI — alles an einem Ort.
       slogan_3: Zufriedene Mitarbeiter. Wachsendes Geschäft.
       slogan_4: Weniger Excel. Mehr Ergebnisse.
+    two_factor:
+      title: Zwei-Faktor-Verifizierung
+      subtitle: Gib den 6-stelligen Code aus deiner Authenticator-App ein. Zugang verloren? Gib einen Backup-Code ein.
+      code_label: Code
+      verify_btn: Bestätigen
+      back_to_login: Erneut anmelden
   roles:
     superadmin: Super-Admin
     hr: HR-Spezialist

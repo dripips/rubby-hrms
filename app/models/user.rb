@@ -1,3 +1,5 @@
+require "bcrypt"
+
 class User < ApplicationRecord
   include Discard::Model
 
@@ -68,5 +70,105 @@ class User < ApplicationRecord
   # Возвращает текущее значение для UI с учётом дефолта.
   def preference_value(kind, channel)
     notify_for?(kind, channel)
+  end
+
+  # ── 2FA / TOTP (RFC 6238) ──────────────────────────────────────────────
+  # otp_secret             — base32, генерится при setup
+  # otp_required_for_login — true когда пользователь подтвердил setup TOTP'ом
+  # otp_backup_codes       — JSON-array из 10 одноразовых кодов (8 hex chars)
+  # otp_enabled_at         — когда юзер прошёл verify (не на setup-старте)
+  # otp_last_used_at       — для drift-tracking (анти-replay внутри drift-окна)
+
+  TOTP_ISSUER = "HRMS".freeze
+  BACKUP_CODES_COUNT = 10
+
+  def two_factor_enabled?
+    otp_required_for_login? && otp_secret.present?
+  end
+
+  # Генерит новый секрет (вызывается на старте setup-flow). Не enable'ит до verify.
+  def regenerate_otp_secret!
+    update!(
+      otp_secret: ROTP::Base32.random,
+      otp_required_for_login: false,
+      otp_enabled_at: nil
+    )
+  end
+
+  def totp
+    return nil if otp_secret.blank?
+    ROTP::TOTP.new(otp_secret, issuer: TOTP_ISSUER)
+  end
+
+  def otp_provisioning_uri
+    totp&.provisioning_uri(email)
+  end
+
+  # Проверка кода с drift'ом ±30s. После успеха — пишет otp_last_used_at чтобы
+  # не пускать тот же код повторно в пределах того же 30s окна.
+  def verify_totp(code)
+    return false if code.blank? || totp.nil?
+    code = code.to_s.gsub(/\s+/, "")
+    timestamp = totp.verify(code, drift_behind: 30, drift_ahead: 30, after: otp_last_used_at)
+    return false unless timestamp
+    update_column(:otp_last_used_at, Time.zone.at(timestamp))
+    true
+  end
+
+  # Включает 2FA после успешной верификации первого TOTP-кода. Заодно генерит
+  # и возвращает plaintext backup-codes (показываем юзеру 1 раз — потом только хеши).
+  def enable_two_factor!
+    codes = generate_backup_codes
+    update!(
+      otp_required_for_login: true,
+      otp_enabled_at: Time.current,
+      otp_backup_codes: codes.map { |c| ::BCrypt::Password.create(c) }.to_json
+    )
+    codes
+  end
+
+  def disable_two_factor!
+    update!(
+      otp_secret: nil,
+      otp_required_for_login: false,
+      otp_enabled_at: nil,
+      otp_backup_codes: nil,
+      otp_last_used_at: nil
+    )
+  end
+
+  # Регенерация набора backup-кодов (новый сет, старые становятся невалидны).
+  # Возвращает plaintext-коды для показа в UI.
+  def regenerate_backup_codes!
+    codes = generate_backup_codes
+    update!(otp_backup_codes: codes.map { |c| ::BCrypt::Password.create(c) }.to_json)
+    codes
+  end
+
+  # Verify backup-code: ищет совпадение среди bcrypt-хешей. На совпадении —
+  # удаляет использованный хеш (одноразовость).
+  def consume_backup_code!(code)
+    return false if otp_backup_codes.blank? || code.blank?
+    code = code.to_s.strip.downcase
+    hashes = JSON.parse(otp_backup_codes) rescue []
+    return false if hashes.empty?
+
+    matched_idx = hashes.index { |h| ::BCrypt::Password.new(h) == code rescue false }
+    return false unless matched_idx
+
+    hashes.delete_at(matched_idx)
+    update_column(:otp_backup_codes, hashes.to_json)
+    true
+  end
+
+  def remaining_backup_codes_count
+    return 0 if otp_backup_codes.blank?
+    (JSON.parse(otp_backup_codes) rescue []).size
+  end
+
+  private
+
+  def generate_backup_codes
+    Array.new(BACKUP_CODES_COUNT) { SecureRandom.hex(4).downcase }
   end
 end

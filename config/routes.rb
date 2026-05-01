@@ -185,7 +185,16 @@ Rails.application.routes.draw do
       get :privacy
       get :export_data
       delete :delete_account
+      # 2FA: setup → verify → enabled. Disable + regenerate backup codes.
+      get    "two_factor",                  to: "two_factor_auths#show",        as: :two_factor
+      post   "two_factor",                  to: "two_factor_auths#create",      as: :enable_two_factor
+      delete "two_factor",                  to: "two_factor_auths#destroy",     as: :disable_two_factor
+      post   "two_factor/backup_codes",     to: "two_factor_auths#regenerate",  as: :regenerate_backup_codes
     end
+
+    # 2FA challenge на sign-in (пользователь уже прошёл password, ждём TOTP).
+    get    "two_factor/challenge", to: "two_factor_challenges#show",   as: :two_factor_challenge
+    post   "two_factor/challenge", to: "two_factor_challenges#create", as: :verify_two_factor_challenge
 
     # AI Audit log — отдельный аудит для запусков AI-задач (HR/admin only).
     resources :ai_runs, only: %i[index show]

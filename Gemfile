@@ -28,6 +28,8 @@ gem "mission_control-jobs"  # web UI for solid_queue
 gem "devise"
 gem "devise-i18n"
 gem "pundit"
+gem "rotp"                  # TOTP (RFC 6238) для 2FA
+gem "rqrcode"               # SVG QR-код для 2FA setup
 
 # ── Domain-specific gems ────────────────────────────────────────────────────
 gem "aasm"                  # state machines (leave_requests workflow)

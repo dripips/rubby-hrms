@@ -1,0 +1,37 @@
+<div class="auth-shell">
+  <section class="auth-shell__form-side">
+    <%= form_with url: verify_two_factor_challenge_path, method: :post, local: true, html: { class: "auth-shell__form" } do %>
+      <div class="sidebar-apple__brand" style="margin-bottom: var(--ds-space-4); padding: 0;">
+        <span class="sidebar-apple__brand-mark">H</span>
+        <span><%= t("app.name") %></span>
+      </div>
+
+      <h1 class="auth-shell__title"><%= t("auth.two_factor.title", default: "Двухфакторная проверка") %></h1>
+      <p class="auth-shell__subtitle">
+        <%= t("auth.two_factor.subtitle", default: "Введи 6-значный код из приложения-аутентификатора. Если потерял доступ — введи backup-код.") %>
+      </p>
+
+      <% if alert.present? %>
+        <div class="alert alert-danger"><%= alert %></div>
+      <% end %>
+
+      <div>
+        <%= label_tag :otp_code, t("auth.two_factor.code_label", default: "Код"), class: "form-label" %>
+        <%= text_field_tag :otp_code, nil,
+              class: "form-control form-control-lg",
+              inputmode: "text", autocomplete: "one-time-code",
+              maxlength: 8, placeholder: "000000",
+              autofocus: true, required: true %>
+      </div>
+
+      <%= submit_tag t("auth.two_factor.verify_btn", default: "Подтвердить"),
+                    class: "btn btn-primary btn-lg w-100 mt-2" %>
+
+      <div class="d-flex justify-content-between mt-3">
+        <%= link_to t("auth.two_factor.back_to_login", default: "Войти заново"), new_user_session_path, class: "footnote" %>
+      </div>
+    <% end %>
+  </section>
+
+  <%= render "shared/auth_hero" %>
+</div>

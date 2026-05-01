@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_01_010001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_01_161501) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -877,6 +877,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_01_010001) do
     t.string "last_sign_in_ip"
     t.string "locale", limit: 5, default: "ru", null: false
     t.jsonb "notification_preferences", default: {}, null: false
+    t.text "otp_backup_codes"
+    t.datetime "otp_enabled_at"
+    t.datetime "otp_last_used_at"
+    t.boolean "otp_required_for_login", default: false, null: false
+    t.string "otp_secret"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"

@@ -15,6 +15,36 @@
 
 <%= render "profile/tabs" %>
 
+<%# ── 2FA card ────────────────────────────────────────────────────────── %>
+<div class="card-apple mb-3">
+  <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+    <div class="d-flex align-items-center gap-3">
+      <% if current_user.two_factor_enabled? %>
+        <span class="status-dot status-dot--success"></span>
+      <% else %>
+        <span class="status-dot status-dot--warning"></span>
+      <% end %>
+      <div>
+        <h3 class="title-3 m-0"><%= t("profile.two_factor.title", default: "Двухфакторная аутентификация") %></h3>
+        <p class="footnote text-tertiary m-0 mt-1">
+          <% if current_user.two_factor_enabled? %>
+            <%= t("profile.two_factor.status_on", default: "Включена. Backup-кодов осталось: %{n}", n: current_user.remaining_backup_codes_count) %>
+          <% else %>
+            <%= t("profile.two_factor.status_off", default: "Не включена — рекомендуется для защиты аккаунта.") %>
+          <% end %>
+        </p>
+      </div>
+    </div>
+    <div>
+      <% if current_user.two_factor_enabled? %>
+        <%= link_to t("profile.two_factor.manage", default: "Управлять"), two_factor_profile_path, class: "btn btn-ghost" %>
+      <% else %>
+        <%= link_to t("profile.two_factor.enable", default: "Включить"), two_factor_profile_path, class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
 <%= form_with model: current_user, url: update_security_profile_path, method: :patch,
               local: true, html: { class: "card-apple form-apple d-flex flex-column gap-3" } do |f| %>
   <% if current_user.errors.any? %>

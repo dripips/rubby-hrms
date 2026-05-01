@@ -54,6 +54,36 @@ ru:
       delete_confirm_required: Введи DELETE заглавными для подтверждения.
       delete_btn: Удалить навсегда
       deleted: Аккаунт удалён. Прощай.
+    two_factor:
+      title: Двухфакторная аутентификация
+      hint: Дополнительный код из приложения-аутентификатора (Google Authenticator, 1Password, Authy) при каждом входе.
+      enable: Включить
+      manage: Управлять
+      enabled: 2FA включена. Сохрани backup-коды!
+      disabled: 2FA выключена.
+      invalid_code: Неверный код. Попробуй ещё раз.
+      codes_regenerated: Новые backup-коды выпущены.
+      enabled_title: 2FA активна
+      enabled_hint: При входе будет запрашиваться код из приложения.
+      codes_one_time_title: Сохрани эти коды СЕЙЧАС
+      codes_one_time_hint: Они показываются ОДИН раз. Каждый код одноразовый — используй если потеряешь телефон.
+      backup_remaining: 'Осталось backup-кодов: %{n}'
+      regenerate_title: Перевыпустить backup-коды
+      regenerate_hint: Старые коды станут невалидны. Введи текущий TOTP-код для подтверждения.
+      regenerate_btn: Перевыпустить
+      disable_title: Выключить 2FA
+      disable_hint: Снизит уровень защиты аккаунта. Введи TOTP или backup-код для подтверждения.
+      disable_btn: Выключить
+      disable_confirm: Точно выключить 2FA?
+      setup_title: Шаг 2 — введи код из приложения
+      setup_hint: Введи 6-значный код, который показывает приложение, чтобы подтвердить настройку.
+      scan_hint: Отсканируй QR в Google Authenticator, 1Password, Authy или любом TOTP-клиенте.
+      code_label: Код 2FA
+      enable_btn: Включить 2FA
+      cant_scan: Не получается отсканировать?
+      manual_entry: 'Введи секрет вручную:'
+      status_on: 'Включена. Backup-кодов осталось: %{n}'
+      status_off: Не включена — рекомендуется для защиты аккаунта.
   navigation:
     workspace: Рабочее место
     org: Организация
@@ -128,6 +158,7 @@ ru:
     unassigned: Не назначен
     prev: Назад
     next: Дальше
+    copy: Скопировать
   auth:
     sign_in: Войти
     sign_up: Регистрация
@@ -149,6 +180,12 @@ ru:
       slogan_2: От найма до KPI — в одном месте.
       slogan_3: Сотрудники счастливы. Бизнес растёт.
       slogan_4: Меньше Excel — больше результата.
+    two_factor:
+      title: Двухфакторная проверка
+      subtitle: Введи 6-значный код из приложения-аутентификатора. Если потерял доступ — введи backup-код.
+      code_label: Код
+      verify_btn: Подтвердить
+      back_to_login: Войти заново
   roles:
     superadmin: Суперадминистратор
     hr: HR-специалист
