@@ -2607,6 +2607,13 @@ de:
         interview_cancelled: Interview abgesagt
         applicant_stage_change: Bewerber-Phasenwechsel
         document_expiring: Dokument läuft ab
+    tenancy:
+      title: Firmen-Subdomain
+      single_tenant: single-tenant
+      hint: Für Multi-Tenant-Deployment setze eine Subdomain — HRMS wird unter %{example} erreichbar. Leer lassen für Single-Tenant-Modus (alle Anfragen → diese Firma).
+      subdomain_label: Subdomain
+      updated: Subdomain aktualisiert
+      invalid: 'Subdomain: nur a-z, 0-9, Bindestrich (max. 50 Zeichen).'
   ai_runs:
     title: KI Audit
     eyebrow: KI-Log

@@ -270,6 +270,7 @@ Rails.application.routes.draw do
         post   :setup_webhook
         delete :delete_webhook
       end
+      resource :tenancy, only: %i[update]
       resource  :careers,        only: %i[show update]
       resource  :leaves,         only: %i[show update], controller: "leaves"
       resources :leave_approval_rules, except: [ :show ]

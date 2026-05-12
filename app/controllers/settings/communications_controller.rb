@@ -128,7 +128,7 @@ class Settings::CommunicationsController < SettingsController
   private
 
   def company
-    @company ||= Company.kept.first
+    @company ||= Current.company || Company.kept.first
   end
 
   def load_setting

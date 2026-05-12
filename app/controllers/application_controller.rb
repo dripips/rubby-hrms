@@ -13,7 +13,19 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound,  with: :record_not_found
   rescue_from ActionController::RoutingError, with: :record_not_found
 
-  helper_method :current_theme
+  before_action :sync_current_user
+  helper_method :current_theme, :current_company
+
+  # current_company — единая точка получения тенанта. В v2.0 берётся из
+  # Current.company (резолвится TenantResolver-middleware по subdomain'у).
+  # Fallback на Company.kept.first для single-tenant установок.
+  def current_company
+    Current.company ||= Company.kept.first
+  end
+
+  def sync_current_user
+    Current.user = current_user if respond_to?(:current_user)
+  end
 
   def default_url_options(options = {})
     { locale: I18n.locale == I18n.default_locale ? nil : I18n.locale }.merge(options)

@@ -90,7 +90,7 @@ class TelegramWebhooksController < ApplicationController
 
   def communication_data
     @communication_data ||= begin
-      company = Company.kept.first
+      company = Current.company || Company.kept.first
       (company && AppSetting.find_by(company: company, category: "communication")&.data) || {}
     end
   end

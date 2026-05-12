@@ -205,6 +205,9 @@ class ProfileController < ApplicationController
       communication_setting_data["telegram_bot_token"]
   end
 
+  # Reset Current.company memoization при PATCH /profile если subdomain меняется.
+  # Здесь явно не используется, но helper доступен.
+
   def telegram_bot_username
     communication_setting_data["telegram_bot_username"].to_s.presence
   end
@@ -216,8 +219,7 @@ class ProfileController < ApplicationController
 
   def communication_setting_data
     @communication_setting_data ||= begin
-      company = Company.kept.first
-      (company && AppSetting.find_by(company: company, category: "communication")&.data) || {}
+      (current_company && AppSetting.find_by(company: current_company, category: "communication")&.data) || {}
     end
   end
 

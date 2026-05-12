@@ -14,7 +14,7 @@ class Api::V1::PositionsController < ActionController::API
   private
 
   def set_company
-    @company = Company.kept.first
+    @company = Current.company || Company.kept.first
     head(:service_unavailable) and return unless @company
   end
 end

@@ -12,6 +12,38 @@
 
 <%= render "shared/settings_tabs" %>
 
+<%# ── Tenancy: subdomain для multi-tenant deployment ──────────────── %>
+<% tenant_company = current_company %>
+<% if tenant_company %>
+  <div class="card-apple mb-3">
+    <div class="d-flex align-items-baseline justify-content-between gap-3 flex-wrap mb-3">
+      <h3 class="card-apple__title m-0">🏢 <%= t("settings.tenancy.title", default: "Subdomain компании") %></h3>
+      <% if tenant_company.subdomain.present? %>
+        <span class="pill pill--success">@<%= tenant_company.subdomain %></span>
+      <% else %>
+        <span class="pill pill--neutral"><%= t("settings.tenancy.single_tenant", default: "single-tenant") %></span>
+      <% end %>
+    </div>
+    <p class="footnote text-secondary-apple mb-3">
+      <%= t("settings.tenancy.hint", default: "Для multi-tenant deployment задай subdomain — тогда HRMS будет доступен по адресу %{example}. Если оставить пустым — работает в single-tenant режиме (все запросы → эта компания).").html_safe.sub('%{example}', "<code>#{tenant_company.subdomain.presence || 'your-name'}.hrms.example.com</code>") %>
+    </p>
+    <%= form_with model: tenant_company, url: settings_tenancy_path, method: :patch, local: true,
+                  html: { class: "row g-2 align-items-end" } do |f| %>
+      <div class="col-md-9">
+        <%= f.label :subdomain, t("settings.tenancy.subdomain_label", default: "Subdomain"), class: "form-label" %>
+        <%= f.text_field :subdomain, class: "form-control",
+                        placeholder: "acme",
+                        pattern: "[a-z0-9-]+",
+                        maxlength: 50,
+                        autocomplete: "off" %>
+      </div>
+      <div class="col-md-3">
+        <%= f.submit t("common.save"), class: "btn btn-primary w-100" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
 <div class="card-apple">
   <%= form_with(model: @setting, url: settings_communications_path, method: :patch, html: { class: "" }) do |f| %>
     <table class="table-apple m-0 communications-matrix">

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_215839) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_220724) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -153,10 +153,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_215839) do
     t.string "legal_name"
     t.string "name", null: false
     t.string "phone"
+    t.string "subdomain"
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_companies_on_code", unique: true, where: "(code IS NOT NULL)"
     t.index ["discarded_at"], name: "index_companies_on_discarded_at"
     t.index ["inn"], name: "index_companies_on_inn", unique: true, where: "(inn IS NOT NULL)"
+    t.index ["subdomain"], name: "index_companies_on_subdomain", unique: true, where: "(subdomain IS NOT NULL)"
   end
 
   create_table "contracts", force: :cascade do |t|

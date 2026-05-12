@@ -20,7 +20,7 @@ class Conversation < ApplicationRecord
   # Возвращает existing 1-на-1 диалог или создаёт. Игнорирует context-bound треды.
   def self.between(*users)
     raise ArgumentError, "need ≥2 users" if users.size < 2
-    company = users.first.employee&.company || Company.kept.first
+    company = Current.company || users.first.employee&.company || Company.kept.first
     user_ids = users.map(&:id).sort
 
     candidate = standalone.for_user(users.first).joins(:conversation_participants)
@@ -45,7 +45,7 @@ class Conversation < ApplicationRecord
       if conv.new_record?
         conv.creator = viewer
         conv.company = (target.respond_to?(:company) && target.company) ||
-                       viewer.employee&.company || Company.kept.first
+                       Current.company || viewer.employee&.company || Company.kept.first
         conv.subject = default_subject_for(target)
         conv.save!
       end

@@ -19,6 +19,15 @@ module Hrms
 
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # Multi-tenant resolver (v2.0): ставит Current.company по subdomain'у.
+    # На single-tenant установке (без subdomain) — fallback на первую company.
+    config.autoload_paths += [ Rails.root.join("app/middleware").to_s ]
+
+    initializer "hrms.tenant_resolver", after: :load_config_initializers do |app|
+      require Rails.root.join("app/middleware/tenant_resolver")
+      app.middleware.use TenantResolver
+    end
+
     config.time_zone = "Moscow"
     config.active_record.default_timezone = :utc
 

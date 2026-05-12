@@ -2607,6 +2607,13 @@ en:
         interview_cancelled: Interview cancelled
         applicant_stage_change: Applicant stage change
         document_expiring: Document expiring
+    tenancy:
+      title: Company subdomain
+      single_tenant: single-tenant
+      hint: For multi-tenant deployment set a subdomain — HRMS becomes reachable at %{example}. Leave empty for single-tenant mode (all requests → this company).
+      subdomain_label: Subdomain
+      updated: Subdomain updated
+      invalid: 'Subdomain: only a-z, 0-9, hyphen (max 50 chars).'
   ai_runs:
     title: AI Audit
     eyebrow: AI log

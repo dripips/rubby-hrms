@@ -8,12 +8,31 @@ Full release notes (with longer prose) live on GitHub Releases: https://github.c
 
 ## [Unreleased]
 
-Working on:
-- Multi-tenant subdomain routing (`acme.hrms.local` → tenant) — v2.0
-- RSpec coverage push to >80%
-- Performance instrumentation (bullet, rack-mini-profiler)
-
 See [ROADMAP.md](ROADMAP.md) for the full backlog.
+
+## [2.0] — 2026-05-13
+
+### Added — Multi-tenant foundation
+- **`companies.subdomain`** column (unique partial index, nullable)
+- **`Current`** ActiveSupport::CurrentAttributes — `Current.company`, `Current.user`
+- **`TenantResolver` middleware** — резолвит компанию по subdomain'у на каждом request'е; fallback на `Company.kept.first` для single-tenant установок; 404 если subdomain указан но компания не найдена
+- **`current_company`** helper в ApplicationController (доступен из view'ов и контроллеров)
+- **`/settings/communications`** — секция «Subdomain компании» с pill-индикатором single-tenant/active
+- **`Settings::TenancyController#update`** — superadmin меняет subdomain (validation: `[a-z0-9-]{1,50}`)
+- Refactored 6 hot paths (v1.6+ code) to use `Current.company` / `current_company` instead of `Company.kept.first`
+
+### Added — Deployment & ops
+- **`scripts/update.sh`** — zero-downtime upgrade: backup → git pull/checkout tag → build → migrate-before-restart → rolling restart → healthcheck → auto-rollback hint on failure
+- **`docker-compose.prod.yml`** override — pre-built image (`APP_IMAGE`), restart always, healthcheck, json-file logging with rotation, PG tuning (shared_buffers 512MB, work_mem 16MB)
+
+### Migration path (v2.1+)
+- 14 remaining `Company.kept.first` callsites in legacy code (services, jobs, helpers) will migrate to `Current.company` incrementally as those files are touched
+- No breaking changes — old code still works via fallback
+
+### i18n
+- +6 keys × 3 locales
+
+[2.0]: https://github.com/dripips/rubby-hrms/releases/tag/v2.0
 
 ---
 

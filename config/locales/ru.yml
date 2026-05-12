@@ -2159,6 +2159,13 @@ ru:
         interview_cancelled: Интервью отменено
         applicant_stage_change: Смена этапа кандидата
         document_expiring: Документ скоро истекает
+    tenancy:
+      title: Subdomain компании
+      single_tenant: single-tenant
+      hint: Для multi-tenant deployment задай subdomain — тогда HRMS будет доступен по адресу %{example}. Если оставить пустым — работает в single-tenant режиме (все запросы → эта компания).
+      subdomain_label: Subdomain
+      updated: Subdomain обновлён
+      invalid: 'Subdomain: только a-z, 0-9, дефис (макс 50 символов).'
   pundit:
     not_authorized: Недостаточно прав для этого действия
   user_menu:
