@@ -35,6 +35,9 @@ class User < ApplicationRecord
 
   has_many :notifications, class_name: "Noticed::Notification", as: :recipient, dependent: :destroy
   has_many :api_tokens, dependent: :destroy
+  has_many :conversation_participants, dependent: :destroy
+  has_many :conversations, through: :conversation_participants
+  has_many :messages, dependent: :destroy
 
   # Каталог типов уведомлений с дефолтами по каналам.
   # Структура: { event_key => { in_app: bool, email: bool, slack: bool, telegram: bool } }.

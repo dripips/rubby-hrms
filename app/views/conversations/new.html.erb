@@ -1,0 +1,42 @@
+<% content_for :page_title, t("chat.new", default: "Новый диалог") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">💬 <%= t("navigation.communication", default: "Коммуникации") %></div>
+    <h1 class="page-header__title m-0"><%= t("chat.new", default: "Новый диалог") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("chat.new_hint", default: "Выбери одного или нескольких собеседников и опционально добавь тему.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), conversations_path, class: "btn btn-ghost" %>
+  </div>
+</header>
+
+<%= form_with url: conversations_path, method: :post, local: true,
+              html: { class: "card-apple form-apple d-flex flex-column gap-3" } do %>
+  <div>
+    <label class="form-label" for="subject"><%= t("chat.fields.subject", default: "Тема (опционально)") %></label>
+    <input type="text" id="subject" name="subject" class="form-control"
+           placeholder="<%= t("chat.fields.subject_placeholder", default: "Согласование отпуска / Onboarding / …") %>"
+           maxlength="200">
+  </div>
+
+  <div>
+    <label class="form-label"><%= t("chat.fields.recipients", default: "Собеседники") %></label>
+    <div class="recipients-grid">
+      <% @recipients.each do |u| %>
+        <label class="form-check d-flex align-items-center gap-2">
+          <input type="checkbox" name="recipient_ids[]" value="<%= u.id %>" class="form-check-input">
+          <span class="avatar-apple avatar-apple--sm"><%= u.email.first(2).upcase %></span>
+          <span><%= u.display_name %> <span class="footnote text-tertiary">· <%= u.full_role_name %></span></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><%= t("chat.start", default: "Начать диалог") %></button>
+    <%= link_to t("common.cancel"), conversations_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

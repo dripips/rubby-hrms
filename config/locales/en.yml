@@ -174,6 +174,8 @@ en:
     offboarding: Offboarding
     menu: Menu
     ai_runs: AI log
+    chat: Chat
+    communication: Communication
   locale_names:
     ru: Russian
     en: English
@@ -2636,3 +2638,27 @@ en:
       same_employee: All runs for this employee
       same_user: All runs by this user
       same_kind: All «%{kind}»
+  chat:
+    title: Chat
+    subtitle: Direct messages with colleagues. Live updates via Turbo Streams.
+    new: "+ New conversation"
+    new_hint: Pick one or more recipients and optionally add a subject.
+    start: Start conversation
+    you: You
+    empty_list: No conversations yet — start the first one.
+    empty_thread: No messages yet
+    self_chat: Notes to self
+    delete: Delete conversation
+    delete_confirm: Delete this conversation and all messages?
+    errors:
+      no_recipients: Pick at least one recipient
+    fields:
+      subject: Subject (optional)
+      subject_placeholder: Leave approval / Onboarding / …
+      recipients: Recipients
+    composer:
+      placeholder: Type a message… Enter to send, Shift+Enter for newline.
+      send: Send
+    discussion_title: Discussion
+    discussion_empty: Start the discussion — all participants get a notification in HRMS / by email.
+    participants_count: "%{count} participants"

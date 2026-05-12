@@ -60,6 +60,8 @@ RSpec.describe "smoke", type: :request do
     /settings/users
     /ai_runs
     /careers
+    /conversations
+    /conversations/new
   ].freeze
 
   PATHS.each do |path|

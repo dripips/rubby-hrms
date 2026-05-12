@@ -1,0 +1,43 @@
+<%#
+  Context-bound discussion thread, рендерится inline на странице сущности.
+
+  Использование:
+    <%= render "conversations/discussion_panel", target: @leave_request %>
+
+  Опционально:
+    title: "..." — заголовок над тредом (default: t('chat.discussion_title'))
+%>
+<%
+  conversation = Conversation.discussion_for(target, current_user)
+  participant  = conversation.conversation_participants.find_by(user: current_user)
+  participant&.update_column(:last_read_at, Time.current)
+  messages = conversation.messages.includes(:user).limit(200)
+%>
+
+<div class="card-apple mt-3" id="discussion">
+  <%= turbo_stream_from conversation %>
+
+  <div class="d-flex align-items-baseline justify-content-between flex-wrap gap-2 mb-3">
+    <h3 class="card-apple__title m-0">💬 <%= local_assigns[:title] || t("chat.discussion_title", default: "Обсуждение") %></h3>
+    <span class="footnote text-tertiary">
+      <%= t("chat.participants_count", count: conversation.participants.size, default: "%{count} участников") %>:
+      <%= conversation.participants.map(&:display_name).join(", ") %>
+    </span>
+  </div>
+
+  <div class="discussion-thread bootstrap-chat"
+       id="conversation_<%= conversation.id %>_messages"
+       data-controller="chat-autoscroll">
+    <% if messages.empty? %>
+      <div class="footnote text-tertiary text-center p-3">
+        <%= t("chat.discussion_empty", default: "Начни обсуждение — все участники получат уведомление в HRMS / по почте.") %>
+      </div>
+    <% else %>
+      <% messages.each do |msg| %>
+        <%= render "messages/message", message: msg %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%= render "conversations/composer", conversation: conversation %>
+</div>

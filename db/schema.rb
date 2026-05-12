@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_213319) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_215839) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -176,6 +176,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_213319) do
     t.index ["employee_id", "active"], name: "index_contracts_on_employee_id_and_active"
     t.index ["employee_id"], name: "index_contracts_on_employee_id"
     t.index ["started_at"], name: "index_contracts_on_started_at"
+  end
+
+  create_table "conversation_participants", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "last_read_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["conversation_id", "user_id"], name: "index_conversation_participants_on_conversation_id_and_user_id", unique: true
+    t.index ["conversation_id"], name: "index_conversation_participants_on_conversation_id"
+    t.index ["user_id"], name: "index_conversation_participants_on_user_id"
+  end
+
+  create_table "conversations", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "creator_id", null: false
+    t.datetime "last_message_at"
+    t.string "subject"
+    t.bigint "targetable_id"
+    t.string "targetable_type"
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_conversations_on_company_id"
+    t.index ["creator_id"], name: "index_conversations_on_creator_id"
+    t.index ["last_message_at"], name: "index_conversations_on_last_message_at"
+    t.index ["targetable_type", "targetable_id"], name: "idx_conversations_on_targetable_unique", unique: true, where: "(targetable_type IS NOT NULL)"
   end
 
   create_table "department_hierarchies", id: false, force: :cascade do |t|
@@ -681,6 +707,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_213319) do
     t.index ["company_id"], name: "index_leave_types_on_company_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.text "body", null: false
+    t.bigint "conversation_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["conversation_id", "created_at"], name: "index_messages_on_conversation_id_and_created_at"
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
   create_table "noticed_events", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "notifications_count"
@@ -949,6 +986,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_213319) do
   add_foreign_key "application_stage_changes", "job_applicants"
   add_foreign_key "application_stage_changes", "users"
   add_foreign_key "contracts", "employees"
+  add_foreign_key "conversation_participants", "conversations"
+  add_foreign_key "conversation_participants", "users"
+  add_foreign_key "conversations", "companies"
+  add_foreign_key "conversations", "users", column: "creator_id"
   add_foreign_key "departments", "companies"
   add_foreign_key "departments", "departments", column: "parent_id"
   add_foreign_key "departments", "employees", column: "head_employee_id"
@@ -999,6 +1040,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_213319) do
   add_foreign_key "leave_requests", "employees"
   add_foreign_key "leave_requests", "leave_types"
   add_foreign_key "leave_types", "companies"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users"
   add_foreign_key "offboarding_processes", "employees"
   add_foreign_key "offboarding_processes", "process_templates", column: "template_id"
   add_foreign_key "offboarding_processes", "users", column: "created_by_id"

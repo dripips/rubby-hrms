@@ -48,6 +48,9 @@ Rails.application.routes.draw do
         get  "notifications",        to: "notifications#index"
         post "notifications/read_all", to: "notifications#read_all"
         post "notifications/:id/read", to: "notifications#read", as: :read_notification
+        # CalDAV-subscribable feed — поддерживает ?token=... query-param
+        # для Google Calendar / Apple Calendar / Outlook (они не шлют header'ы).
+        get  "calendar.ics",   to: "calendar#show", as: :calendar, defaults: { format: :ics }
       end
     end
   end
@@ -224,6 +227,11 @@ Rails.application.routes.draw do
 
     # API-токены пользователя (для /api/v1/me/*)
     resources :api_tokens, only: %i[create destroy]
+
+    # In-app chat (HR ↔ employee, peer ↔ peer)
+    resources :conversations, only: %i[index show new create destroy] do
+      resources :messages, only: %i[create]
+    end
 
     # AI Audit log — отдельный аудит для запусков AI-задач (HR/admin only).
     resources :ai_runs, only: %i[index show]

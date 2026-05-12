@@ -1,0 +1,39 @@
+<% content_for :page_title, @conversation.title_for(current_user) %>
+<%= turbo_stream_from @conversation %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">
+      <%= link_to "💬 " + t("chat.title", default: "Чат"), conversations_path %>
+    </div>
+    <h1 class="page-header__title m-0"><%= @conversation.title_for(current_user) %></h1>
+    <p class="page-header__subtitle">
+      <%= @conversation.participants.map(&:display_name).join(", ") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), conversations_path, class: "btn btn-ghost" %>
+    <% if @conversation.creator_id == current_user.id %>
+      <%= button_to t("chat.delete", default: "Удалить диалог"),
+                    conversation_path(@conversation),
+                    method: :delete,
+                    class: "btn btn-ghost",
+                    form: { class: "m-0" },
+                    data: { turbo_confirm: t("chat.delete_confirm", default: "Удалить диалог и все сообщения?") } %>
+    <% end %>
+  </div>
+</header>
+
+<div class="chat-thread card-apple card-apple--flush">
+  <div class="chat-thread__messages bootstrap-chat"
+       id="conversation_<%= @conversation.id %>_messages"
+       data-controller="chat-autoscroll">
+    <% @messages.each do |msg| %>
+      <%= render "messages/message", message: msg %>
+    <% end %>
+  </div>
+
+  <div id="composer">
+    <%= render "conversations/composer", conversation: @conversation %>
+  </div>
+</div>

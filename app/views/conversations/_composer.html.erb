@@ -1,0 +1,16 @@
+<%= form_with(model: [ conversation, conversation.messages.new ],
+              url: conversation_messages_path(conversation),
+              method: :post,
+              data: { controller: "chat-composer", turbo_frame: "_top" },
+              html: { class: "chat-composer" }) do |f| %>
+  <%= f.text_area :body,
+                  rows: 2,
+                  placeholder: t("chat.composer.placeholder", default: "Напиши сообщение… Enter — отправить, Shift+Enter — новая строка."),
+                  class: "form-control",
+                  data: { chat_composer_target: "input", action: "keydown->chat-composer#onKeydown" },
+                  autocomplete: "off",
+                  required: true %>
+  <button type="submit" class="btn btn-primary chat-composer__send">
+    <%= t("chat.composer.send", default: "Отправить") %>
+  </button>
+<% end %>

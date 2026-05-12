@@ -8,11 +8,13 @@
   </div>
 
   <%
+    unread_chat = current_user ? current_user.conversations.sum { |c| c.unread_count_for(current_user) } : 0
     nav_sections = [
       { title: t("navigation.workspace"),
         items: [
-          { key: :dashboard,  path: dashboard_path,  icon: "grid"   },
-          { key: :employees,  path: employees_path,  icon: "people" }
+          { key: :dashboard,  path: dashboard_path,     icon: "grid"   },
+          { key: :employees,  path: employees_path,     icon: "people" },
+          { key: :chat,       path: conversations_path, icon: "calendar", badge: unread_chat.positive? ? unread_chat : nil }
         ] },
       { title: t("navigation.org"),
         items: [
@@ -61,6 +63,9 @@
         <%= link_to item[:path], class: "sidebar-apple__item #{'active' if active}" do %>
           <%= render "shared/icons/#{item[:icon]}" %>
           <span><%= t("navigation.#{item[:key]}") %></span>
+          <% if item[:badge] %>
+            <span class="sidebar-apple__badge"><%= item[:badge] %></span>
+          <% end %>
         <% end %>
       <% end %>
     <% end %>

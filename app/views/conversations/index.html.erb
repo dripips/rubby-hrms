@@ -1,0 +1,54 @@
+<% content_for :page_title, t("chat.title", default: "Чат") %>
+
+<header class="page-header">
+  <div>
+    <div class="page-header__eyebrow">💬 <%= t("navigation.communication", default: "Коммуникации") %></div>
+    <h1 class="page-header__title m-0"><%= t("chat.title", default: "Чат") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("chat.subtitle", default: "Прямые сообщения с коллегами. Live-обновления через Turbo Streams.") %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("chat.new", default: "+ Новый диалог"), new_conversation_path, class: "btn btn-primary" %>
+  </div>
+</header>
+
+<% if @conversations.any? %>
+  <div class="card-apple card-apple--flush">
+    <ul class="list-apple m-0">
+      <% @conversations.each do |c| %>
+        <% unread = c.unread_count_for(current_user) %>
+        <% href = c.target_url || conversation_path(c) %>
+        <%= link_to href, class: "list-apple__item conversation-row" do %>
+          <div class="flex-fill min-w-0">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <strong><%= c.title_for(current_user) %></strong>
+              <% if unread.positive? %>
+                <span class="pill pill--info"><%= unread %></span>
+              <% end %>
+              <% if c.targetable %>
+                <span class="pill pill--neutral"><%= c.target_label %></span>
+              <% end %>
+            </div>
+            <% last = c.last_message %>
+            <% if last %>
+              <div class="footnote text-tertiary text-truncate">
+                <%= last.user == current_user ? "#{t('chat.you', default: 'Ты')}: " : "#{last.user.display_name}: " %><%= last.body.truncate(120) %>
+              </div>
+            <% else %>
+              <div class="footnote text-tertiary"><%= t("chat.empty_thread", default: "Сообщений пока нет") %></div>
+            <% end %>
+          </div>
+          <span class="footnote text-tertiary text-nowrap ms-2">
+            <%= time_ago_in_words(c.last_message_at || c.created_at) %> <%= t("common.ago", default: "назад") %>
+          </span>
+        <% end %>
+      <% end %>
+    </ul>
+  </div>
+<% else %>
+  <div class="card-apple text-center">
+    <p class="text-tertiary mb-3">💬 <%= t("chat.empty_list", default: "Диалогов пока нет — начни первый разговор.") %></p>
+    <%= link_to t("chat.new", default: "+ Новый диалог"), new_conversation_path, class: "btn btn-primary" %>
+  </div>
+<% end %>

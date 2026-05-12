@@ -174,6 +174,8 @@ ru:
     onboarding: Онбординг
     offboarding: Офбординг
     menu: Меню
+    chat: Чат
+    communication: Коммуникации
   locale_names:
     ru: Русский
     en: Английский
@@ -2636,3 +2638,27 @@ ru:
       same_employee: Все запуски по этому сотруднику
       same_user: Все запуски этого пользователя
       same_kind: Все «%{kind}»
+  chat:
+    title: Чат
+    subtitle: Прямые сообщения с коллегами. Live-обновления через Turbo Streams.
+    new: "+ Новый диалог"
+    new_hint: Выбери одного или нескольких собеседников и опционально добавь тему.
+    start: Начать диалог
+    you: Ты
+    empty_list: Диалогов пока нет — начни первый разговор.
+    empty_thread: Сообщений пока нет
+    self_chat: Заметки
+    delete: Удалить диалог
+    delete_confirm: Удалить диалог и все сообщения?
+    errors:
+      no_recipients: Выбери хотя бы одного собеседника
+    fields:
+      subject: Тема (опционально)
+      subject_placeholder: Согласование отпуска / Onboarding / …
+      recipients: Собеседники
+    composer:
+      placeholder: Напиши сообщение… Enter — отправить, Shift+Enter — новая строка.
+      send: Отправить
+    discussion_title: Обсуждение
+    discussion_empty: Начни обсуждение — все участники получат уведомление в HRMS / по почте.
+    participants_count: "%{count} участников"

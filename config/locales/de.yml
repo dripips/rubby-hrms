@@ -174,6 +174,8 @@ de:
     offboarding: Offboarding
     menu: Menü
     ai_runs: KI-Log
+    chat: Chat
+    communication: Kommunikation
   locale_names:
     ru: Russisch
     en: Englisch
@@ -2636,3 +2638,27 @@ de:
       same_employee: Alle Läufe für diesen Mitarbeiter
       same_user: Alle Läufe dieses Benutzers
       same_kind: Alle «%{kind}»
+  chat:
+    title: Chat
+    subtitle: Direktnachrichten mit Kollegen. Live-Updates über Turbo Streams.
+    new: "+ Neue Unterhaltung"
+    new_hint: Wähle einen oder mehrere Empfänger und optional ein Thema.
+    start: Unterhaltung starten
+    you: Du
+    empty_list: Noch keine Unterhaltungen — fang die erste an.
+    empty_thread: Noch keine Nachrichten
+    self_chat: Notizen an mich
+    delete: Unterhaltung löschen
+    delete_confirm: Diese Unterhaltung und alle Nachrichten löschen?
+    errors:
+      no_recipients: Mindestens einen Empfänger wählen
+    fields:
+      subject: Betreff (optional)
+      subject_placeholder: Urlaub / Onboarding / …
+      recipients: Empfänger
+    composer:
+      placeholder: Nachricht schreiben… Enter — senden, Shift+Enter — neue Zeile.
+      send: Senden
+    discussion_title: Diskussion
+    discussion_empty: Diskussion starten — alle Teilnehmer erhalten eine Benachrichtigung im HRMS / per E-Mail.
+    participants_count: "%{count} Teilnehmer"
