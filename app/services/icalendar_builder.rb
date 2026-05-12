@@ -66,13 +66,15 @@ class IcalendarBuilder
   end
 
   # RFC 5545 §3.3.11 — escape special chars в TEXT.
+  # ВАЖНО: gsub replacement обрабатывает `\\` как литеральный `\`, поэтому
+  # используем block-form чтобы избежать этой особенности.
   def escape(text)
     text.to_s
-        .gsub("\\", "\\\\")
-        .gsub("\r\n", "\\n")
-        .gsub("\n", "\\n")
-        .gsub(",", "\\,")
-        .gsub(";", "\\;")
+        .gsub("\\") { "\\\\" }   # один backslash → два
+        .gsub("\r\n") { '\\n' }
+        .gsub("\n")   { '\\n' }
+        .gsub(",")    { '\\,' }
+        .gsub(";")    { '\\;' }
   end
 
   # RFC 5545 §3.1 — длинные строки фолдятся на 75 octets с continuation-space.

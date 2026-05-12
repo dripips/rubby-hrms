@@ -116,8 +116,8 @@ class GdprExporter
       {
         metric: a.kpi_metric&.name,
         period_start: a.period_start, period_end: a.period_end,
-        target_value: a.target_value, weight: a.weight,
-        evaluations: a.kpi_evaluations.map { |e| { score: e.score, evaluated_at: e.evaluated_at, comment: e.comment } }
+        target: a.target, weight: a.weight,
+        evaluations: a.kpi_evaluations.map { |e| { score: e.score, actual_value: e.actual_value, evaluated_at: e.evaluated_at, notes: e.notes } }
       }
     end
   end

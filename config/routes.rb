@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "ping",  to: "ping#index"
-      resources :openings, only: %i[index show]
+      resources :openings, only: %i[index show], param: :code
       post "openings/:code/apply", to: "openings#apply", as: :apply_opening, constraints: { code: /[\w\-]+/ }
       get  "config", to: "openings#widget_config", as: :widget_config
     end

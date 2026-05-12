@@ -52,9 +52,12 @@ class GdprDeleter
   end
 
   def anonymize_employee!
+    # NB: `gender` is NOT NULL в схеме — используем пустую строку для
+    # удаления PII без нарушения constraint'а. Аналогично возможно для
+    # любого другого NOT NULL-поля; здесь явный whitelist.
     @employee.update_columns(
       first_name: "Deleted", last_name: "User", middle_name: nil,
-      birth_date: nil, gender: nil, gender_ref_id: nil,
+      birth_date: nil, gender: 0, gender_ref_id: nil,
       phone: nil, personal_email: nil, address: nil,
       marital_status: nil, hobbies: nil, shirt_size: nil,
       dietary_restrictions: nil, preferred_language: nil,

@@ -1,0 +1,303 @@
+openapi: 3.0.3
+info:
+  title: HRMS Public API
+  description: |
+    Public API for embedding the careers page on third-party sites.
+    No authentication is required for browsing openings; the apply endpoint
+    optionally requires `X-API-Key` if the company enabled it in
+    Settings → Careers.
+  version: "1.0"
+  contact:
+    name: HRMS
+    url: https://github.com/dripips/rubby-hrms
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:4000
+    description: Local development
+  - url: https://hrms.example.com
+    description: Production (replace with your domain)
+
+tags:
+  - name: ping
+    description: Liveness check
+  - name: openings
+    description: Job openings catalog
+  - name: config
+    description: Widget configuration (consents, theme, legal pages)
+
+paths:
+  /api/v1/ping:
+    get:
+      tags: [ping]
+      summary: Liveness probe
+      description: Returns 200 with a small JSON body when the service is up.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:    { type: boolean, example: true }
+                  alive: { type: boolean, example: true }
+
+  /api/v1/openings:
+    get:
+      tags: [openings]
+      summary: List published openings
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+          description: Free-text search across title / description / requirements.
+        - in: query
+          name: department_id
+          schema: { type: integer }
+        - in: query
+          name: employment_type
+          schema:
+            type: string
+            enum: [full_time, part_time, contract, internship, project]
+        - in: query
+          name: page
+          schema: { type: integer, default: 1, minimum: 1 }
+        - in: query
+          name: per
+          schema: { type: integer, default: 10, minimum: 1, maximum: 50 }
+      responses:
+        "200":
+          description: Paginated list of openings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meta:
+                    type: object
+                    properties:
+                      page:        { type: integer, example: 1 }
+                      per_page:    { type: integer, example: 10 }
+                      total:       { type: integer, example: 42 }
+                      total_pages: { type: integer, example: 5 }
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OpeningSummary"
+
+  /api/v1/openings/{code}:
+    get:
+      tags: [openings]
+      summary: Get single opening (full description)
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema: { type: string }
+          description: Opening code (e.g. "frontend-2026") or numeric id.
+      responses:
+        "200":
+          description: Opening details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/OpeningFull"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/openings/{code}/apply:
+    post:
+      tags: [openings]
+      summary: Submit a job application
+      description: |
+        Honeypot anti-bot field: include a hidden `website` field that real users
+        won't fill — if it's present, we silently return 200 without creating the applicant.
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema: { type: string }
+        - in: header
+          name: X-API-Key
+          required: false
+          schema: { type: string }
+          description: Required only if the company enabled API key for apply.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ApplyRequest"
+      responses:
+        "200":
+          description: Created (or silently dropped via honeypot)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean, example: true }
+                  id: { type: integer, example: 123 }
+        "401":
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:    { type: boolean, example: false }
+                  error: { type: string,  example: "invalid_api_key" }
+        "422":
+          description: Validation errors (missing required consents / invalid fields)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:     { type: boolean, example: false }
+                  errors:
+                    type: object
+                    additionalProperties: true
+
+  /api/v1/config:
+    get:
+      tags: [config]
+      summary: Widget configuration (theme, consents, legal pages)
+      parameters:
+        - in: query
+          name: locale
+          required: false
+          schema: { type: string, enum: [ru, en, de] }
+      responses:
+        "200":
+          description: Settings used to render an embedded careers widget
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WidgetConfig"
+
+components:
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string, example: "not_found" }
+
+  schemas:
+    OpeningSummary:
+      type: object
+      properties:
+        id:              { type: integer, example: 1 }
+        code:            { type: string,  example: "frontend-2026" }
+        title:           { type: string,  example: "Senior Frontend Engineer" }
+        department:      { type: string,  example: "Engineering" }
+        position:        { type: string,  example: "Frontend Developer" }
+        employment_type: { type: string,  example: "full_time" }
+        currency:        { type: string,  example: "USD" }
+        salary_from:     { type: number,  format: float, example: 60000 }
+        salary_to:       { type: number,  format: float, example: 90000 }
+        published_at:    { type: string,  format: date-time }
+        excerpt:         { type: string,  example: "First 280 chars of the description…" }
+
+    OpeningFull:
+      allOf:
+        - $ref: "#/components/schemas/OpeningSummary"
+        - type: object
+          properties:
+            description:  { type: string }
+            requirements: { type: string }
+            nice_to_have: { type: string }
+
+    ApplyRequest:
+      type: object
+      required: [first_name, last_name, email]
+      properties:
+        first_name:          { type: string }
+        last_name:           { type: string }
+        email:               { type: string, format: email }
+        phone:               { type: string }
+        location:            { type: string }
+        current_company:     { type: string }
+        current_position:    { type: string }
+        years_of_experience: { type: integer }
+        expected_salary:     { type: number, format: float }
+        portfolio_url:       { type: string }
+        linkedin_url:        { type: string }
+        github_url:          { type: string }
+        telegram:            { type: string }
+        summary:             { type: string }
+        resume:              { type: string, format: binary }
+        portfolio_files:
+          type: array
+          items: { type: string, format: binary }
+        consents:
+          type: object
+          additionalProperties: { type: string, enum: ["0", "1"] }
+          description: |
+            Per-consent flags keyed by consent key configured in
+            Settings → Careers (e.g. `consents[gdpr]=1`).
+        website:
+          type: string
+          description: "Honeypot anti-bot field — leave empty for real submissions."
+
+    WidgetConfig:
+      type: object
+      properties:
+        site_name:     { type: string }
+        color_primary: { type: string, example: "#0A84FF" }
+        logo_url:      { type: string, nullable: true }
+        consents:
+          type: array
+          items:
+            type: object
+            properties:
+              key:      { type: string, example: "gdpr" }
+              required: { type: boolean }
+              label:    { type: string }
+              link:
+                type: object
+                nullable: true
+                properties:
+                  kind:   { type: string, example: "page" }
+                  target: { type: string, example: "privacy" }
+        cookie_categories:
+          type: array
+          items:
+            type: object
+            properties:
+              key:         { type: string }
+              required:    { type: boolean }
+              default:     { type: boolean }
+              label:       { type: string }
+              description: { type: string }
+        legal_pages:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              title: { type: string }
+              body:  { type: string }
+        texts:
+          type: object
+          properties:
+            hero_title:  { type: string }
+            hero_lead:   { type: string }
+            form_submit: { type: string }
+            form_title:  { type: string }
+
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: Optional, only for `/apply` if enabled in company careers settings.

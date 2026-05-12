@@ -120,6 +120,18 @@ That's it. The installer:
 
 Open http://localhost:3000 and sign in.
 
+## Public API
+
+Embed your careers page on any external site via the public REST API. Interactive Swagger UI docs live at **`/api-docs/`** on every running instance.
+
+```bash
+curl http://localhost:4000/api/v1/openings | jq '.data[] | .title'
+curl http://localhost:4000/api/v1/openings/JOB-0001
+curl http://localhost:4000/api/v1/config?locale=en
+```
+
+OpenAPI 3 spec: [`public/api-docs/openapi.yaml`](public/api-docs/openapi.yaml). The Apply endpoint optionally requires `X-API-Key` if you enable it in Settings → Careers.
+
 ## Modules
 
 | Module | What it does |
