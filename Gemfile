@@ -79,6 +79,11 @@ end
 group :development, :test do
   gem "capybara"
   gem "selenium-webdriver"
+  gem "bullet"             # N+1 detector — warns в dev / падает в test
+end
+
+group :development do
+  gem "rack-mini-profiler"  # speed badge в углу страницы, ?pp=help для опций
 end
 
 group :test do
