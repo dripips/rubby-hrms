@@ -41,6 +41,75 @@ class Settings::CommunicationsController < SettingsController
     redirect_to settings_communications_path, alert: "Telegram error: #{e.message.first(120)}"
   end
 
+  # POST /settings/communications/setup_webhook
+  # Регистрирует наш /telegram/webhook endpoint у Telegram через setWebhook
+  # API. Генерируется случайный secret_token — Telegram отправляет его в
+  # заголовке X-Telegram-Bot-Api-Secret-Token (Bot API ≥ 6.7), наш
+  # webhook-контроллер проверяет.
+  def setup_webhook
+    token = @setting.data["telegram_bot_token"].to_s.strip
+    if token.blank?
+      redirect_to settings_communications_path,
+                  alert: t("settings.communications.bot_no_token", default: "Сначала впиши Bot Token")
+      return
+    end
+
+    base_url = ENV["APP_BASE_URL"].presence ||
+               (request.protocol == "http://" && request.local? ? nil : request.base_url)
+    if base_url.blank? || base_url.start_with?("http://localhost", "http://127.")
+      redirect_to settings_communications_path,
+                  alert: t("settings.communications.webhook_local_blocked",
+                           default: "Telegram требует HTTPS-публичный URL. На localhost не работает — задай APP_BASE_URL в .env или открой через ngrok-туннель.")
+      return
+    end
+
+    secret  = SecureRandom.hex(24)
+    webhook = "#{base_url}/telegram/webhook"
+
+    require "net/http"
+    require "json"
+    response = Net::HTTP.post(
+      URI("https://api.telegram.org/bot#{token}/setWebhook"),
+      { url: webhook, secret_token: secret, allowed_updates: ["message"] }.to_json,
+      "Content-Type" => "application/json"
+    )
+    body = JSON.parse(response.body) rescue {}
+
+    if body["ok"]
+      @setting.update!(data: @setting.data.merge(
+        "telegram_webhook_url"    => webhook,
+        "telegram_webhook_secret" => secret,
+        "telegram_webhook_at"     => Time.current.iso8601
+      ))
+      redirect_to settings_communications_path,
+                  notice: t("settings.communications.webhook_ok",
+                            default: "✓ Webhook зарегистрирован: %{url}", url: webhook)
+    else
+      error = body["description"].presence || "HTTP #{response.code}"
+      redirect_to settings_communications_path,
+                  alert: t("settings.communications.webhook_fail",
+                           default: "Telegram отклонил webhook: %{e}", e: error)
+    end
+  rescue StandardError => e
+    redirect_to settings_communications_path, alert: "Telegram setWebhook error: #{e.message.first(120)}"
+  end
+
+  # DELETE webhook — снимает регистрацию.
+  def delete_webhook
+    token = @setting.data["telegram_bot_token"].to_s.strip
+    if token.present?
+      require "net/http"
+      Net::HTTP.post(
+        URI("https://api.telegram.org/bot#{token}/deleteWebhook"),
+        {}.to_json,
+        "Content-Type" => "application/json"
+      )
+    end
+    @setting.update!(data: @setting.data.except("telegram_webhook_url", "telegram_webhook_secret", "telegram_webhook_at"))
+    redirect_to settings_communications_path,
+                notice: t("settings.communications.webhook_removed", default: "Webhook снят")
+  end
+
   def update
     raw = params.dig(:app_setting, :data) || {}
     raw = raw.respond_to?(:permit!) ? raw.permit!.to_h : raw.to_h

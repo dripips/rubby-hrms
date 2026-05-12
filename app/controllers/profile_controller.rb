@@ -5,7 +5,7 @@
 class ProfileController < ApplicationController
   before_action :authenticate_user!
   before_action :load_employee
-  helper_method :telegram_bot_username
+  helper_method :telegram_bot_username, :telegram_webhook_active?
 
   EDITABLE_ATTRIBUTES = %i[
     phone personal_email address marital_status
@@ -81,6 +81,22 @@ class ProfileController < ApplicationController
 
   # ── Integrations: Slack webhook + Telegram chat_id ─────────────────────
   def integrations; end
+
+  # One-click Telegram binding: генерит токен, редиректит на t.me/<bot>?start=<token>.
+  # Webhook сам сохранит chat_id когда юзер нажмёт Start.
+  def start_telegram_link
+    bot = telegram_bot_username
+    if bot.blank?
+      redirect_to integrations_profile_path,
+                  alert: t("profile.integrations.tg_bot_missing", default: "Telegram-бот компании не настроен — попроси HR/IT.")
+      return
+    end
+
+    token = SecureRandom.urlsafe_base64(16)
+    current_user.update!(tg_link_token: token, tg_link_token_at: Time.current)
+
+    redirect_to "https://t.me/#{bot}?start=#{token}", allow_other_host: true
+  end
 
   def update_integrations
     raw = params.require(:user).permit(:slack_webhook_url, :telegram_chat_id)
@@ -191,6 +207,11 @@ class ProfileController < ApplicationController
 
   def telegram_bot_username
     communication_setting_data["telegram_bot_username"].to_s.presence
+  end
+
+  def telegram_webhook_active?
+    communication_setting_data["telegram_webhook_url"].to_s.present? &&
+      communication_setting_data["telegram_webhook_secret"].to_s.present?
   end
 
   def communication_setting_data

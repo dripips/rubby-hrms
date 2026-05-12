@@ -117,6 +117,20 @@ ru:
       tg_step_3: Впиши chat_id ниже и нажми Сохранить. После — нажми «Тест», бот напишет тебе подтверждение.
       tg_not_configured: Telegram-бот компании ещё не настроен. Попроси HR/IT настроить его в /settings/communications — тогда здесь появится ссылка на бот.
       tg_get_chat_id_html: Узнать свой chat_id заранее можно через <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> — открой и нажми Start.
+      tg_step_1_v2_html: Открой бота компании <a href='%{bot_link}' target='_blank' rel='noopener'><strong>@%{bot_name}</strong></a> и нажми <strong>Start</strong>. <em>Бот ничего не ответит — это нормально.</em> Так Telegram разрешает боту слать тебе уведомления (anti-spam policy).
+      tg_step_2_v2_html: Открой <a href='https://t.me/userinfobot' target='_blank' rel='noopener'><strong>@userinfobot</strong></a> → Start — он пришлёт твой chat_id (число типа <code>123456789</code>). Скопируй его.
+      tg_step_3_v2: Впиши chat_id ниже → Сохранить → нажми «Тест». Если всё ок — бот пришлёт тебе подтверждение.
+      tg_bot_silent: Наш бот не отвечает на сообщения — он только шлёт уведомления. Свой chat_id узнавай через @userinfobot.
+      tg_one_click_title: Подключить Telegram одной кнопкой
+      tg_one_click_subtitle: Откроется бот → нажми Start → готово. Без копирования chat_id.
+      tg_one_click_btn: Открыть Telegram
+      tg_one_click_hint: Подключи Telegram одной кнопкой — откроется бот, ты жмёшь Start, мы сами получим твой chat_id.
+      tg_manual_toggle: Подключить вручную (если кнопка не работает)
+      tg_manual_step1_html: Открой <a href='%{bot_link}' target='_blank' rel='noopener'>@%{bot_name}</a> → Start.
+      tg_manual_step2_html: Узнай chat_id через <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> → Start.
+      tg_manual_step3: Впиши chat_id и Сохранить.
+      tg_webhook_off: 'One-click привязка не доступна — админ не зарегистрировал webhook. Подключайся вручную:'
+      tg_bot_missing: Telegram-бот компании не настроен — попроси HR/IT.
   navigation:
     workspace: Рабочее место
     org: Организация
@@ -1867,6 +1881,20 @@ ru:
       bot_step_2: BotFather пришлёт токен вида 123456:AAEhBP_... — скопируй его целиком.
       bot_step_3: Впиши токен в поле ниже и нажми «Проверить» — мы вытащим @username бота автоматически.
       bot_step_4: Сотрудники привязывают свой chat_id в /profile/integrations — они увидят правильную ссылку на бота автоматически.
+      webhook_title: Webhook для one-click привязки
+      webhook_active: активен
+      webhook_inactive: не настроен
+      webhook_hint: Webhook позволяет сотрудникам привязывать Telegram одной кнопкой — без копирования chat_id. Telegram требует HTTPS-публичный URL (на localhost не работает; для теста используй ngrok-туннель и задай APP_BASE_URL).
+      webhook_url_label: URL
+      webhook_when: Зарегистрирован
+      webhook_register: Зарегистрировать webhook
+      webhook_re_register: Перерегистрировать
+      webhook_remove: Снять webhook
+      webhook_remove_confirm: Снять webhook? One-click привязка перестанет работать.
+      webhook_ok: "✓ Webhook зарегистрирован: %{url}"
+      webhook_fail: 'Telegram отклонил webhook: %{e}'
+      webhook_removed: Webhook снят
+      webhook_local_blocked: Telegram требует HTTPS-публичный URL. На localhost не работает — задай APP_BASE_URL в .env или открой через ngrok-туннель.
     careers:
       title: Страница найма
       subtitle: Публичная страница вакансий, бренд, доступы

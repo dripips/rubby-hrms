@@ -123,7 +123,7 @@
 
   <% if bot_token.present? %>
     <%# Отдельная форма для теста (нельзя вложить <form> в <form>) %>
-    <div class="mt-3">
+    <div class="mt-3 d-flex gap-2 flex-wrap">
       <%= button_to t("settings.communications.bot_test", default: "Проверить подключение"),
                     test_bot_settings_communications_path,
                     method: :post,
@@ -132,6 +132,58 @@
     </div>
   <% end %>
 </div>
+
+<%# ── Webhook (one-click привязка для сотрудников) ───────────────────── %>
+<%
+  webhook_url    = @setting.data["telegram_webhook_url"].to_s
+  webhook_at     = @setting.data["telegram_webhook_at"].to_s
+%>
+<% if bot_token.present? %>
+  <div class="card-apple mt-4">
+    <div class="d-flex align-items-baseline justify-content-between gap-3 flex-wrap mb-3">
+      <h3 class="card-apple__title m-0">🔗 <%= t("settings.communications.webhook_title", default: "Webhook для one-click привязки") %></h3>
+      <% if webhook_url.present? %>
+        <span class="pill pill--success"><%= t("settings.communications.webhook_active", default: "активен") %></span>
+      <% else %>
+        <span class="pill pill--warning"><%= t("settings.communications.webhook_inactive", default: "не настроен") %></span>
+      <% end %>
+    </div>
+
+    <p class="footnote text-secondary-apple mb-3">
+      <%= t("settings.communications.webhook_hint", default: "Webhook позволяет сотрудникам привязывать Telegram одной кнопкой — без копирования chat_id. Telegram требует HTTPS-публичный URL (на localhost не работает; для теста используй ngrok-туннель и задай APP_BASE_URL).") %>
+    </p>
+
+    <% if webhook_url.present? %>
+      <dl class="footnote">
+        <dt><%= t("settings.communications.webhook_url_label", default: "URL") %></dt>
+        <dd><code class="text-break"><%= webhook_url %></code></dd>
+        <% if webhook_at.present? %>
+          <dt><%= t("settings.communications.webhook_when", default: "Зарегистрирован") %></dt>
+          <dd><%= webhook_at %></dd>
+        <% end %>
+      </dl>
+      <div class="d-flex gap-2 flex-wrap">
+        <%= button_to t("settings.communications.webhook_re_register", default: "Перерегистрировать"),
+                      setup_webhook_settings_communications_path,
+                      method: :post,
+                      class: "btn btn-ghost",
+                      form: { class: "m-0" } %>
+        <%= button_to t("settings.communications.webhook_remove", default: "Снять webhook"),
+                      delete_webhook_settings_communications_path,
+                      method: :delete,
+                      class: "btn btn-ghost",
+                      form: { class: "m-0" },
+                      data: { turbo_confirm: t("settings.communications.webhook_remove_confirm", default: "Снять webhook? One-click привязка перестанет работать.") } %>
+      </div>
+    <% else %>
+      <%= button_to t("settings.communications.webhook_register", default: "Зарегистрировать webhook"),
+                    setup_webhook_settings_communications_path,
+                    method: :post,
+                    class: "btn btn-primary",
+                    form: { class: "m-0" } %>
+    <% end %>
+  </div>
+<% end %>
 
 <div class="card-apple mt-4">
   <h3 class="card-apple__title mb-2"><%= t("settings.communications.about_title", default: "Как это работает") %></h3>

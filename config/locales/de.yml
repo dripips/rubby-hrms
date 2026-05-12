@@ -117,6 +117,20 @@ de:
       tg_step_3: chat_id unten einfügen und Speichern. Dann «Test» klicken — der Bot antwortet mit Bestätigung.
       tg_not_configured: Firmen-Telegram-Bot ist noch nicht eingerichtet. Bitte HR/IT, ihn in /settings/communications einzurichten — dann erscheint der Bot-Link hier.
       tg_get_chat_id_html: Du kannst deine chat_id vorab über <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> herausfinden — öffnen und Start tippen.
+      tg_step_1_v2_html: Öffne den Firmenbot <a href='%{bot_link}' target='_blank' rel='noopener'><strong>@%{bot_name}</strong></a> und tippe <strong>Start</strong>. <em>Der Bot antwortet nicht — das ist normal.</em> So erlaubt Telegram dem Bot, dir Benachrichtigungen zu senden (Anti-Spam).
+      tg_step_2_v2_html: Öffne <a href='https://t.me/userinfobot' target='_blank' rel='noopener'><strong>@userinfobot</strong></a> → Start — er sendet dir deine chat_id (eine Zahl wie <code>123456789</code>). Kopiere sie.
+      tg_step_3_v2: chat_id unten einfügen → Speichern → «Test» klicken. Wenn alles ok, sendet der Bot eine Bestätigung.
+      tg_bot_silent: Unser Bot antwortet nicht auf Nachrichten — er sendet nur Benachrichtigungen. Deine chat_id über @userinfobot.
+      tg_one_click_title: Telegram per Knopfdruck verbinden
+      tg_one_click_subtitle: Bot öffnet sich → tippe Start → fertig. Ohne chat_id zu kopieren.
+      tg_one_click_btn: Telegram öffnen
+      tg_one_click_hint: Verbinde Telegram per Knopfdruck — Bot öffnet sich, du tippst Start, wir erhalten deine chat_id automatisch.
+      tg_manual_toggle: Manuell verbinden (falls der Knopf nicht funktioniert)
+      tg_manual_step1_html: Öffne <a href='%{bot_link}' target='_blank' rel='noopener'>@%{bot_name}</a> → Start.
+      tg_manual_step2_html: chat_id über <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> → Start.
+      tg_manual_step3: chat_id einfügen und Speichern.
+      tg_webhook_off: 'One-Click-Bindung nicht verfügbar — Admin hat den Webhook nicht registriert. Manuell verbinden:'
+      tg_bot_missing: Firmen-Telegram-Bot ist nicht eingerichtet — HR/IT fragen.
   navigation:
     workspace: Arbeitsbereich
     org: Organisation
@@ -2344,6 +2358,20 @@ de:
       bot_step_2: BotFather sendet einen Token wie 123456:AAEhBP_... — kopiere ihn vollständig.
       bot_step_3: Füge den Token unten ein und klicke «Prüfen» — wir holen den @username automatisch.
       bot_step_4: Mitarbeiter binden ihre chat_id in /profile/integrations — der Bot-Link erscheint dort automatisch.
+      webhook_title: Webhook für One-Click-Bindung
+      webhook_active: aktiv
+      webhook_inactive: nicht konfiguriert
+      webhook_hint: Webhook ermöglicht Mitarbeitern, Telegram per Knopfdruck zu verbinden — ohne chat_id zu kopieren. Telegram benötigt eine öffentliche HTTPS-URL (localhost funktioniert nicht; für Tests ngrok + APP_BASE_URL).
+      webhook_url_label: URL
+      webhook_when: Registriert am
+      webhook_register: Webhook registrieren
+      webhook_re_register: Neu registrieren
+      webhook_remove: Webhook entfernen
+      webhook_remove_confirm: Webhook entfernen? One-Click-Bindung funktioniert dann nicht mehr.
+      webhook_ok: "✓ Webhook registriert: %{url}"
+      webhook_fail: 'Telegram hat Webhook abgelehnt: %{e}'
+      webhook_removed: Webhook entfernt
+      webhook_local_blocked: Telegram benötigt eine öffentliche HTTPS-URL. localhost funktioniert nicht — APP_BASE_URL setzen oder ngrok-Tunnel verwenden.
     notifications:
       about_text: Aktiviere oder deaktiviere Kanäle für jeden Ereignistyp — gilt für alle Empfänger.
       about_title: Über die Einstellungen

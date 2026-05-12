@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_141438) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_182111) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -889,12 +889,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_141438) do
     t.integer "sign_in_count", default: 0, null: false
     t.string "slack_webhook_url"
     t.string "telegram_chat_id"
+    t.string "tg_link_token"
+    t.datetime "tg_link_token_at"
     t.string "time_zone", default: "Moscow", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_users_on_discarded_at"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["role"], name: "index_users_on_role"
+    t.index ["tg_link_token"], name: "index_users_on_tg_link_token", unique: true, where: "(tg_link_token IS NOT NULL)"
   end
 
   create_table "versions", force: :cascade do |t|

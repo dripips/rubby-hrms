@@ -22,6 +22,9 @@ Rails.application.routes.draw do
     post "careers/:code/apply",      to: "careers#create",     as: :apply_careers_opening, constraints: { code: /[\w\-]+/ }
   end
 
+  # ── Telegram bot webhook (no auth, no locale, no CSRF) ─────────────────
+  post "telegram/webhook", to: "telegram_webhooks#receive", as: :telegram_webhook
+
   # ── Public Careers API v1 (CORS, без auth) ───────────────────────────────
   # Позволяет встраивать список вакансий и форму подачи на любой внешний сайт.
   namespace :api do
@@ -193,8 +196,9 @@ Rails.application.routes.draw do
       # Integrations: Slack + Telegram per-user
       get   :integrations
       patch :update_integrations, path: "integrations"
-      post  "integrations/test_slack",    to: "profile#test_slack",    as: :test_slack
-      post  "integrations/test_telegram", to: "profile#test_telegram", as: :test_telegram
+      post  "integrations/test_slack",          to: "profile#test_slack",          as: :test_slack
+      post  "integrations/test_telegram",       to: "profile#test_telegram",       as: :test_telegram
+      post  "integrations/start_telegram_link", to: "profile#start_telegram_link", as: :start_telegram_link
     end
 
     # 2FA challenge на sign-in (пользователь уже прошёл password, ждём TOTP).
@@ -234,7 +238,9 @@ Rails.application.routes.draw do
       end
       resource  :notifications, only: %i[show update]
       resource  :communications, only: %i[show update] do
-        post :test_bot
+        post   :test_bot
+        post   :setup_webhook
+        delete :delete_webhook
       end
       resource  :careers,        only: %i[show update]
       resource  :leaves,         only: %i[show update], controller: "leaves"

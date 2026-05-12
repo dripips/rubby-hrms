@@ -50,7 +50,7 @@
           <% else %>—<% end %>
         </dd>
         <dt class="col-md-4 form-label"><%= t("employees.fields.gender", default: "Пол") %></dt>
-        <dd class="col-md-8"><%= @employee.gender_ref&.name.presence || "—" %></dd>
+        <dd class="col-md-8"><%= @employee.gender_record&.name.presence || "—" %></dd>
         <dt class="col-md-4 form-label"><%= t("employees.fields.hobbies", default: "Хобби") %></dt>
         <dd class="col-md-8"><%= @employee.hobbies.presence || "—" %></dd>
         <dt class="col-md-4 form-label"><%= t("employees.fields.shirt_size", default: "Размер одежды") %></dt>

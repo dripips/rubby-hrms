@@ -42,6 +42,7 @@
   <%
     bot_username = telegram_bot_username
     bot_link     = bot_username.present? ? "https://t.me/#{bot_username}" : nil
+    webhook_active = telegram_webhook_active?
   %>
   <div>
     <h3 class="title-3 mb-2">
@@ -51,40 +52,87 @@
       <% end %>
     </h3>
 
-    <% if bot_link %>
+    <% if bot_link && webhook_active %>
+      <%# ── ОСНОВНОЙ ПУТЬ: one-click через webhook ──────────────────── %>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("profile.integrations.tg_one_click_hint", default: "Подключи Telegram одной кнопкой — откроется бот, ты жмёшь Start, мы сами получим твой chat_id.") %>
+      </p>
+      <%# Кнопка ВНЕ основной формы — поэтому добавим её отдельно (ниже формы). %>
+      <%= f.hidden_field :telegram_chat_id %>
+
+      <details class="footnote mt-2">
+        <summary style="cursor: pointer;">
+          <%= t("profile.integrations.tg_manual_toggle", default: "Подключить вручную (если кнопка не работает)") %>
+        </summary>
+        <div class="mt-3">
+          <ol class="text-secondary-apple mb-3" style="padding-left: 18px;">
+            <li><%= t("profile.integrations.tg_manual_step1_html",
+                       bot_link: bot_link, bot_name: bot_username,
+                       default: "Открой <a href='%{bot_link}' target='_blank' rel='noopener'>@%{bot_name}</a> → Start.").html_safe %></li>
+            <li><%= t("profile.integrations.tg_manual_step2_html", default:
+                       "Узнай chat_id через <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> → Start.").html_safe %></li>
+            <li><%= t("profile.integrations.tg_manual_step3", default: "Впиши chat_id и Сохранить.") %></li>
+          </ol>
+          <label class="form-label" for="user_telegram_chat_id_manual"><%= t("profile.integrations.telegram_chat_id_label", default: "Telegram chat_id") %></label>
+          <input type="text" id="user_telegram_chat_id_manual"
+                 name="user[telegram_chat_id]"
+                 value="<%= current_user.telegram_chat_id %>"
+                 class="form-control" inputmode="numeric"
+                 placeholder="123456789" autocomplete="off">
+        </div>
+      </details>
+    <% elsif bot_link %>
+      <%# ── Webhook не зарегистрирован — manual инструкция ──────────── %>
+      <div class="alert alert-soft footnote mb-3">
+        💡 <%= t("profile.integrations.tg_webhook_off", default: "One-click привязка не доступна — админ не зарегистрировал webhook. Подключайся вручную:") %>
+      </div>
       <ol class="footnote text-secondary-apple mb-3" style="padding-left: 18px;">
         <li>
-          <%= t("profile.integrations.tg_step_1_html",
-                bot_link: bot_link,
-                bot_name: bot_username,
-                default: "Открой бота компании в Telegram: <a href='%{bot_link}' target='_blank' rel='noopener'><strong>@%{bot_name}</strong></a> → нажми <strong>Start</strong>.").html_safe %>
+          <%= t("profile.integrations.tg_step_1_v2_html",
+                bot_link: bot_link, bot_name: bot_username,
+                default: "Открой бота <a href='%{bot_link}' target='_blank' rel='noopener'><strong>@%{bot_name}</strong></a> → <strong>Start</strong>. <em>Бот промолчит — это нормально (anti-spam).</em>").html_safe %>
         </li>
         <li>
-          <%= t("profile.integrations.tg_step_2_html", default:
-                "Узнай свой chat_id: открой <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a>, нажми Start — он пришлёт тебе твой ID (число).").html_safe %>
+          <%= t("profile.integrations.tg_step_2_v2_html", default:
+                "Открой <a href='https://t.me/userinfobot' target='_blank' rel='noopener'><strong>@userinfobot</strong></a> → Start — он пришлёт твой chat_id.").html_safe %>
         </li>
-        <li><%= t("profile.integrations.tg_step_3", default: "Впиши chat_id ниже и нажми Сохранить. После — нажми «Тест», бот напишет тебе подтверждение.") %></li>
+        <li><%= t("profile.integrations.tg_step_3_v2", default: "Впиши chat_id ниже → Сохранить → нажми «Тест».") %></li>
       </ol>
+      <%= f.label :telegram_chat_id, t("profile.integrations.telegram_chat_id_label", default: "Telegram chat_id"), class: "form-label" %>
+      <%= f.text_field :telegram_chat_id, class: "form-control",
+                      placeholder: "123456789", inputmode: "numeric", autocomplete: "off" %>
     <% else %>
+      <%# ── Бот вообще не настроен ──────────────────────────────────── %>
       <div class="alert alert-soft footnote mb-3">
-        ⚠️ <%= t("profile.integrations.tg_not_configured", default: "Telegram-бот компании ещё не настроен. Попроси HR/IT настроить его в /settings/communications — тогда здесь появится ссылка на бот.") %>
+        ⚠️ <%= t("profile.integrations.tg_not_configured", default: "Telegram-бот компании ещё не настроен. Попроси HR/IT настроить его в /settings/communications.") %>
       </div>
-      <p class="footnote text-secondary-apple mb-3">
-        <%= t("profile.integrations.tg_get_chat_id_html", default:
-              "Узнать свой chat_id заранее можно через <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> — открой и нажми Start.").html_safe %>
-      </p>
+      <%= f.label :telegram_chat_id, t("profile.integrations.telegram_chat_id_label", default: "Telegram chat_id"), class: "form-label" %>
+      <%= f.text_field :telegram_chat_id, class: "form-control",
+                      placeholder: "123456789", inputmode: "numeric", autocomplete: "off",
+                      disabled: true %>
     <% end %>
-
-    <%= f.label :telegram_chat_id, t("profile.integrations.telegram_chat_id_label", default: "Telegram chat_id"), class: "form-label" %>
-    <%= f.text_field :telegram_chat_id, class: "form-control",
-                    placeholder: "123456789",
-                    inputmode: "numeric",
-                    autocomplete: "off" %>
   </div>
 
   <div class="d-flex gap-2">
     <%= f.submit t("common.save"), class: "btn btn-primary" %>
     <%= link_to t("common.cancel"), profile_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>
+
+<%# ── One-click Telegram-кнопка (отдельная форма после основной) ──── %>
+<% if telegram_bot_username.present? && telegram_webhook_active? %>
+  <div class="card-apple mt-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div>
+      <h3 class="title-3 m-0 mb-1">🔗 <%= t("profile.integrations.tg_one_click_title", default: "Подключить Telegram одной кнопкой") %></h3>
+      <p class="footnote text-tertiary m-0">
+        <%= t("profile.integrations.tg_one_click_subtitle", default: "Откроется бот → нажми Start → готово. Без копирования chat_id.") %>
+      </p>
+    </div>
+    <%= button_to t("profile.integrations.tg_one_click_btn", default: "Открыть Telegram"),
+                  start_telegram_link_profile_path,
+                  method: :post,
+                  class: "btn btn-primary",
+                  form: { class: "m-0" } %>
   </div>
 <% end %>
 
