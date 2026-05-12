@@ -7,20 +7,57 @@
 
   <title>HRMS — Open-source HRMS with 24 AI agents</title>
   <meta name="description" content="Self-hostable HR management for any industry. AI-native: 24 agents for recruitment, retention, onboarding, documents. Rails 8 · Apple HIG · GDPR-ready · 3 locales. One-command Docker install.">
+  <link rel="canonical" href="https://dripips.github.io/rubby-hrms/">
+  <link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/">
+  <link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/ru/">
+  <link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/de/">
+  <link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/">
 
   <!-- Open Graph / Twitter -->
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ru_RU">
+  <meta property="og:locale:alternate" content="de_DE">
   <meta property="og:title" content="HRMS — Open-source HRMS with 24 AI agents">
   <meta property="og:description" content="Self-hostable HR management for any industry. Rails 8 · Apple HIG · 24 AI agents · GDPR · MIT.">
   <meta property="og:image" content="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/01-dashboard.png">
-  <meta property="og:url" content="https://github.com/dripips/rubby-hrms">
+  <meta property="og:image:width" content="1440">
+  <meta property="og:image:height" content="900">
+  <meta property="og:image:alt" content="HRMS dashboard preview">
+  <meta property="og:url" content="https://dripips.github.io/rubby-hrms/">
+  <meta property="og:site_name" content="HRMS">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HRMS — Open-source HRMS with 24 AI agents">
+  <meta name="twitter:description" content="Self-hostable HR for any industry. Rails 8 · 24 AI agents · GDPR · MIT.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/01-dashboard.png">
 
   <link rel="icon" href="https://raw.githubusercontent.com/dripips/rubby-hrms/master/public/icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
   <link rel="stylesheet" href="./style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "HRMS",
+    "applicationCategory": "BusinessApplication",
+    "applicationSubCategory": "Human Resources Management",
+    "operatingSystem": "Linux, macOS, Windows (Docker)",
+    "description": "Open-source self-hostable HR management system with 24 AI agents, multi-tenant, GDPR-ready.",
+    "license": "https://opensource.org/licenses/MIT",
+    "softwareVersion": "2.0",
+    "datePublished": "2026-05-13",
+    "url": "https://dripips.github.io/rubby-hrms/",
+    "downloadUrl": "https://github.com/dripips/rubby-hrms",
+    "releaseNotes": "https://dripips.github.io/rubby-hrms/releases/",
+    "screenshot": "https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/01-dashboard.png",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Organization", "name": "dripips", "url": "https://github.com/dripips" },
+    "inLanguage": [ "en", "ru", "de" ]
+  }
+  </script>
 </head>
 <body>
 
@@ -36,6 +73,7 @@
       <a href="#ai">AI agents</a>
       <a href="#install">Install</a>
       <a href="#screenshots">Screenshots</a>
+      <a href="./releases/">Releases</a>
       <div class="lang-switcher">
         <span class="lang-switcher__opt is-active">EN</span>
         <a class="lang-switcher__opt" href="./ru/">RU</a>
@@ -315,12 +353,24 @@ cd rubby-hrms
     </div>
     <div class="footer__links">
       <a href="https://github.com/dripips/rubby-hrms">GitHub</a>
-      <a href="https://github.com/dripips/rubby-hrms/releases">Releases</a>
+      <a href="./releases/">Releases</a>
       <a href="https://github.com/dripips/rubby-hrms/blob/master/CHANGELOG.md">Changelog</a>
       <a href="https://github.com/dripips/rubby-hrms/issues">Issues</a>
     </div>
   </div>
 </footer>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document,'script','https://mc.webvisor.org/metrika/tag_ww.js?id=109169241', 'ym');
+    ym(109169241, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", referrer:document.referrer, url:location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/109169241" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 
 </body>
 </html>

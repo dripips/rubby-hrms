@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Landing pages (3 locales) -->
+  <url>
+    <loc>https://dripips.github.io/rubby-hrms/</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/ru/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/"/>
+  </url>
+  <url>
+    <loc>https://dripips.github.io/rubby-hrms/ru/</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/ru/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/"/>
+  </url>
+  <url>
+    <loc>https://dripips.github.io/rubby-hrms/de/</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/ru/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/"/>
+  </url>
+
+  <!-- Releases pages (3 locales) -->
+  <url>
+    <loc>https://dripips.github.io/rubby-hrms/releases/</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/releases/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/releases/ru/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/releases/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/releases/"/>
+  </url>
+  <url>
+    <loc>https://dripips.github.io/rubby-hrms/releases/ru/</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/releases/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/releases/ru/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/releases/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/releases/"/>
+  </url>
+  <url>
+    <loc>https://dripips.github.io/rubby-hrms/releases/de/</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/releases/"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/releases/ru/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/releases/de/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/releases/"/>
+  </url>
+
+</urlset>

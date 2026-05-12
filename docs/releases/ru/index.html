@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta name="theme-color" content="#0A84FF">
+
+  <title>Релизы · HRMS — open-source HR-система</title>
+  <meta name="description" content="История релизов HRMS. v2.0 — Multi-tenant + Docker deploy. Major-релизы v1.0–v2.0 с фичами, миграциями, AI-агентами, безопасностью и i18n.">
+  <link rel="canonical" href="https://dripips.github.io/rubby-hrms/releases/ru/">
+  <link rel="alternate" hreflang="en" href="https://dripips.github.io/rubby-hrms/releases/">
+  <link rel="alternate" hreflang="ru" href="https://dripips.github.io/rubby-hrms/releases/ru/">
+  <link rel="alternate" hreflang="de" href="https://dripips.github.io/rubby-hrms/releases/de/">
+  <link rel="alternate" hreflang="x-default" href="https://dripips.github.io/rubby-hrms/releases/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="de_DE">
+  <meta property="og:site_name" content="HRMS">
+  <meta property="og:title" content="Релизы · HRMS — 14 версий за месяц">
+  <meta property="og:description" content="От v1.0 (Универсальная HRMS) до v2.0 (Multi-tenant + Docker deploy). Каждый релиз — значимая user-facing фича.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/01-dashboard.png">
+  <meta property="og:image:width" content="1440">
+  <meta property="og:image:height" content="900">
+  <meta property="og:image:alt" content="HRMS дашборд">
+  <meta property="og:url" content="https://dripips.github.io/rubby-hrms/releases/ru/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Релизы · HRMS">
+  <meta name="twitter:description" content="От v1.0 до v2.0 — 14 релизов open-source HR-системы с 24 AI-агентами.">
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/01-dashboard.png">
+
+  <link rel="icon" href="https://raw.githubusercontent.com/dripips/rubby-hrms/master/public/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="../../style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "HRMS",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Linux, macOS, Windows (Docker)",
+    "description": "Open-source self-hostable HR-система с 24 AI-агентами, multi-tenant, GDPR / 152-ФЗ.",
+    "license": "https://opensource.org/licenses/MIT",
+    "softwareVersion": "2.0",
+    "datePublished": "2026-05-13",
+    "releaseNotes": "https://github.com/dripips/rubby-hrms/releases",
+    "url": "https://github.com/dripips/rubby-hrms",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Organization", "name": "dripips" }
+  }
+  </script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar__row">
+    <a href="../../ru/" class="brand">
+      <span class="brand__mark">H</span>
+      <span class="brand__name">HRMS</span>
+      <span class="brand__pill">v2.0</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="../../ru/#features">Возможности</a>
+      <a href="../../ru/#ai">AI-агенты</a>
+      <a href="../../ru/#install">Установка</a>
+      <a href="./" class="topbar__link-strong">Релизы</a>
+      <div class="lang-switcher">
+        <a class="lang-switcher__opt" href="../">EN</a>
+        <span class="lang-switcher__opt is-active">RU</span>
+        <a class="lang-switcher__opt" href="../de/">DE</a>
+      </div>
+      <a href="https://github.com/dripips/rubby-hrms" class="topbar__link-strong">GitHub →</a>
+    </nav>
+  </div>
+</header>
+
+<section class="releases-hero">
+  <div class="container">
+    <h1>Релизы</h1>
+    <p>14 релизов за жизнь проекта — от v1.0 (Универсальная HRMS) до v2.0 (Multi-tenant + Docker deploy). Каждый — значимая user-facing фича с отдельным GitHub release'ом.</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="releases-layout">
+
+    <aside class="releases-toc">
+      <h4>Версии</h4>
+      <ul>
+        <li><a href="#v2-0"><b>v2.0</b><span class="releases-toc__date">13 мая</span></a></li>
+        <li><a href="#v1-12">v1.12<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-11">v1.11<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-10">v1.10<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-9">v1.9<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-8">v1.8<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-7">v1.7<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-6">v1.6<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-5">v1.5<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-4">v1.4<span class="releases-toc__date">12 мая</span></a></li>
+        <li><a href="#v1-3">v1.3<span class="releases-toc__date">1 мая</span></a></li>
+        <li><a href="#v1-2">v1.2<span class="releases-toc__date">1 мая</span></a></li>
+        <li><a href="#v1-1">v1.1<span class="releases-toc__date">1 мая</span></a></li>
+        <li><a href="#v1-0">v1.0<span class="releases-toc__date">1 мая</span></a></li>
+      </ul>
+    </aside>
+
+    <main>
+
+      <article class="release-card release-card--latest" id="v2-0">
+        <div class="release-card__head">
+          <h2 class="release-card__version">
+            <span class="grad">v2.0</span>
+            <span class="release-card__pill">ПОСЛЕДНИЙ</span>
+          </h2>
+          <span class="release-card__date">2026-05-13</span>
+        </div>
+        <p class="release-card__tagline"><strong>Multi-tenant foundation + Docker deploy</strong> — крупный архитектурный сдвиг. Несколько компаний на одной инстансе с резолвингом по subdomain'у; zero-downtime upgrades через <code>scripts/update.sh</code>.</p>
+
+        <h3>Multi-tenant routing</h3>
+        <ul>
+          <li><code>companies.subdomain</code> + <code>TenantResolver</code> middleware: <code>acme.hrms.example.com</code> → <code>Current.company</code>, fallback на первую компанию на apex-домене.</li>
+          <li><code>Current</code> ActiveSupport::CurrentAttributes (company, user) + helper <code>current_company</code>.</li>
+          <li><strong>Настройки → Коммуникации → 🏢 Subdomain</strong> — superadmin задаёт tenant slug.</li>
+          <li>404 при неизвестном subdomain (JSON для API, HTML для браузера). <code>www / api / app</code> исключены.</li>
+        </ul>
+
+        <h3>Развёртывание</h3>
+        <ul>
+          <li><code>scripts/update.sh</code> — бэкап → fetch → миграции на новом образе <strong>до</strong> swap'а → rolling restart → healthcheck-цикл → rollback-подсказка при failure.</li>
+          <li><code>docker-compose.prod.yml</code> override: pre-built image, healthcheck, JSON-логи с rotation, PG tuning (shared_buffers 512MB, work_mem 16MB), Puma 3×10.</li>
+        </ul>
+
+        <div class="release-card__cta">
+          <a class="btn btn--primary" href="https://github.com/dripips/rubby-hrms/releases/tag/v2.0">Полные заметки на GitHub →</a>
+          <a class="btn btn--ghost" href="../../ru/#install">Инструкция по установке</a>
+        </div>
+      </article>
+
+      <article class="release-card" id="v1-12">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.12</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">In-app чат с <strong>context-bound discussions</strong> + CalDAV календарь-feed.</p>
+        <ul>
+          <li>Standalone-чат на <code>/conversations</code> с live Turbo Streams, unread badge в sidebar.</li>
+          <li><strong>Discussion-треды</strong> прямо на Leave Requests и Job Applicants — участники подбираются автоматически (employee + manager + HR для отпусков; recruiter + HR для кандидатов).</li>
+          <li>CalDAV-фид <code>/api/v1/me/calendar.ics?token=...</code> — подписка в Google Calendar / Outlook / Apple Calendar с авто-обновлением.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.12">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-11">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.11</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">Authenticated REST API — <strong>5 → 15 endpoints</strong> с Bearer-token auth.</p>
+        <ul>
+          <li><code>ApiToken</code>: bcrypt-hashed, 8-char visible prefix, reveal-once при выпуске, last_used_at rate-limited 60s.</li>
+          <li>Новое: <code>/me</code>, <code>/me/kpi</code>, <code>/me/leave_requests</code>, <code>/me/documents</code>, <code>/me/notifications</code>.</li>
+          <li>Public metadata: <code>/api/v1/departments</code>, <code>/positions</code>.</li>
+          <li>UI управления токенами в Профиль → Безопасность.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.11">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-10">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.10</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">RSpec coverage <strong>38 → 93 examples</strong> + OpenAPI/Swagger + <strong>4 prod bug-fix'а</strong>.</p>
+        <ul>
+          <li>Написание тестов поймало реальные баги: GdprDeleter упал бы на NotNullViolation при реальном удалении; IcalendarBuilder escape ел backslash'и; API openings route отдавал 404 из-за param mismatch.</li>
+          <li>OpenAPI 3 spec + Swagger UI на <code>/api-docs/</code>.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.10">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-9">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.9</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">OSS-hygiene + performance instrumentation.</p>
+        <ul>
+          <li><code>CHANGELOG.md</code> + <code>ROADMAP.md</code> + <code>CONTRIBUTING.md</code>.</li>
+          <li><strong>bullet</strong> (N+1 детектор) + <strong>rack-mini-profiler</strong> в dev.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.9">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-8">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.8</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">CI runtime guards + <strong>.ics</strong> экспорт календаря.</p>
+        <ul>
+          <li>Smoke spec — 38 GET-проверок страниц, ловит <code>ActionView::Template::Error</code> до merge'а.</li>
+          <li>Zeitwerk autoload check в CI.</li>
+          <li><code>/recruitment/calendar.ics</code> — RFC 5545 экспорт интервью.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.8">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-7">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.7</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">One-click Telegram через webhook.</p>
+        <ul>
+          <li>Профиль → "Открыть Telegram" → бот открывается → Start → готово. Webhook валидирует <code>X-Telegram-Bot-Api-Secret-Token</code>, авто-биндит chat_id.</li>
+          <li><code>tg_link_token</code>: 16-byte random, single-use, 10 мин TTL.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.7">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-6">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.6</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">Slack + Telegram каналы доставки для Noticed.</p>
+        <ul>
+          <li>Custom Noticed delivery methods (<code>DeliveryMethods::Slack</code>, <code>::Telegram</code>).</li>
+          <li>Per-user webhook / chat_id в <code>/profile/integrations</code>, company-wide bot token в <code>/settings/communications</code>.</li>
+          <li>Test-кнопки шлют реальные сообщения для проверки.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.6">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-5">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.5</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">Mobile responsiveness.</p>
+        <ul>
+          <li>Таблицы → горизонтальный scroll на мобиле.</li>
+          <li>Kanban-карточки 86vw, компактный card padding.</li>
+          <li><code>@media (hover: none)</code> — отключение sticky-hover на touch.</li>
+          <li>nokogiri 1.19.2 → 1.19.3 (CVE-патчи).</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.5">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-4">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.4</h2>
+          <span class="release-card__date">2026-05-12</span>
+        </div>
+        <p class="release-card__tagline">iOS Springboard-style дашборд.</p>
+        <ul>
+          <li>CSS Grid 4 → 2 → 1 колонки responsive.</li>
+          <li>3 размера виджетов (S/M/L), live edit mode, drag-drop reorder, floating size pips, eye-toggle.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.4">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-3">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.3</h2>
+          <span class="release-card__date">2026-05-01</span>
+        </div>
+        <p class="release-card__tagline">2FA (TOTP) + backup-коды.</p>
+        <ul>
+          <li>QR-код setup через rqrcode, verify до enable.</li>
+          <li>Drift ±30s + anti-replay через <code>otp_last_used_at</code>.</li>
+          <li>10 backup-кодов, single-use, bcrypt-hashed.</li>
+          <li>Sign-in challenge с 5-мин pending session TTL.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.3">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-2">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.2</h2>
+          <span class="release-card__date">2026-05-01</span>
+        </div>
+        <p class="release-card__tagline">Production hardening.</p>
+        <ul>
+          <li>force_ssl + secure cookies в production.</li>
+          <li><code>AiBudgetGuard</code> — hard-cap по AI-стоимости (<code>HARD_CAP_MULTIPLIER × monthly_budget_usd</code>).</li>
+          <li>GDPR / 152-ФЗ: <code>GdprExporter</code> (Article 15) + <code>GdprDeleter</code> (Article 17).</li>
+          <li><code>HrmsErrorSubscriber</code> — централизованный error tracking + опциональный Sentry.</li>
+          <li>Backup / restore скрипты.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.2">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-1">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.1</h2>
+          <span class="release-card__date">2026-05-01</span>
+        </div>
+        <p class="release-card__tagline">Кастомизируемый дашборд + Users admin + Profile tabs.</p>
+        <ul>
+          <li>10 виджетов с drag-drop reorder + role-based visibility.</li>
+          <li>Users admin (/settings/users) — full CRUD, lock/unlock, reset password.</li>
+          <li>Profile tabs: Личное / Безопасность / Уведомления.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.1">GitHub release →</a>
+      </article>
+
+      <article class="release-card" id="v1-0">
+        <div class="release-card__head">
+          <h2 class="release-card__version">v1.0</h2>
+          <span class="release-card__date">2026-05-01</span>
+        </div>
+        <p class="release-card__tagline">Первый публичный релиз — универсальная HRMS под любую индустрию.</p>
+        <ul>
+          <li>Rails 8.1 + Hotwire + PostgreSQL 18 + SolidQueue + SolidCable.</li>
+          <li>24 AI-агента по полному циклу — recruitment / retention / on+off-boarding / docs / dictionaries.</li>
+          <li>Custom Fields через справочники — подстраивай любую сущность под индустрию.</li>
+          <li>Documents: pdf-reader + Tesseract OCR + OpenAI Vision fallback.</li>
+          <li>3 локали (RU / EN / DE), 2050+ ключей.</li>
+          <li>Установка одной командой через Docker.</li>
+        </ul>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/releases/tag/v1.0">GitHub release →</a>
+      </article>
+
+    </main>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container footer__row">
+    <div>
+      <strong>HRMS</strong> · MIT · Rails 8 + много кофе.
+    </div>
+    <div class="footer__links">
+      <a href="https://github.com/dripips/rubby-hrms">GitHub</a>
+      <a href="https://github.com/dripips/rubby-hrms/releases">Все релизы</a>
+      <a href="https://github.com/dripips/rubby-hrms/blob/master/CHANGELOG.md">CHANGELOG.md</a>
+      <a href="https://github.com/dripips/rubby-hrms/issues">Issues</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();
+    for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+    k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document,'script','https://mc.webvisor.org/metrika/tag_ww.js?id=109169241', 'ym');
+    ym(109169241, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", referrer:document.referrer, url:location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/109169241" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html>

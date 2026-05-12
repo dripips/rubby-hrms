@@ -465,6 +465,174 @@ body {
 .cta .btn--ghost { background: rgba(255,255,255,0.16); color: #fff; }
 .cta .btn--ghost:hover { background: rgba(255,255,255,0.26); }
 
+/* ── Releases page ───────────────────────────────────────────────── */
+.releases-hero {
+  padding: var(--space-8) 0 var(--space-5);
+  background:
+    radial-gradient(900px circle at 80% 0%, rgba(10,132,255,0.10), transparent 60%);
+}
+.releases-hero h1 {
+  font-size: clamp(38px, 6vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--space-3);
+}
+.releases-hero p {
+  font-size: 17px;
+  color: var(--label-2);
+  margin: 0;
+  max-width: 720px;
+}
+
+.releases-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-6);
+  padding: var(--space-6) 0 var(--space-10);
+}
+@media (max-width: 880px) {
+  .releases-layout { grid-template-columns: 1fr; }
+}
+
+.releases-toc {
+  position: sticky;
+  top: 72px;
+  align-self: start;
+  padding: var(--space-4);
+  background: var(--bg-elev);
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+@media (max-width: 880px) {
+  .releases-toc { position: static; }
+}
+.releases-toc h4 {
+  margin: 0 0 var(--space-2);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--label-3);
+}
+.releases-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.releases-toc a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--label-2);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background 120ms var(--ease-standard);
+}
+.releases-toc a:hover {
+  background: var(--fill-3);
+  color: var(--label-1);
+}
+.releases-toc__date {
+  font-size: 10px;
+  color: var(--label-3);
+  font-family: "JetBrains Mono", monospace;
+}
+
+.release-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  scroll-margin-top: 80px;
+}
+.release-card--latest {
+  border: 2px solid var(--blue);
+  box-shadow: var(--shadow-xl);
+}
+.release-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+.release-card__version {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.release-card__version .grad {
+  background: linear-gradient(90deg, var(--blue), var(--indigo));
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+}
+.release-card__date {
+  font-size: 13px;
+  color: var(--label-3);
+  font-family: "JetBrains Mono", monospace;
+}
+.release-card__tagline {
+  font-size: 16px;
+  color: var(--label-2);
+  margin: 0 0 var(--space-4);
+}
+.release-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin: var(--space-4) 0 var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--label-3);
+}
+.release-card h3:first-of-type { margin-top: 0; }
+.release-card ul {
+  margin: 0 0 var(--space-3);
+  padding-left: var(--space-4);
+  font-size: 14px;
+  color: var(--label-2);
+  line-height: 1.7;
+}
+.release-card ul li b,
+.release-card ul li strong {
+  color: var(--label-1);
+}
+.release-card code {
+  background: var(--fill-3);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+}
+.release-card__cta {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+.release-card__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--blue);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
 /* ── Footer ──────────────────────────────────────────────────────── */
 .footer {
   padding: var(--space-5) 0;
