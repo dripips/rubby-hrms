@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta name="theme-color" content="#0A84FF">
+
+  <title>HRMS — Open-source HRMS with 24 AI agents</title>
+  <meta name="description" content="Self-hostable HR management for any industry. AI-native: 24 agents for recruitment, retention, onboarding, documents. Rails 8 · Apple HIG · GDPR-ready · 3 locales. One-command Docker install.">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HRMS — Open-source HRMS with 24 AI agents">
+  <meta property="og:description" content="Self-hostable HR management for any industry. Rails 8 · Apple HIG · 24 AI agents · GDPR · MIT.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/01-dashboard.png">
+  <meta property="og:url" content="https://github.com/dripips/rubby-hrms">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="https://raw.githubusercontent.com/dripips/rubby-hrms/master/public/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar__row">
+    <a href="#top" class="brand">
+      <span class="brand__mark">H</span>
+      <span class="brand__name">HRMS</span>
+      <span class="brand__pill">v2.0</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="#features">Features</a>
+      <a href="#ai">AI agents</a>
+      <a href="#install">Install</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="https://github.com/dripips/rubby-hrms" class="topbar__link-strong">GitHub →</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────────── HERO ─────────────── -->
+<section class="hero" id="top">
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <div class="hero__eyebrow">
+        <span class="dot dot--green"></span> Open source · MIT · v2.0
+      </div>
+      <h1 class="hero__title">
+        Open-source HRMS<br>
+        with <span class="grad">24 AI agents</span>.
+      </h1>
+      <p class="hero__lead">
+        Self-hostable HR for <strong>any industry</strong> — from a tech startup to a septic-pumping company. Rails 8 · Apple HIG · GDPR-ready · 3 locales. One-command Docker install.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#install">Install in 2 minutes</a>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms">⭐ Star on GitHub</a>
+      </div>
+      <div class="hero__meta">
+        <span>Rails 8.1</span><span>·</span>
+        <span>PostgreSQL 18</span><span>·</span>
+        <span>Hotwire</span><span>·</span>
+        <span>24 AI agents</span><span>·</span>
+        <span>RU · EN · DE</span>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/01-dashboard.png"
+           alt="HRMS dashboard"
+           loading="eager"
+           class="hero__shot">
+      <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/01-dashboard-dark.png"
+           alt="HRMS dashboard dark mode"
+           loading="lazy"
+           class="hero__shot hero__shot--dark">
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── COMPARISON ─────────────── -->
+<section class="why">
+  <div class="container">
+    <h2 class="section-title">Why another HRMS?</h2>
+    <p class="section-lead">
+      Most HR systems hardcode one industry's vocabulary. A hire is a "developer", a leave is "PTO", a document is a "passport". Real companies are messier — a septic service tracks ADR clearances; a clinic tracks license numbers; a tech startup wants GitHub URLs.
+    </p>
+    <p class="section-lead">
+      <strong>HRMS bends to the company, not the other way around.</strong> Every entity has a Custom Fields system through Dictionaries. HR defines the schema once — forms, validation, AI extraction, and audit pick it up automatically.
+    </p>
+  </div>
+</section>
+
+<!-- ─────────────── FEATURES ─────────────── -->
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-title">What's inside</h2>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card__icon">🌍</div>
+        <h3>Universal across industries</h3>
+        <p>Custom fields per entity, configurable lookup lists, all company-scoped. <strong>AI Bootstrap chat</strong> — describe your company in plain language, AI proposes the full schema.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🤖</div>
+        <h3>24 AI agents</h3>
+        <p>OpenAI / OpenRouter / Together / Groq / DeepSeek / Anthropic / vLLM / Ollama. Per-task model override, hard cost cap, full audit log.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">📄</div>
+        <h3>Documents subsystem</h3>
+        <p>pdf-reader + Tesseract OCR + OpenAI Vision fallback. Auto-extract → review → apply. Expiry notifications via in-app, email, Slack, Telegram.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🎨</div>
+        <h3>Apple-HIG design</h3>
+        <p>System colors, SF Pro typography, spring animations. iOS-style dashboard with S/M/L widget grid and live edit mode. Full dark theme.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🔐</div>
+        <h3>Security & compliance</h3>
+        <p>2FA (TOTP + backup codes), GDPR Article 15+17 (export + erasure), 152-FZ aware, Pundit RBAC, audit log on every change with revert.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🔌</div>
+        <h3>Integrations</h3>
+        <p>Slack webhooks, Telegram bot (one-click linking via webhook), Bearer-token REST API (15 endpoints, Swagger UI), CalDAV calendar feed.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">⚡</div>
+        <h3>Live everywhere</h3>
+        <p>Turbo Streams + ActionCable — KPI updates, new applications, AI run completion stream into the page without reloads.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🏢</div>
+        <h3>Multi-tenant ready (v2.0)</h3>
+        <p>Subdomain-resolved tenants out of the box. Single-tenant install works the same — flip the switch when you grow.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🐳</div>
+        <h3>One-command install</h3>
+        <p>Docker + Postgres + Tesseract + libvips + poppler. Auto-generated secrets, healthcheck, zero-downtime <code>update.sh</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── AI AGENTS ─────────────── -->
+<section class="ai" id="ai">
+  <div class="container">
+    <h2 class="section-title">AI agents — for every lifecycle stage</h2>
+    <p class="section-lead">
+      Each agent is a focused service. Multi-provider — point them at OpenAI, OpenRouter, your own vLLM, Ollama. Per-task model override and hard cost cap built in.
+    </p>
+
+    <div class="agent-grid">
+      <div class="agent-col">
+        <h4>Recruitment</h4>
+        <ul>
+          <li><b>analyze_resume</b> — score + competencies + red flags</li>
+          <li><b>generate_assignment</b> — test task tailored to applicant</li>
+          <li><b>questions_for</b> — interview questions per round type</li>
+          <li><b>summarize_interview</b> — TL;DR from transcripts</li>
+          <li><b>compare_candidates</b> — side-by-side ranking</li>
+          <li><b>recommend</b> — hire / no hire with reasoning</li>
+          <li><b>offer_letter</b> — personalized in candidate's locale</li>
+        </ul>
+      </div>
+      <div class="agent-col">
+        <h4>Employee retention</h4>
+        <ul>
+          <li><b>burnout_brief</b> — risk score from KPI + leaves</li>
+          <li><b>suggest_leave_window</b> — best dates for time off</li>
+          <li><b>kpi_brief</b> / <b>kpi_team_brief</b> — performance summaries</li>
+          <li><b>meeting_agenda</b> — context-aware 1-on-1 agendas</li>
+          <li><b>compensation_review</b> — market data + fair raise</li>
+          <li><b>exit_risk_brief</b> — flight risk early-warning</li>
+        </ul>
+      </div>
+      <div class="agent-col">
+        <h4>Onboarding / Offboarding</h4>
+        <ul>
+          <li><b>onboarding_plan</b> — 90-day milestones</li>
+          <li><b>welcome_letter</b> — personalized day-1 message</li>
+          <li><b>mentor_match</b> — based on skills + tenure</li>
+          <li><b>probation_review</b> — month-3 evaluation</li>
+          <li><b>knowledge_transfer_plan</b></li>
+          <li><b>exit_interview_brief</b></li>
+          <li><b>replacement_brief</b> — opens new vacancy automatically</li>
+        </ul>
+      </div>
+      <div class="agent-col">
+        <h4>Documents & dictionaries</h4>
+        <ul>
+          <li><b>document_summary</b> — TL;DR of long contracts</li>
+          <li><b>document_extract_assist</b> — Vision API for scans</li>
+          <li><b>dictionary_seed</b> — populate lookup list from prompt</li>
+          <li><b>company_bootstrap</b> — chat that designs the whole schema</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── INSTALL ─────────────── -->
+<section class="install" id="install">
+  <div class="container">
+    <h2 class="section-title">Install in 2 minutes</h2>
+    <p class="section-lead">One bash command. The installer generates secrets, builds the image, starts <code>db + app + worker</code>, creates a superadmin, prints the credentials.</p>
+
+    <pre class="code-block"><code>git clone https://github.com/dripips/rubby-hrms.git
+cd rubby-hrms
+./scripts/install.sh</code></pre>
+
+    <p class="section-lead">Upgrade later — zero-downtime, with automatic backup:</p>
+
+    <pre class="code-block"><code>./scripts/update.sh              # latest master
+./scripts/update.sh v2.0         # specific tag</code></pre>
+
+    <div class="install__tiles">
+      <div class="install-tile">
+        <h4>🐳 Production</h4>
+        <p>Pre-built image from registry, healthcheck, PG tuning, JSON logging with rotation.</p>
+        <code>docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d</code>
+      </div>
+      <div class="install-tile">
+        <h4>🧑‍💻 Development</h4>
+        <p>Ruby 4.0.3 + PostgreSQL 18. No Docker required.</p>
+        <code>bundle install && bin/rails db:setup db:seed && bin/dev</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── SCREENSHOTS ─────────────── -->
+<section class="shots" id="screenshots">
+  <div class="container">
+    <h2 class="section-title">Screenshots</h2>
+    <p class="section-lead">Full gallery on <a href="https://github.com/dripips/rubby-hrms#screenshots">GitHub README</a> — including dark mode + per-locale (RU / EN / DE).</p>
+
+    <div class="shots-grid">
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/03-recruitment-kanban.png" alt="Recruitment Kanban" loading="lazy">
+        <figcaption>Recruitment Kanban — drag-drop pipeline with AI scoring</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/07-kpi-dashboard.png" alt="KPI Dashboard" loading="lazy">
+        <figcaption>KPI Dashboard — weekly assignments + trend + AI brief</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/04-recruitment-calendar.png" alt="Interview Calendar" loading="lazy">
+        <figcaption>Interview Calendar — FullCalendar 6 with hover popover</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/05-recruitment-analytics.png" alt="Recruitment Analytics" loading="lazy">
+        <figcaption>Conversion funnel + time-in-stage + recruiter perf</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/12-profile-integrations.png" alt="Slack + Telegram integrations" loading="lazy">
+        <figcaption>Per-user Slack webhook + one-click Telegram</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/en/14-settings-ai.png" alt="AI provider settings" loading="lazy">
+        <figcaption>AI provider — 7 presets + custom OpenAI-compatible</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── STACK ─────────────── -->
+<section class="stack">
+  <div class="container">
+    <h2 class="section-title">Stack</h2>
+    <div class="stack-grid">
+      <span>Rails 8.1</span>
+      <span>PostgreSQL 18</span>
+      <span>Hotwire (Turbo + Stimulus)</span>
+      <span>SolidQueue · SolidCable</span>
+      <span>Devise · Pundit · PaperTrail</span>
+      <span>Discard · AASM</span>
+      <span>Noticed v3</span>
+      <span>pdf-reader · rtesseract</span>
+      <span>Bootstrap 5 + Apple tokens</span>
+      <span>RSpec · FactoryBot</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── CTA ─────────────── -->
+<section class="cta">
+  <div class="container cta__inner">
+    <h2>Try it now.</h2>
+    <p>Free, MIT-licensed, self-hostable. Built in the open.</p>
+    <div class="cta__row">
+      <a class="btn btn--primary" href="#install">Quick install</a>
+      <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms">⭐ GitHub</a>
+      <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/blob/master/ROADMAP.md">Roadmap</a>
+      <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/blob/master/CONTRIBUTING.md">Contribute</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__row">
+    <div>
+      <strong>HRMS</strong> · MIT · Built with Rails 8 + a lot of coffee.
+    </div>
+    <div class="footer__links">
+      <a href="https://github.com/dripips/rubby-hrms">GitHub</a>
+      <a href="https://github.com/dripips/rubby-hrms/releases">Releases</a>
+      <a href="https://github.com/dripips/rubby-hrms/blob/master/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/dripips/rubby-hrms/issues">Issues</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
