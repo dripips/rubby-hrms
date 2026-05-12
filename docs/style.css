@@ -110,7 +110,7 @@ body {
 }
 
 .topbar__nav {
-  display: flex; gap: var(--space-5);
+  display: flex; gap: var(--space-5); align-items: center;
   font-size: 14px;
 }
 .topbar__nav a {
@@ -122,8 +122,35 @@ body {
 .topbar__nav .topbar__link-strong {
   color: var(--blue); font-weight: 600;
 }
+
+.lang-switcher {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--fill-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.lang-switcher__opt {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  color: var(--label-2) !important;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 120ms var(--ease-standard), color 120ms;
+}
+.lang-switcher__opt:hover { color: var(--label-1) !important; }
+.lang-switcher__opt.is-active {
+  background: var(--bg-elev);
+  color: var(--label-1) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  cursor: default;
+}
+
 @media (max-width: 720px) {
-  .topbar__nav a:not(.topbar__link-strong) { display: none; }
+  .topbar__nav a:not(.topbar__link-strong):not(.lang-switcher__opt) { display: none; }
 }
 
 /* ── Hero ────────────────────────────────────────────────────────── */

@@ -1,6 +1,6 @@
 # HRMS
 
-[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md)
+[English](README.md) · [Русский](README.ru.md) · [Deutsch](README.de.md) · 🌐 [Landing](https://dripips.github.io/rubby-hrms/de/)
 
 **Universelles HRMS für jede Branche — vom Tech-Startup bis zum Klärgrubenservice.** Open Source, selbst-hostbar, KI-gestützt, regulator-freundlich (152-FZ, DSGVO).
 

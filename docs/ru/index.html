@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta name="theme-color" content="#0A84FF">
+
+  <title>HRMS — Open-source система управления персоналом с 24 AI-агентами</title>
+  <meta name="description" content="Self-hostable HR-система для любой индустрии — от IT до септик-сервиса. 24 AI-агента для найма, удержания, онбординга, документов. Rails 8 · Apple HIG · GDPR/152-ФЗ · 3 локали. Установка одной командой через Docker.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HRMS — Open-source HRMS с 24 AI-агентами">
+  <meta property="og:description" content="Self-hostable HR для любой индустрии. Rails 8 · Apple HIG · 24 AI · GDPR/152-ФЗ · MIT.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/01-dashboard.png">
+  <meta property="og:url" content="https://github.com/dripips/rubby-hrms">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="https://raw.githubusercontent.com/dripips/rubby-hrms/master/public/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container topbar__row">
+    <a href="#top" class="brand">
+      <span class="brand__mark">H</span>
+      <span class="brand__name">HRMS</span>
+      <span class="brand__pill">v2.0</span>
+    </a>
+    <nav class="topbar__nav">
+      <a href="#features">Возможности</a>
+      <a href="#ai">AI-агенты</a>
+      <a href="#install">Установка</a>
+      <a href="#screenshots">Скриншоты</a>
+      <div class="lang-switcher">
+        <a class="lang-switcher__opt" href="../">EN</a>
+        <span class="lang-switcher__opt is-active">RU</span>
+        <a class="lang-switcher__opt" href="../de/">DE</a>
+      </div>
+      <a href="https://github.com/dripips/rubby-hrms" class="topbar__link-strong">GitHub →</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ─────────────── HERO ─────────────── -->
+<section class="hero" id="top">
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <div class="hero__eyebrow">
+        <span class="dot dot--green"></span> Open source · MIT · v2.0
+      </div>
+      <h1 class="hero__title">
+        Open-source HRMS<br>
+        с <span class="grad">24 AI-агентами</span>.
+      </h1>
+      <p class="hero__lead">
+        Self-hostable HR-система для <strong>любой индустрии</strong> — от IT-стартапа до септик-сервиса. Rails 8 · Apple HIG · GDPR / 152-ФЗ · 3 локали. Установка одной командой через Docker.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#install">Установить за 2 минуты</a>
+        <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms">⭐ Star на GitHub</a>
+      </div>
+      <div class="hero__meta">
+        <span>Rails 8.1</span><span>·</span>
+        <span>PostgreSQL 18</span><span>·</span>
+        <span>Hotwire</span><span>·</span>
+        <span>24 AI-агента</span><span>·</span>
+        <span>RU · EN · DE</span>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/01-dashboard.png"
+           alt="HRMS дашборд"
+           loading="eager"
+           class="hero__shot">
+      <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/01-dashboard-dark.png"
+           alt="HRMS дашборд в тёмной теме"
+           loading="lazy"
+           class="hero__shot hero__shot--dark">
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── WHY ─────────────── -->
+<section class="why">
+  <div class="container">
+    <h2 class="section-title">Зачем ещё одна HRMS?</h2>
+    <p class="section-lead">
+      Большинство HR-систем зашивают словарь одной индустрии. Найм — это «разработчик», отпуск — это «ежегодный», документ — это «паспорт». Реальные компании сложнее: септик-сервису нужны категории ADR-допусков, клинике — номера лицензий, IT-стартапу — ссылки на GitHub.
+    </p>
+    <p class="section-lead">
+      <strong>HRMS подстраивается под компанию, а не наоборот.</strong> Каждая сущность поддерживает Custom Fields через словари. HR описывает схему один раз — формы, валидация, AI-разбор и аудит подхватывают её автоматически.
+    </p>
+  </div>
+</section>
+
+<!-- ─────────────── FEATURES ─────────────── -->
+<section class="features" id="features">
+  <div class="container">
+    <h2 class="section-title">Что внутри</h2>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card__icon">🌍</div>
+        <h3>Универсальная под любую индустрию</h3>
+        <p>Custom Fields для каждой сущности, настраиваемые справочники, всё scope'нуто по компании. <strong>AI Bootstrap-чат</strong> — опиши компанию обычным текстом, AI предложит полную схему.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🤖</div>
+        <h3>24 AI-агента</h3>
+        <p>OpenAI / OpenRouter / Together / Groq / DeepSeek / Anthropic / vLLM / Ollama. Per-task выбор модели, hard cap по бюджету, полный audit log.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">📄</div>
+        <h3>Документы</h3>
+        <p>pdf-reader + Tesseract OCR + OpenAI Vision fallback. Авто-разбор → ревью → применение. Уведомления о просрочке: in-app, email, Slack, Telegram.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🎨</div>
+        <h3>Apple-HIG дизайн</h3>
+        <p>Системные цвета, SF Pro, spring-анимации. iOS-style дашборд с S/M/L гридом виджетов и live edit-mode. Полная тёмная тема.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🔐</div>
+        <h3>Безопасность и compliance</h3>
+        <p>2FA (TOTP + backup-коды), GDPR Article 15+17 (экспорт + право на забвение), 152-ФЗ, Pundit RBAC, audit log на каждое изменение + revert.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🔌</div>
+        <h3>Интеграции</h3>
+        <p>Slack webhook'и, Telegram-бот (one-click привязка через webhook), Bearer-token REST API (15 endpoints, Swagger UI), CalDAV-фид календаря.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">⚡</div>
+        <h3>Live UI везде</h3>
+        <p>Turbo Streams + ActionCable — KPI, новые отклики, AI-результаты стримятся в страницу без перезагрузок.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🏢</div>
+        <h3>Multi-tenant (v2.0)</h3>
+        <p>Резолвинг тенанта по subdomain'у из коробки. Single-tenant установка работает так же — переключаешь, когда вырастешь.</p>
+      </div>
+      <div class="card">
+        <div class="card__icon">🐳</div>
+        <h3>Установка одной командой</h3>
+        <p>Docker + Postgres + Tesseract + libvips + poppler. Авто-генерация секретов, healthcheck, zero-downtime <code>update.sh</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── AI AGENTS ─────────────── -->
+<section class="ai" id="ai">
+  <div class="container">
+    <h2 class="section-title">AI-агенты — для каждого этапа жизненного цикла сотрудника</h2>
+    <p class="section-lead">
+      Каждый агент — отдельный сервис. Multi-provider — нацеливай на OpenAI, OpenRouter, свой vLLM, Ollama. Per-task override модели и hard cap по бюджету встроены.
+    </p>
+
+    <div class="agent-grid">
+      <div class="agent-col">
+        <h4>Найм</h4>
+        <ul>
+          <li><b>analyze_resume</b> — оценка + компетенции + red flags</li>
+          <li><b>generate_assignment</b> — тестовое задание под кандидата</li>
+          <li><b>questions_for</b> — вопросы под тип интервью</li>
+          <li><b>summarize_interview</b> — TL;DR из транскрипта</li>
+          <li><b>compare_candidates</b> — сравнение бок-о-бок</li>
+          <li><b>recommend</b> — нанимать / нет + обоснование</li>
+          <li><b>offer_letter</b> — оффер на языке кандидата</li>
+        </ul>
+      </div>
+      <div class="agent-col">
+        <h4>Удержание</h4>
+        <ul>
+          <li><b>burnout_brief</b> — риск выгорания по KPI + отпускам</li>
+          <li><b>suggest_leave_window</b> — лучшие даты для отпуска</li>
+          <li><b>kpi_brief</b> / <b>kpi_team_brief</b> — саммари по перформансу</li>
+          <li><b>meeting_agenda</b> — context-aware 1-on-1</li>
+          <li><b>compensation_review</b> — рыночные данные + честное повышение</li>
+          <li><b>exit_risk_brief</b> — ранний сигнал ухода</li>
+        </ul>
+      </div>
+      <div class="agent-col">
+        <h4>Онбординг / Офбординг</h4>
+        <ul>
+          <li><b>onboarding_plan</b> — 90-дневные майлстоуны</li>
+          <li><b>welcome_letter</b> — приветствие на day 1</li>
+          <li><b>mentor_match</b> — на основе скиллов + стажа</li>
+          <li><b>probation_review</b> — оценка испытательного</li>
+          <li><b>knowledge_transfer_plan</b></li>
+          <li><b>exit_interview_brief</b></li>
+          <li><b>replacement_brief</b> — автоматически открывает вакансию</li>
+        </ul>
+      </div>
+      <div class="agent-col">
+        <h4>Документы и справочники</h4>
+        <ul>
+          <li><b>document_summary</b> — TL;DR длинных контрактов</li>
+          <li><b>document_extract_assist</b> — Vision API для сканов</li>
+          <li><b>dictionary_seed</b> — заполнение справочника из промпта</li>
+          <li><b>company_bootstrap</b> — чат, который проектирует всю схему</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── INSTALL ─────────────── -->
+<section class="install" id="install">
+  <div class="container">
+    <h2 class="section-title">Установка за 2 минуты</h2>
+    <p class="section-lead">Одна bash-команда. Установщик генерит секреты, билдит образ, поднимает <code>db + app + worker</code>, создаёт superadmin'а, печатает доступы.</p>
+
+    <pre class="code-block"><code>git clone https://github.com/dripips/rubby-hrms.git
+cd rubby-hrms
+./scripts/install.sh</code></pre>
+
+    <p class="section-lead">Обновление позже — zero-downtime, с автобэкапом:</p>
+
+    <pre class="code-block"><code>./scripts/update.sh              # последний master
+./scripts/update.sh v2.0         # конкретный тег</code></pre>
+
+    <div class="install__tiles">
+      <div class="install-tile">
+        <h4>🐳 Production</h4>
+        <p>Pre-built образ из registry, healthcheck, PG-tuning, JSON-логи с rotation.</p>
+        <code>docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d</code>
+      </div>
+      <div class="install-tile">
+        <h4>🧑‍💻 Development</h4>
+        <p>Ruby 4.0.3 + PostgreSQL 18. Без Docker.</p>
+        <code>bundle install && bin/rails db:setup db:seed && bin/dev</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── SCREENSHOTS ─────────────── -->
+<section class="shots" id="screenshots">
+  <div class="container">
+    <h2 class="section-title">Скриншоты</h2>
+    <p class="section-lead">Полная галерея на <a href="https://github.com/dripips/rubby-hrms/blob/master/README.ru.md#скриншоты">README на GitHub</a> — включая тёмную тему и три локали.</p>
+
+    <div class="shots-grid">
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/03-recruitment-kanban.png" alt="Канбан найма" loading="lazy">
+        <figcaption>Канбан найма — drag-drop pipeline с AI-скорингом</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/07-kpi-dashboard.png" alt="KPI Dashboard" loading="lazy">
+        <figcaption>KPI Dashboard — недельные назначения + тренд + AI-бриф</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/04-recruitment-calendar.png" alt="Календарь интервью" loading="lazy">
+        <figcaption>Календарь интервью — FullCalendar 6 с hover-popover</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/05-recruitment-analytics.png" alt="Аналитика найма" loading="lazy">
+        <figcaption>Воронка конверсии + время в стадии + перформанс рекрутеров</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/12-profile-integrations.png" alt="Slack + Telegram интеграции" loading="lazy">
+        <figcaption>Per-user Slack webhook + one-click Telegram</figcaption>
+      </figure>
+      <figure>
+        <img src="https://raw.githubusercontent.com/dripips/rubby-hrms/master/docs/screenshots/ru/14-settings-ai.png" alt="Настройки AI-провайдера" loading="lazy">
+        <figcaption>AI-провайдер — 7 пресетов + custom OpenAI-совместимый</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── STACK ─────────────── -->
+<section class="stack">
+  <div class="container">
+    <h2 class="section-title">Стек</h2>
+    <div class="stack-grid">
+      <span>Rails 8.1</span>
+      <span>PostgreSQL 18</span>
+      <span>Hotwire (Turbo + Stimulus)</span>
+      <span>SolidQueue · SolidCable</span>
+      <span>Devise · Pundit · PaperTrail</span>
+      <span>Discard · AASM</span>
+      <span>Noticed v3</span>
+      <span>pdf-reader · rtesseract</span>
+      <span>Bootstrap 5 + Apple-токены</span>
+      <span>RSpec · FactoryBot</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── CTA ─────────────── -->
+<section class="cta">
+  <div class="container cta__inner">
+    <h2>Попробуй прямо сейчас.</h2>
+    <p>Бесплатно, MIT, self-hostable. Разрабатывается открыто.</p>
+    <div class="cta__row">
+      <a class="btn btn--primary" href="#install">Быстрая установка</a>
+      <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms">⭐ GitHub</a>
+      <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/blob/master/ROADMAP.md">Roadmap</a>
+      <a class="btn btn--ghost" href="https://github.com/dripips/rubby-hrms/blob/master/CONTRIBUTING.md">Контрибьютить</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container footer__row">
+    <div>
+      <strong>HRMS</strong> · MIT · Rails 8 + много кофе.
+    </div>
+    <div class="footer__links">
+      <a href="https://github.com/dripips/rubby-hrms">GitHub</a>
+      <a href="https://github.com/dripips/rubby-hrms/releases">Релизы</a>
+      <a href="https://github.com/dripips/rubby-hrms/blob/master/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/dripips/rubby-hrms/issues">Issues</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
