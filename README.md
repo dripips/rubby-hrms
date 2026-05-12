@@ -30,6 +30,67 @@ Most HR systems hardcode one industry's vocabulary. A hire is a "developer", a l
 - 📧 **Email notifications** with runtime-configurable SMTP from Settings UI.
 - 🐳 **One-command Docker install** with auto-generated secrets.
 
+## Screenshots
+
+### Dashboard
+![Dashboard](docs/screenshots/01-dashboard.png)
+
+### Recruitment Kanban
+Drag-and-drop pipeline. AI scores each applicant on resume upload.
+![Recruitment Kanban](docs/screenshots/03-recruitment-kanban.png)
+
+### Recruitment Analytics
+Conversion funnel + time-in-stage + recruiter performance.
+![Recruitment Analytics](docs/screenshots/05-recruitment-analytics.png)
+
+### Interview Calendar
+FullCalendar 6 with hover-popover, drag-to-create, agenda.
+![Recruitment Calendar](docs/screenshots/04-recruitment-calendar.png)
+
+### KPI Dashboard
+Weekly assignments, evaluations, trend, AI brief generator.
+![KPI Dashboard](docs/screenshots/07-kpi-dashboard.png)
+
+<details>
+<summary><strong>More screenshots</strong></summary>
+
+#### Employees
+![Employees](docs/screenshots/02-employees.png)
+
+#### Leave Requests
+![Leave Requests](docs/screenshots/06-leave-requests.png)
+
+#### Documents
+Upload → parse (pdf-reader + Tesseract + Vision API) → review → apply.
+![Documents](docs/screenshots/08-documents.png)
+
+#### Onboarding Processes
+![Onboarding](docs/screenshots/09-onboarding.png)
+
+#### Audit log
+Every model change tracked + revertable.
+![Audit](docs/screenshots/10-audit.png)
+
+#### Self-service profile
+![Profile](docs/screenshots/11-profile.png)
+
+#### Slack + Telegram integrations
+![Integrations](docs/screenshots/12-profile-integrations.png)
+
+#### Settings — Languages
+![Settings Languages](docs/screenshots/13-settings-languages.png)
+
+#### Settings — AI provider
+![Settings AI](docs/screenshots/14-settings-ai.png)
+
+#### AI Runs log
+Every AI invocation tracked: tokens, cost, model, prompt, response, status.
+![AI Runs](docs/screenshots/15-ai-runs.png)
+
+</details>
+
+> Want to regenerate these screenshots? With the server running, execute `bin/rails screenshots`. The Rake task signs in as admin and captures all key pages at 1440×900 into `docs/screenshots/`.
+
 ## Quick install (Docker)
 
 ```bash

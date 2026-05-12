@@ -76,8 +76,11 @@ group :development do
   gem "ruby-lsp", require: false
 end
 
-group :test do
+group :development, :test do
   gem "capybara"
   gem "selenium-webdriver"
+end
+
+group :test do
   gem "database_cleaner-active_record"
 end
