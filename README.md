@@ -122,15 +122,43 @@ Open http://localhost:3000 and sign in.
 
 ## Public API
 
-Embed your careers page on any external site via the public REST API. Interactive Swagger UI docs live at **`/api-docs/`** on every running instance.
+Interactive Swagger UI docs live at **`/api-docs/`** on every running instance.
+
+**Public (no auth)** — embed careers page, lookup data:
 
 ```bash
-curl http://localhost:4000/api/v1/openings | jq '.data[] | .title'
-curl http://localhost:4000/api/v1/openings/JOB-0001
-curl http://localhost:4000/api/v1/config?locale=en
+curl /api/v1/openings | jq '.data[] | .title'
+curl /api/v1/openings/JOB-0001
+curl /api/v1/config?locale=en
+curl /api/v1/departments
+curl /api/v1/positions
 ```
 
-OpenAPI 3 spec: [`public/api-docs/openapi.yaml`](public/api-docs/openapi.yaml). The Apply endpoint optionally requires `X-API-Key` if you enable it in Settings → Careers.
+**Authenticated (Bearer token)** — self-service for any user:
+
+```bash
+# Generate token in HRMS UI → Profile → Security → API tokens → "Issue"
+TOKEN="hrms_xxx_yyy"
+
+curl -H "Authorization: Bearer $TOKEN" /api/v1/me
+curl -H "Authorization: Bearer $TOKEN" /api/v1/me/kpi
+curl -H "Authorization: Bearer $TOKEN" /api/v1/me/leave_requests
+curl -H "Authorization: Bearer $TOKEN" /api/v1/me/documents
+curl -H "Authorization: Bearer $TOKEN" /api/v1/me/notifications
+
+# Apply for a leave
+curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"leave_type_id":1,"started_on":"2026-08-01","ended_on":"2026-08-14","reason":"Vacation"}' \
+  /api/v1/me/leave_requests
+
+# Update profile
+curl -X PATCH -H "Authorization: Bearer $TOKEN" \
+  -d "locale=en&time_zone=Berlin" /api/v1/me
+```
+
+Tokens are **shown once** when created, stored only as bcrypt hashes — even a compromised DB won't leak working tokens. Format: `hrms_<8-char-prefix>_<64-hex-raw>`.
+
+Full spec: [`public/api-docs/openapi.yaml`](public/api-docs/openapi.yaml).
 
 ## Modules
 

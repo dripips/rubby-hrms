@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_182111) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_213319) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,6 +85,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_182111) do
     t.index ["offboarding_process_id"], name: "index_ai_runs_on_offboarding_process_id"
     t.index ["onboarding_process_id"], name: "index_ai_runs_on_onboarding_process_id"
     t.index ["user_id"], name: "index_ai_runs_on_user_id"
+  end
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.string "token_digest", limit: 60, null: false
+    t.string "token_prefix", limit: 8, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["token_digest"], name: "index_api_tokens_on_token_digest", unique: true
+    t.index ["token_prefix"], name: "index_api_tokens_on_token_prefix"
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
   end
 
   create_table "app_settings", force: :cascade do |t|
@@ -928,6 +942,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_182111) do
   add_foreign_key "ai_runs", "offboarding_processes"
   add_foreign_key "ai_runs", "onboarding_processes"
   add_foreign_key "ai_runs", "users"
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "app_settings", "companies"
   add_foreign_key "applicant_notes", "job_applicants"
   add_foreign_key "applicant_notes", "users", column: "author_id"

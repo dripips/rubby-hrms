@@ -131,6 +131,21 @@ de:
       tg_manual_step3: chat_id einfügen und Speichern.
       tg_webhook_off: 'One-Click-Bindung nicht verfügbar — Admin hat den Webhook nicht registriert. Manuell verbinden:'
       tg_bot_missing: Firmen-Telegram-Bot ist nicht eingerichtet — HR/IT fragen.
+    api_tokens:
+      title: API-Token
+      hint: Bearer-Token für /api/v1/me/* — für mobile Clients, Skripte, Integrationen. Docs unter /api-docs.
+      one_time_title: 'Jetzt kopieren — du siehst es nicht wieder:'
+      one_time_hint: Wir speichern nur den bcrypt-Hash — selbst eine kompromittierte DB gibt keine funktionierenden Token preis. Verloren? Neuen ausgeben.
+      name_label: Name
+      name_placeholder: iOS-App / Zapier / cron
+      create: Token ausgeben
+      col_name: Name
+      col_token: Token
+      col_last_used: Zuletzt verwendet
+      col_created: Erstellt
+      revoked: Token widerrufen
+      revoke_confirm: Token widerrufen? Alle Clients damit erhalten 401.
+      empty: Keine Token. Gib das erste aus — notwendig für externe API-Clients.
   navigation:
     workspace: Arbeitsbereich
     org: Organisation
@@ -207,6 +222,7 @@ de:
     next: Weiter
     copy: Kopieren
     connected: verbunden
+    revoke: Widerrufen
   auth:
     sign_in: Anmelden
     sign_up: Registrieren

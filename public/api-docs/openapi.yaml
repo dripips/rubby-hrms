@@ -24,9 +24,16 @@ tags:
   - name: ping
     description: Liveness check
   - name: openings
-    description: Job openings catalog
+    description: Job openings catalog (public)
   - name: config
     description: Widget configuration (consents, theme, legal pages)
+  - name: metadata
+    description: Public lookup data — departments, positions (for filter UIs)
+  - name: me
+    description: Authenticated self-service — current user, their leaves, KPI, notifications, documents
+
+security:
+  - bearerAuth: []
 
 paths:
   /api/v1/ping:
@@ -169,6 +176,7 @@ paths:
     get:
       tags: [config]
       summary: Widget configuration (theme, consents, legal pages)
+      security: []
       parameters:
         - in: query
           name: locale
@@ -182,6 +190,190 @@ paths:
               schema:
                 $ref: "#/components/schemas/WidgetConfig"
 
+  /api/v1/departments:
+    get:
+      tags: [metadata]
+      summary: List company departments (for filter dropdowns)
+      security: []
+      responses:
+        "200":
+          description: All non-discarded departments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:        { type: integer }
+                        code:      { type: string }
+                        name:      { type: string }
+                        parent_id: { type: integer, nullable: true }
+
+  /api/v1/positions:
+    get:
+      tags: [metadata]
+      summary: List positions
+      security: []
+      responses:
+        "200":
+          description: All positions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:         { type: integer }
+                        code:       { type: string }
+                        name:       { type: string }
+                        department: { type: string, nullable: true }
+
+  /api/v1/me:
+    get:
+      tags: [me]
+      summary: Current authenticated user + linked employee
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeProfile"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    patch:
+      tags: [me]
+      summary: Update self (locale, time_zone, integrations)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                locale:            { type: string, enum: [ru, en, de] }
+                time_zone:         { type: string, example: "Moscow" }
+                slack_webhook_url: { type: string }
+                telegram_chat_id:  { type: string }
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeProfile"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/v1/me/leave_requests:
+    get:
+      tags: [me]
+      summary: My leave requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: state
+          schema: { type: string, enum: [draft, pending, approved, active, completed, rejected, cancelled] }
+        - { in: query, name: page, schema: { type: integer, default: 1 } }
+        - { in: query, name: per,  schema: { type: integer, default: 25, maximum: 100 } }
+      responses:
+        "200":
+          description: Paginated list
+    post:
+      tags: [me]
+      summary: Request a new leave
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [leave_type_id, started_on, ended_on]
+              properties:
+                leave_type_id: { type: integer }
+                started_on:    { type: string, format: date }
+                ended_on:      { type: string, format: date }
+                reason:        { type: string }
+      responses:
+        "201":
+          description: Created
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/v1/me/kpi:
+    get:
+      tags: [me]
+      summary: My KPI assignments with evaluations
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: KPI list with evaluations history
+
+  /api/v1/me/documents:
+    get:
+      tags: [me]
+      summary: My documents (passport, contracts, etc.)
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Paginated list of documents
+
+  /api/v1/me/notifications:
+    get:
+      tags: [me]
+      summary: My in-app notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema: { type: string, enum: [unread] }
+      responses:
+        "200":
+          description: Paginated list
+
+  /api/v1/me/notifications/read_all:
+    post:
+      tags: [me]
+      summary: Mark all notifications as read
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: All marked read
+
+  /api/v1/me/notifications/{id}/read:
+    post:
+      tags: [me]
+      summary: Mark single notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Updated notification
+
 components:
   responses:
     NotFound:
@@ -192,6 +384,28 @@ components:
             type: object
             properties:
               error: { type: string, example: "not_found" }
+    Unauthorized:
+      description: Missing / invalid bearer token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string, example: "unauthorized" }
+              hint:  { type: string, example: "Send Authorization: Bearer hrms_<prefix>_<raw>" }
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:   { type: string, example: "validation_failed" }
+              details:
+                type: object
+                additionalProperties:
+                  type: array
+                  items: { type: string }
 
   schemas:
     OpeningSummary:
@@ -295,7 +509,46 @@ components:
             form_submit: { type: string }
             form_title:  { type: string }
 
+    MeProfile:
+      type: object
+      properties:
+        id:        { type: integer }
+        email:     { type: string,  format: email }
+        role:      { type: string,  example: "employee" }
+        locale:    { type: string,  example: "ru" }
+        time_zone: { type: string,  example: "Moscow" }
+        two_factor_enabled: { type: boolean }
+        integrations:
+          type: object
+          properties:
+            slack_connected:    { type: boolean }
+            telegram_connected: { type: boolean }
+        employee:
+          type: object
+          nullable: true
+          properties:
+            id:               { type: integer }
+            personnel_number: { type: string }
+            full_name:        { type: string }
+            first_name:       { type: string }
+            last_name:        { type: string }
+            department:       { type: string }
+            position:         { type: string }
+            grade:            { type: string }
+            hired_at:         { type: string, format: date }
+            state:            { type: string, example: "active" }
+            phone:            { type: string, nullable: true }
+            personal_email:   { type: string, nullable: true }
+
   securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: hrms_<prefix>_<raw>
+      description: |
+        Generate a token in HRMS UI: Profile → Security → API tokens → "Issue token".
+        Token is shown ONCE — copy immediately. Format: `hrms_<8-char-prefix>_<64-hex-raw>`.
+        Send as `Authorization: Bearer hrms_xxx_yyy`.
     apiKey:
       type: apiKey
       in: header

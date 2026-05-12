@@ -34,6 +34,7 @@ class User < ApplicationRecord
   has_many :kpi_evaluations,  foreign_key: :evaluator_id, dependent: :nullify, inverse_of: :evaluator
 
   has_many :notifications, class_name: "Noticed::Notification", as: :recipient, dependent: :destroy
+  has_many :api_tokens, dependent: :destroy
 
   # Каталог типов уведомлений с дефолтами по каналам.
   # Структура: { event_key => { in_app: bool, email: bool, slack: bool, telegram: bool } }.

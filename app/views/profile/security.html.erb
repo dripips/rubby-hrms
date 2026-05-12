@@ -89,3 +89,70 @@
     <%= link_to t("common.cancel"), profile_path, class: "btn btn-ghost" %>
   </div>
 <% end %>
+
+<%# ── API tokens ───────────────────────────────────────────────────── %>
+<div class="card-apple mt-3">
+  <div class="d-flex align-items-baseline justify-content-between gap-3 flex-wrap mb-3">
+    <div>
+      <h3 class="title-3 m-0">🔑 <%= t("profile.api_tokens.title", default: "API-токены") %></h3>
+      <p class="footnote text-tertiary m-0 mt-1">
+        <%= t("profile.api_tokens.hint", default: "Bearer-токены для /api/v1/me/* — используй в мобильных клиентах, скриптах, интеграциях. Документация на /api-docs.") %>
+      </p>
+    </div>
+  </div>
+
+  <% if flash[:api_token_raw].present? %>
+    <div class="alert alert-warning mb-3">
+      <strong><%= t("profile.api_tokens.one_time_title", default: "Скопируй сейчас — больше не увидишь:") %></strong>
+      <pre class="m-0 mt-2 p-2" style="background: var(--ds-fill-3); border-radius: 8px; word-break: break-all; white-space: pre-wrap;"><%= flash[:api_token_raw] %></pre>
+      <p class="footnote text-tertiary m-0 mt-2"><%= t("profile.api_tokens.one_time_hint", default: "Мы храним только bcrypt-хэш — даже compromised БД не выдаст рабочие токены. Если потерял — выпусти новый.") %></p>
+    </div>
+  <% end %>
+
+  <%= form_with(url: api_tokens_path, method: :post, local: true, html: { class: "row g-2 align-items-end mb-3" }) do %>
+    <div class="col-md-8">
+      <label class="form-label" for="api_token_name"><%= t("profile.api_tokens.name_label", default: "Название") %></label>
+      <input type="text" id="api_token_name" name="name" class="form-control"
+             placeholder="<%= t("profile.api_tokens.name_placeholder", default: "iOS app / Zapier / cron") %>"
+             maxlength="80" autocomplete="off">
+    </div>
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-primary w-100"><%= t("profile.api_tokens.create", default: "Выпустить токен") %></button>
+    </div>
+  <% end %>
+
+  <% tokens = current_user.api_tokens.order(created_at: :desc) %>
+  <% if tokens.any? %>
+    <table class="table-apple m-0">
+      <thead>
+        <tr>
+          <th><%= t("profile.api_tokens.col_name", default: "Название") %></th>
+          <th><%= t("profile.api_tokens.col_token", default: "Токен") %></th>
+          <th><%= t("profile.api_tokens.col_last_used", default: "Использован") %></th>
+          <th><%= t("profile.api_tokens.col_created", default: "Создан") %></th>
+          <th style="width: 100px;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tokens.each do |t| %>
+          <tr>
+            <td><%= t.name %></td>
+            <td><code><%= t.masked %></code></td>
+            <td><%= t.last_used_at ? "#{time_ago_in_words(t.last_used_at)} #{I18n.t('common.ago', default: 'назад')}" : "—" %></td>
+            <td><%= l(t.created_at, format: :short) %></td>
+            <td>
+              <%= button_to t("common.revoke", default: "Отозвать"),
+                            api_token_path(t),
+                            method: :delete,
+                            class: "btn btn-ghost btn-sm",
+                            form: { class: "m-0" },
+                            data: { turbo_confirm: t("profile.api_tokens.revoke_confirm", default: "Отозвать токен? Все клиенты с этим токеном получат 401.") } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="footnote text-tertiary m-0"><%= t("profile.api_tokens.empty", default: "Токенов нет. Выпусти первый — нужно для подключения внешних клиентов к API.") %></p>
+  <% end %>
+</div>

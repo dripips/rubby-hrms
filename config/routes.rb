@@ -29,10 +29,26 @@ Rails.application.routes.draw do
   # Позволяет встраивать список вакансий и форму подачи на любой внешний сайт.
   namespace :api do
     namespace :v1 do
+      # ── Public (no auth, CORS-open) ──────────────────────────────────
       get "ping",  to: "ping#index"
       resources :openings, only: %i[index show], param: :code
       post "openings/:code/apply", to: "openings#apply", as: :apply_opening, constraints: { code: /[\w\-]+/ }
-      get  "config", to: "openings#widget_config", as: :widget_config
+      get  "config",      to: "openings#widget_config", as: :widget_config
+      get  "departments", to: "departments#index"
+      get  "positions",   to: "positions#index"
+
+      # ── Authenticated (bearer token via Authorization header) ────────
+      get   "me", to: "me#show"
+      patch "me", to: "me#update"
+
+      namespace :me do
+        resources :leave_requests, only: %i[index create]
+        get  "kpi",                  to: "kpi#index"
+        get  "documents",            to: "documents#index"
+        get  "notifications",        to: "notifications#index"
+        post "notifications/read_all", to: "notifications#read_all"
+        post "notifications/:id/read", to: "notifications#read", as: :read_notification
+      end
     end
   end
 
@@ -205,6 +221,9 @@ Rails.application.routes.draw do
     # 2FA challenge на sign-in (пользователь уже прошёл password, ждём TOTP).
     get    "two_factor/challenge", to: "two_factor_challenges#show",   as: :two_factor_challenge
     post   "two_factor/challenge", to: "two_factor_challenges#create", as: :verify_two_factor_challenge
+
+    # API-токены пользователя (для /api/v1/me/*)
+    resources :api_tokens, only: %i[create destroy]
 
     # AI Audit log — отдельный аудит для запусков AI-задач (HR/admin only).
     resources :ai_runs, only: %i[index show]

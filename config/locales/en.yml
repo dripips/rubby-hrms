@@ -131,6 +131,21 @@ en:
       tg_manual_step3: Paste chat_id and Save.
       tg_webhook_off: 'One-click linking unavailable — admin hasn''t registered the webhook. Use the manual flow:'
       tg_bot_missing: Company Telegram bot is not configured — ask HR/IT.
+    api_tokens:
+      title: API tokens
+      hint: Bearer tokens for /api/v1/me/* — use in mobile clients, scripts, integrations. Docs at /api-docs.
+      one_time_title: 'Copy now — you won''t see it again:'
+      one_time_hint: We store only the bcrypt hash — even a compromised DB won't leak working tokens. Lost it? Issue a new one.
+      name_label: Name
+      name_placeholder: iOS app / Zapier / cron
+      create: Issue token
+      col_name: Name
+      col_token: Token
+      col_last_used: Last used
+      col_created: Created
+      revoked: Token revoked
+      revoke_confirm: Revoke token? All clients using it will get 401.
+      empty: No tokens yet. Issue the first one — needed to connect external clients to the API.
   navigation:
     workspace: Workspace
     org: Organization
@@ -207,6 +222,7 @@ en:
     next: Next
     copy: Copy
     connected: connected
+    revoke: Revoke
   auth:
     sign_in: Sign in
     sign_up: Sign up

@@ -131,6 +131,21 @@ ru:
       tg_manual_step3: Впиши chat_id и Сохранить.
       tg_webhook_off: 'One-click привязка не доступна — админ не зарегистрировал webhook. Подключайся вручную:'
       tg_bot_missing: Telegram-бот компании не настроен — попроси HR/IT.
+    api_tokens:
+      title: API-токены
+      hint: Bearer-токены для /api/v1/me/* — используй в мобильных клиентах, скриптах, интеграциях. Документация на /api-docs.
+      one_time_title: 'Скопируй сейчас — больше не увидишь:'
+      one_time_hint: Мы храним только bcrypt-хэш — даже compromised БД не выдаст рабочие токены. Если потерял — выпусти новый.
+      name_label: Название
+      name_placeholder: iOS app / Zapier / cron
+      create: Выпустить токен
+      col_name: Название
+      col_token: Токен
+      col_last_used: Использован
+      col_created: Создан
+      revoked: Токен отозван
+      revoke_confirm: Отозвать токен? Все клиенты с этим токеном получат 401.
+      empty: Токенов нет. Выпусти первый — нужно для подключения внешних клиентов к API.
   navigation:
     workspace: Рабочее место
     org: Организация
@@ -207,6 +222,7 @@ ru:
     next: Дальше
     copy: Скопировать
     connected: подключено
+    revoke: Отозвать
   auth:
     sign_in: Войти
     sign_up: Регистрация
