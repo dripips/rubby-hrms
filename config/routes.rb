@@ -233,7 +233,9 @@ Rails.application.routes.draw do
         post :test
       end
       resource  :notifications, only: %i[show update]
-      resource  :communications, only: %i[show update]
+      resource  :communications, only: %i[show update] do
+        post :test_bot
+      end
       resource  :careers,        only: %i[show update]
       resource  :leaves,         only: %i[show update], controller: "leaves"
       resources :leave_approval_rules, except: [ :show ]

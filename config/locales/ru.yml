@@ -107,6 +107,16 @@ ru:
       telegram_test_fail: Не получилось — Telegram вернул %{code}
       connect: подключить
       note: Выбор какие уведомления приходят в каждый канал — на вкладке Уведомления.
+      test_title: Проверка
+      slack_step_1_html: Открой <a href='https://api.slack.com/apps?new_app=1' target='_blank' rel='noopener'>api.slack.com/apps</a> → <strong>Create New App → From scratch</strong>, выбери workspace и любое имя.
+      slack_step_2: В меню слева — Features → Incoming Webhooks, активируй переключатель.
+      slack_step_3: Внизу страницы — Add New Webhook to Workspace, выбери канал (можно личный direct-message с собой) → Allow.
+      slack_step_4: Скопируй полученный URL (начинается с https://hooks.slack.com/services/...) и впиши ниже.
+      tg_step_1_html: 'Открой бота компании в Telegram: <a href=''%{bot_link}'' target=''_blank'' rel=''noopener''><strong>@%{bot_name}</strong></a> → нажми <strong>Start</strong>.'
+      tg_step_2_html: 'Узнай свой chat_id: открой <a href=''https://t.me/userinfobot'' target=''_blank'' rel=''noopener''>@userinfobot</a>, нажми Start — он пришлёт тебе твой ID (число).'
+      tg_step_3: Впиши chat_id ниже и нажми Сохранить. После — нажми «Тест», бот напишет тебе подтверждение.
+      tg_not_configured: Telegram-бот компании ещё не настроен. Попроси HR/IT настроить его в /settings/communications — тогда здесь появится ссылка на бот.
+      tg_get_chat_id_html: Узнать свой chat_id заранее можно через <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> — открой и нажми Start.
   navigation:
     workspace: Рабочее место
     org: Организация
@@ -1848,6 +1858,15 @@ ru:
       telegram_hint_html: Создай бота через <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a>, получи токен и впиши его сюда. Сотрудники привязывают свой chat_id через /profile/integrations.
       telegram_token_label: Bot Token
       about_text_v2: Каждое событие в воронке найма шлёт письма по выбранным каналам. Email через настройки SMTP. Telegram-уведомления сотрудникам — через Bot-токен выше + chat_id юзера в Интеграциях профиля. Slack — через личный incoming-webhook юзера.
+      bot_connected: подключён
+      bot_test: Проверить подключение
+      bot_test_ok: "✓ Бот @%{u} (%{n}) подключён"
+      bot_test_fail: 'Telegram отверг токен: %{e}'
+      bot_no_token: Сначала впиши Bot Token
+      bot_step_1_html: Открой <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a> в Telegram, отправь команду <code>/newbot</code>, придумай имя и юзернейм (должен заканчиваться на <code>bot</code>).
+      bot_step_2: BotFather пришлёт токен вида 123456:AAEhBP_... — скопируй его целиком.
+      bot_step_3: Впиши токен в поле ниже и нажми «Проверить» — мы вытащим @username бота автоматически.
+      bot_step_4: Сотрудники привязывают свой chat_id в /profile/integrations — они увидят правильную ссылку на бота автоматически.
     careers:
       title: Страница найма
       subtitle: Публичная страница вакансий, бренд, доступы

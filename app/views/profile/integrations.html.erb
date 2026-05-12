@@ -15,9 +15,10 @@
 
 <%= render "profile/tabs" %>
 
+<%# ── Главная форма: вписать webhook + chat_id и Сохранить ───────────── %>
 <%= form_with model: current_user, url: update_integrations_profile_path, method: :patch,
               local: true, html: { class: "card-apple form-apple d-flex flex-column gap-4" } do |f| %>
-  <%# ── Slack ────────────────────────────────────────────────────────── %>
+  <%# Slack %>
   <div>
     <h3 class="title-3 mb-2">
       <%= t("profile.integrations.slack_title", default: "Slack") %>
@@ -25,25 +26,23 @@
         <span class="pill pill--success ms-2"><%= t("common.connected", default: "подключено") %></span>
       <% end %>
     </h3>
-    <p class="footnote text-secondary-apple mb-3">
-      <%= t("profile.integrations.slack_hint_html", default:
-            "Зайди на <a href='https://api.slack.com/messaging/webhooks' target='_blank' rel='noopener'>api.slack.com/messaging/webhooks</a>, создай Incoming Webhook для нужного канала и впиши URL ниже.").html_safe %>
-    </p>
-    <div class="row g-2">
-      <div class="col-md-9">
-        <%= f.label :slack_webhook_url, t("profile.integrations.slack_url_label", default: "Slack Webhook URL"), class: "form-label" %>
-        <%= f.url_field :slack_webhook_url, class: "form-control", placeholder: "https://hooks.slack.com/services/T.../B.../...", autocomplete: "off" %>
-      </div>
-      <div class="col-md-3 d-flex align-items-end gap-2">
-        <%= button_to t("profile.integrations.test_slack", default: "Тест"),
-                      test_slack_profile_path, method: :post,
-                      class: "btn btn-ghost w-100",
-                      form: { class: "w-100" } %>
-      </div>
-    </div>
+    <ol class="footnote text-secondary-apple mb-3" style="padding-left: 18px;">
+      <li><%= t("profile.integrations.slack_step_1_html", default: "Открой <a href='https://api.slack.com/apps?new_app=1' target='_blank' rel='noopener'>api.slack.com/apps</a> → <strong>Create New App → From scratch</strong>, выбери workspace и любое имя.").html_safe %></li>
+      <li><%= t("profile.integrations.slack_step_2", default: "В меню слева — Features → Incoming Webhooks, активируй переключатель.") %></li>
+      <li><%= t("profile.integrations.slack_step_3", default: "Внизу страницы — Add New Webhook to Workspace, выбери канал (можно личный direct-message с собой) → Allow.") %></li>
+      <li><%= t("profile.integrations.slack_step_4", default: "Скопируй полученный URL (начинается с https://hooks.slack.com/services/...) и впиши ниже.") %></li>
+    </ol>
+    <%= f.label :slack_webhook_url, t("profile.integrations.slack_url_label", default: "Slack Webhook URL"), class: "form-label" %>
+    <%= f.url_field :slack_webhook_url, class: "form-control",
+                    placeholder: "https://hooks.slack.com/services/T.../B.../...",
+                    autocomplete: "off" %>
   </div>
 
-  <%# ── Telegram ───────────────────────────────────────────────────── %>
+  <%# Telegram %>
+  <%
+    bot_username = telegram_bot_username
+    bot_link     = bot_username.present? ? "https://t.me/#{bot_username}" : nil
+  %>
   <div>
     <h3 class="title-3 mb-2">
       <%= t("profile.integrations.telegram_title", default: "Telegram") %>
@@ -51,30 +50,79 @@
         <span class="pill pill--success ms-2"><%= t("common.connected", default: "подключено") %></span>
       <% end %>
     </h3>
-    <p class="footnote text-secondary-apple mb-3">
-      <%= t("profile.integrations.telegram_hint", default: "Напиши /start боту компании (его @username даст HR / IT), бот пришлёт твой chat_id — впиши его ниже.") %>
-    </p>
-    <div class="row g-2">
-      <div class="col-md-9">
-        <%= f.label :telegram_chat_id, t("profile.integrations.telegram_chat_id_label", default: "Telegram chat_id"), class: "form-label" %>
-        <%= f.text_field :telegram_chat_id, class: "form-control", placeholder: "123456789", inputmode: "numeric", autocomplete: "off" %>
+
+    <% if bot_link %>
+      <ol class="footnote text-secondary-apple mb-3" style="padding-left: 18px;">
+        <li>
+          <%= t("profile.integrations.tg_step_1_html",
+                bot_link: bot_link,
+                bot_name: bot_username,
+                default: "Открой бота компании в Telegram: <a href='%{bot_link}' target='_blank' rel='noopener'><strong>@%{bot_name}</strong></a> → нажми <strong>Start</strong>.").html_safe %>
+        </li>
+        <li>
+          <%= t("profile.integrations.tg_step_2_html", default:
+                "Узнай свой chat_id: открой <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a>, нажми Start — он пришлёт тебе твой ID (число).").html_safe %>
+        </li>
+        <li><%= t("profile.integrations.tg_step_3", default: "Впиши chat_id ниже и нажми Сохранить. После — нажми «Тест», бот напишет тебе подтверждение.") %></li>
+      </ol>
+    <% else %>
+      <div class="alert alert-soft footnote mb-3">
+        ⚠️ <%= t("profile.integrations.tg_not_configured", default: "Telegram-бот компании ещё не настроен. Попроси HR/IT настроить его в /settings/communications — тогда здесь появится ссылка на бот.") %>
       </div>
-      <div class="col-md-3 d-flex align-items-end gap-2">
-        <%= button_to t("profile.integrations.test_telegram", default: "Тест"),
-                      test_telegram_profile_path, method: :post,
-                      class: "btn btn-ghost w-100",
-                      form: { class: "w-100" } %>
-      </div>
-    </div>
+      <p class="footnote text-secondary-apple mb-3">
+        <%= t("profile.integrations.tg_get_chat_id_html", default:
+              "Узнать свой chat_id заранее можно через <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> — открой и нажми Start.").html_safe %>
+      </p>
+    <% end %>
+
+    <%= f.label :telegram_chat_id, t("profile.integrations.telegram_chat_id_label", default: "Telegram chat_id"), class: "form-label" %>
+    <%= f.text_field :telegram_chat_id, class: "form-control",
+                    placeholder: "123456789",
+                    inputmode: "numeric",
+                    autocomplete: "off" %>
   </div>
 
   <div class="d-flex gap-2">
     <%= f.submit t("common.save"), class: "btn btn-primary" %>
     <%= link_to t("common.cancel"), profile_path, class: "btn btn-ghost" %>
   </div>
+<% end %>
 
-  <div class="footnote text-tertiary">
-    <%= t("profile.integrations.note",
-          default: "Выбор какие уведомления приходят в каждый канал — на вкладке Уведомления.") %>
+<%# ── Отдельная card для тестов (только если что-то сохранено) ──────── %>
+<%# button_to создаёт <form> — нельзя класть в основную форму, выносим вниз. %>
+<% if current_user.slack_webhook_url.present? || current_user.telegram_chat_id.present? %>
+  <div class="card-apple mt-3">
+    <h3 class="title-3 mb-3"><%= t("profile.integrations.test_title", default: "Проверка") %></h3>
+    <div class="row g-3">
+      <% if current_user.slack_webhook_url.present? %>
+        <div class="col-md-6 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+          <div class="min-w-0 flex-grow-1">
+            <div class="footnote text-tertiary"><%= t("profile.integrations.slack_url_label") %></div>
+            <code class="d-block text-truncate"><%= current_user.slack_webhook_url %></code>
+          </div>
+          <%= button_to t("profile.integrations.test_slack", default: "Тест"),
+                        test_slack_profile_path, method: :post,
+                        class: "btn btn-ghost",
+                        form: { class: "m-0" } %>
+        </div>
+      <% end %>
+      <% if current_user.telegram_chat_id.present? %>
+        <div class="col-md-6 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+          <div class="min-w-0 flex-grow-1">
+            <div class="footnote text-tertiary"><%= t("profile.integrations.telegram_chat_id_label") %></div>
+            <code class="d-block text-truncate"><%= current_user.telegram_chat_id %></code>
+          </div>
+          <%= button_to t("profile.integrations.test_telegram", default: "Тест"),
+                        test_telegram_profile_path, method: :post,
+                        class: "btn btn-ghost",
+                        form: { class: "m-0" } %>
+        </div>
+      <% end %>
+    </div>
   </div>
 <% end %>
+
+<p class="footnote text-tertiary mt-3 mb-0">
+  <%= t("profile.integrations.note",
+        default: "Выбор какие уведомления приходят в каждый канал — на вкладке Уведомления.") %>
+</p>

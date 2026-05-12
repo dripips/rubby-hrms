@@ -5,6 +5,7 @@
 class ProfileController < ApplicationController
   before_action :authenticate_user!
   before_action :load_employee
+  helper_method :telegram_bot_username
 
   EDITABLE_ATTRIBUTES = %i[
     phone personal_email address marital_status
@@ -184,9 +185,18 @@ class ProfileController < ApplicationController
   private
 
   def telegram_bot_token
-    ENV["TELEGRAM_BOT_TOKEN"].presence || begin
+    ENV["TELEGRAM_BOT_TOKEN"].presence ||
+      communication_setting_data["telegram_bot_token"]
+  end
+
+  def telegram_bot_username
+    communication_setting_data["telegram_bot_username"].to_s.presence
+  end
+
+  def communication_setting_data
+    @communication_setting_data ||= begin
       company = Company.kept.first
-      company && AppSetting.find_by(company: company, category: "communication")&.data&.dig("telegram_bot_token")
+      (company && AppSetting.find_by(company: company, category: "communication")&.data) || {}
     end
   end
 

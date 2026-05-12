@@ -107,6 +107,16 @@ de:
       telegram_test_fail: Fehlgeschlagen — Telegram antwortete %{code}
       connect: verbinden
       note: Welche Benachrichtigungen wohin gehen — auf der Registerkarte Benachrichtigungen wählen.
+      test_title: Test
+      slack_step_1_html: Öffne <a href='https://api.slack.com/apps?new_app=1' target='_blank' rel='noopener'>api.slack.com/apps</a> → <strong>Create New App → From scratch</strong>, Workspace und beliebigen Namen wählen.
+      slack_step_2: Linke Menüleiste — Features → Incoming Webhooks, Schalter aktivieren.
+      slack_step_3: Unten — Add New Webhook to Workspace, Kanal wählen (eigener DM geht auch) → Allow.
+      slack_step_4: URL kopieren (beginnt mit https://hooks.slack.com/services/...) und unten einfügen.
+      tg_step_1_html: 'Öffne den Firmenbot in Telegram: <a href=''%{bot_link}'' target=''_blank'' rel=''noopener''><strong>@%{bot_name}</strong></a> → tippe <strong>Start</strong>.'
+      tg_step_2_html: 'chat_id herausfinden: <a href=''https://t.me/userinfobot'' target=''_blank'' rel=''noopener''>@userinfobot</a> öffnen, Start tippen — er schickt dir deine numerische ID.'
+      tg_step_3: chat_id unten einfügen und Speichern. Dann «Test» klicken — der Bot antwortet mit Bestätigung.
+      tg_not_configured: Firmen-Telegram-Bot ist noch nicht eingerichtet. Bitte HR/IT, ihn in /settings/communications einzurichten — dann erscheint der Bot-Link hier.
+      tg_get_chat_id_html: Du kannst deine chat_id vorab über <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> herausfinden — öffnen und Start tippen.
   navigation:
     workspace: Arbeitsbereich
     org: Organisation
@@ -2325,6 +2335,15 @@ de:
       telegram_hint_html: Bot über <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a> erstellen, Token holen und hier einfügen. Mitarbeiter binden ihre chat_id in /profile/integrations.
       telegram_token_label: Bot Token
       about_text_v2: Jedes Hiring-Event verschickt Nachrichten über aktivierte Kanäle. E-Mail per SMTP-Einstellungen. Telegram für Mitarbeiter — über Bot-Token oben + chat_id des Users in den Profil-Integrationen. Slack — über persönlichen Incoming-Webhook des Users.
+      bot_connected: verbunden
+      bot_test: Verbindung prüfen
+      bot_test_ok: "✓ Bot @%{u} (%{n}) verbunden"
+      bot_test_fail: 'Telegram hat Token abgelehnt: %{e}'
+      bot_no_token: Trage zuerst den Bot Token ein
+      bot_step_1_html: Öffne <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a> in Telegram, sende <code>/newbot</code>, wähle Name und Username (muss auf <code>bot</code> enden).
+      bot_step_2: BotFather sendet einen Token wie 123456:AAEhBP_... — kopiere ihn vollständig.
+      bot_step_3: Füge den Token unten ein und klicke «Prüfen» — wir holen den @username automatisch.
+      bot_step_4: Mitarbeiter binden ihre chat_id in /profile/integrations — der Bot-Link erscheint dort automatisch.
     notifications:
       about_text: Aktiviere oder deaktiviere Kanäle für jeden Ereignistyp — gilt für alle Empfänger.
       about_title: Über die Einstellungen

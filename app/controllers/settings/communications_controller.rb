@@ -4,6 +4,43 @@ class Settings::CommunicationsController < SettingsController
   def show
   end
 
+  # POST /settings/communications/test_telegram_bot
+  # Дёргает Telegram getMe → если ответ ОК, сохраняем bot_username и id.
+  # Это даёт пользователям ссылку https://t.me/<username> на странице
+  # /profile/integrations — без необходимости спрашивать у HR/IT.
+  def test_bot
+    token = @setting.data["telegram_bot_token"].to_s.strip
+    if token.blank?
+      redirect_to settings_communications_path,
+                  alert: t("settings.communications.bot_no_token", default: "Сначала впиши Bot Token")
+      return
+    end
+
+    require "net/http"
+    require "json"
+    response = Net::HTTP.get_response(URI("https://api.telegram.org/bot#{token}/getMe"))
+    body = JSON.parse(response.body) rescue {}
+
+    if response.is_a?(Net::HTTPSuccess) && body["ok"]
+      result = body["result"] || {}
+      @setting.update!(data: @setting.data.merge(
+        "telegram_bot_username" => result["username"],
+        "telegram_bot_name"     => result["first_name"]
+      ))
+      redirect_to settings_communications_path,
+                  notice: t("settings.communications.bot_test_ok",
+                            default: "✓ Бот @%{u} (%{n}) подключён",
+                            u: result["username"], n: result["first_name"])
+    else
+      error = body["description"].presence || "HTTP #{response.code}"
+      redirect_to settings_communications_path,
+                  alert: t("settings.communications.bot_test_fail",
+                           default: "Telegram отверг токен: %{e}", e: error)
+    end
+  rescue StandardError => e
+    redirect_to settings_communications_path, alert: "Telegram error: #{e.message.first(120)}"
+  end
+
   def update
     raw = params.dig(:app_setting, :data) || {}
     raw = raw.respond_to?(:permit!) ? raw.permit!.to_h : raw.to_h

@@ -68,20 +68,49 @@
   <% end %>
 </div>
 
-<%# ── Telegram Bot Token (глобальный, для уведомлений сотрудникам) ── %>
+<%# ── Telegram Bot — пошаговый setup ──────────────────────────────── %>
+<%
+  bot_username = @setting.data["telegram_bot_username"].to_s
+  bot_name     = @setting.data["telegram_bot_name"].to_s
+  bot_token    = @setting.data["telegram_bot_token"].to_s
+%>
 <div class="card-apple mt-4">
-  <h3 class="card-apple__title mb-2"><%= t("settings.communications.telegram_section", default: "Telegram-бот компании") %></h3>
-  <p class="footnote text-secondary-apple mb-3">
-    <%= t("settings.communications.telegram_hint_html", default:
-          "Создай бота через <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a>, получи токен и впиши его сюда. Сотрудники привязывают свой chat_id через /profile/integrations.").html_safe %>
-  </p>
+  <div class="d-flex align-items-baseline justify-content-between gap-3 flex-wrap mb-3">
+    <h3 class="card-apple__title m-0">📨 <%= t("settings.communications.telegram_section", default: "Telegram-бот компании") %></h3>
+    <% if bot_username.present? %>
+      <span class="pill pill--success">
+        <%= t("settings.communications.bot_connected", default: "подключён") %>:
+        <a href="https://t.me/<%= bot_username %>" target="_blank" rel="noopener" class="ms-1">@<%= bot_username %></a>
+      </span>
+    <% end %>
+  </div>
+
+  <ol class="footnote mb-3" style="padding-left: 18px;">
+    <li>
+      <%= t("settings.communications.bot_step_1_html", default:
+            "Открой <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a> в Telegram, отправь команду <code>/newbot</code>, придумай имя и юзернейм (должен заканчиваться на <code>bot</code>).").html_safe %>
+    </li>
+    <li>
+      <%= t("settings.communications.bot_step_2", default:
+            "BotFather пришлёт токен вида 123456:AAEhBP_... — скопируй его целиком.") %>
+    </li>
+    <li>
+      <%= t("settings.communications.bot_step_3", default:
+            "Впиши токен в поле ниже и нажми «Проверить» — мы вытащим @username бота автоматически.") %>
+    </li>
+    <li>
+      <%= t("settings.communications.bot_step_4", default:
+            "Сотрудники привязывают свой chat_id в /profile/integrations — они увидят правильную ссылку на бота автоматически.") %>
+    </li>
+  </ol>
+
   <%= form_with(model: @setting, url: settings_communications_path, method: :patch) do |f| %>
     <div class="row g-2">
       <div class="col-md-9">
         <label class="form-label" for="telegram_bot_token"><%= t("settings.communications.telegram_token_label", default: "Bot Token") %></label>
         <input type="text" id="telegram_bot_token"
                name="app_setting[data][telegram_bot_token]"
-               value="<%= @setting.data["telegram_bot_token"] %>"
+               value="<%= bot_token %>"
                class="form-control"
                placeholder="123456:ABC-DEF-..."
                autocomplete="off">
@@ -89,6 +118,17 @@
       <div class="col-md-3 d-flex align-items-end">
         <%= f.submit t("common.save"), class: "btn btn-primary w-100" %>
       </div>
+    </div>
+  <% end %>
+
+  <% if bot_token.present? %>
+    <%# Отдельная форма для теста (нельзя вложить <form> в <form>) %>
+    <div class="mt-3">
+      <%= button_to t("settings.communications.bot_test", default: "Проверить подключение"),
+                    test_bot_settings_communications_path,
+                    method: :post,
+                    class: "btn btn-ghost",
+                    form: { class: "m-0" } %>
     </div>
   <% end %>
 </div>

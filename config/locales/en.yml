@@ -107,6 +107,16 @@ en:
       telegram_test_fail: Failed — Telegram returned %{code}
       connect: connect
       note: Which notifications go to which channel — choose on the Notifications tab.
+      test_title: Verify
+      slack_step_1_html: Open <a href='https://api.slack.com/apps?new_app=1' target='_blank' rel='noopener'>api.slack.com/apps</a> → <strong>Create New App → From scratch</strong>, choose a workspace and any name.
+      slack_step_2: In the sidebar — Features → Incoming Webhooks, turn the toggle on.
+      slack_step_3: Scroll down — Add New Webhook to Workspace, pick a channel (your own DM is fine) → Allow.
+      slack_step_4: Copy the URL (starts with https://hooks.slack.com/services/...) and paste below.
+      tg_step_1_html: 'Open the company bot in Telegram: <a href=''%{bot_link}'' target=''_blank'' rel=''noopener''><strong>@%{bot_name}</strong></a> → tap <strong>Start</strong>.'
+      tg_step_2_html: 'Find your chat_id: open <a href=''https://t.me/userinfobot'' target=''_blank'' rel=''noopener''>@userinfobot</a>, tap Start — it will send you your numeric ID.'
+      tg_step_3: Paste chat_id below and Save. Then click «Test» — bot will reply with confirmation.
+      tg_not_configured: Company Telegram bot is not configured yet. Ask HR/IT to set it up in /settings/communications — then the bot link will appear here.
+      tg_get_chat_id_html: You can get your chat_id in advance via <a href='https://t.me/userinfobot' target='_blank' rel='noopener'>@userinfobot</a> — open and tap Start.
   navigation:
     workspace: Workspace
     org: Organization
@@ -2325,6 +2335,15 @@ en:
       telegram_hint_html: Create a bot via <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a>, get the token and paste it here. Staff bind their chat_id in /profile/integrations.
       telegram_token_label: Bot Token
       about_text_v2: Each hiring event sends messages on enabled channels. Email via SMTP settings. Telegram for staff — via Bot Token above + user's chat_id in profile Integrations. Slack — via user's personal incoming webhook.
+      bot_connected: connected
+      bot_test: Verify connection
+      bot_test_ok: "✓ Bot @%{u} (%{n}) connected"
+      bot_test_fail: 'Telegram rejected token: %{e}'
+      bot_no_token: Enter Bot Token first
+      bot_step_1_html: Open <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a> in Telegram, send <code>/newbot</code>, pick a name and a username (must end with <code>bot</code>).
+      bot_step_2: BotFather will send a token like 123456:AAEhBP_... — copy the whole thing.
+      bot_step_3: Paste the token below and click «Verify» — we'll fetch the bot @username automatically.
+      bot_step_4: Staff bind their chat_id in /profile/integrations — they'll see the correct bot link automatically.
     notifications:
       about_text: Toggle channels for each event type — applies to all recipients.
       about_title: About settings
