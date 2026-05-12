@@ -36,15 +36,18 @@ class User < ApplicationRecord
   has_many :notifications, class_name: "Noticed::Notification", as: :recipient, dependent: :destroy
 
   # Каталог типов уведомлений с дефолтами по каналам.
-  # Структура: { event_key => { in_app: bool, email: bool } }.
+  # Структура: { event_key => { in_app: bool, email: bool, slack: bool, telegram: bool } }.
+  # Slack/Telegram по умолчанию ВЫКЛ — юзер сам активирует на нужные события
+  # после привязки webhook'а / chat_id в /profile/integrations.
+  NOTIFICATION_CHANNELS = %i[in_app email slack telegram].freeze
   NOTIFICATION_KINDS = {
-    "ai_run_completed"       => { in_app: true,  email: false },
-    "interview_soon"         => { in_app: true,  email: true  },
-    "interview_tomorrow"     => { in_app: true,  email: false },
-    "interview_scheduled"    => { in_app: true,  email: true  },
-    "interview_cancelled"    => { in_app: true,  email: true  },
-    "applicant_stage_change" => { in_app: true,  email: false },
-    "document_expiring"      => { in_app: true,  email: true  }
+    "ai_run_completed"       => { in_app: true,  email: false, slack: false, telegram: false },
+    "interview_soon"         => { in_app: true,  email: true,  slack: false, telegram: false },
+    "interview_tomorrow"     => { in_app: true,  email: false, slack: false, telegram: false },
+    "interview_scheduled"    => { in_app: true,  email: true,  slack: false, telegram: false },
+    "interview_cancelled"    => { in_app: true,  email: true,  slack: false, telegram: false },
+    "applicant_stage_change" => { in_app: true,  email: false, slack: false, telegram: false },
+    "document_expiring"      => { in_app: true,  email: true,  slack: false, telegram: false }
   }.freeze
 
   def display_name

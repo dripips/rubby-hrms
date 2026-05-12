@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_01_161501) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_141438) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -887,6 +887,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_01_161501) do
     t.string "reset_password_token"
     t.integer "role", default: 0, null: false
     t.integer "sign_in_count", default: 0, null: false
+    t.string "slack_webhook_url"
+    t.string "telegram_chat_id"
     t.string "time_zone", default: "Moscow", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_users_on_discarded_at"

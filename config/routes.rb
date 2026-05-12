@@ -190,6 +190,11 @@ Rails.application.routes.draw do
       post   "two_factor",                  to: "two_factor_auths#create",      as: :enable_two_factor
       delete "two_factor",                  to: "two_factor_auths#destroy",     as: :disable_two_factor
       post   "two_factor/backup_codes",     to: "two_factor_auths#regenerate",  as: :regenerate_backup_codes
+      # Integrations: Slack + Telegram per-user
+      get   :integrations
+      patch :update_integrations, path: "integrations"
+      post  "integrations/test_slack",    to: "profile#test_slack",    as: :test_slack
+      post  "integrations/test_telegram", to: "profile#test_telegram", as: :test_telegram
     end
 
     # 2FA challenge на sign-in (пользователь уже прошёл password, ждём TOTP).

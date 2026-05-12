@@ -68,9 +68,34 @@
   <% end %>
 </div>
 
+<%# ── Telegram Bot Token (глобальный, для уведомлений сотрудникам) ── %>
+<div class="card-apple mt-4">
+  <h3 class="card-apple__title mb-2"><%= t("settings.communications.telegram_section", default: "Telegram-бот компании") %></h3>
+  <p class="footnote text-secondary-apple mb-3">
+    <%= t("settings.communications.telegram_hint_html", default:
+          "Создай бота через <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a>, получи токен и впиши его сюда. Сотрудники привязывают свой chat_id через /profile/integrations.").html_safe %>
+  </p>
+  <%= form_with(model: @setting, url: settings_communications_path, method: :patch) do |f| %>
+    <div class="row g-2">
+      <div class="col-md-9">
+        <label class="form-label" for="telegram_bot_token"><%= t("settings.communications.telegram_token_label", default: "Bot Token") %></label>
+        <input type="text" id="telegram_bot_token"
+               name="app_setting[data][telegram_bot_token]"
+               value="<%= @setting.data["telegram_bot_token"] %>"
+               class="form-control"
+               placeholder="123456:ABC-DEF-..."
+               autocomplete="off">
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <%= f.submit t("common.save"), class: "btn btn-primary w-100" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
 <div class="card-apple mt-4">
   <h3 class="card-apple__title mb-2"><%= t("settings.communications.about_title", default: "Как это работает") %></h3>
   <p class="footnote text-secondary-apple m-0">
-    <%= t("settings.communications.about_text", default: "Каждое событие в воронке найма (создание тестового, отказ, перевод на следующий этап) шлёт письма по выбранным каналам. Email уже работает через настройки SMTP. Telegram и WhatsApp подключаются отдельными настройками когда добавим адаптеры.") %>
+    <%= t("settings.communications.about_text_v2", default: "Каждое событие в воронке найма (создание тестового, отказ, перевод на следующий этап) шлёт письма по выбранным каналам. Email через настройки SMTP. Telegram-уведомления для сотрудников — через Bot-токен выше + личный chat_id юзера в Интеграциях профиля. Slack — через личный incoming-webhook юзера.") %>
   </p>
 </div>

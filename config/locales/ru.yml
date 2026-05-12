@@ -26,6 +26,7 @@ ru:
       security: Безопасность
       notifications: Уведомления
       privacy: Приватность
+      integrations: Интеграции
     security:
       title: Безопасность
       hint: Смена email, пароля и локали интерфейса. Чтобы изменить email или пароль — введи текущий пароль для подтверждения.
@@ -41,6 +42,7 @@ ru:
       title: Уведомления
       hint: Какие события и куда тебе доставлять. Уведомление не отправится если оба канала выключены.
       updated: Настройки уведомлений сохранены
+      hint_v2: Какие события и куда тебе доставлять. Slack и Telegram появляются если подключены в Интеграциях.
     privacy:
       title: Приватность и данные
       hint: Скачай все свои данные одним JSON или удали аккаунт. Соответствие GDPR Art.15+17 / 152-ФЗ.
@@ -84,6 +86,27 @@ ru:
       manual_entry: 'Введи секрет вручную:'
       status_on: 'Включена. Backup-кодов осталось: %{n}'
       status_off: Не включена — рекомендуется для защиты аккаунта.
+    integrations:
+      title: Интеграции
+      hint: Подключи Slack и Telegram чтобы получать уведомления в мессенджере, а не только в HRMS.
+      slack_title: Slack
+      slack_hint_html: Зайди на <a href='https://api.slack.com/messaging/webhooks' target='_blank' rel='noopener'>api.slack.com/messaging/webhooks</a>, создай Incoming Webhook для нужного канала и впиши URL ниже.
+      slack_url_label: Slack Webhook URL
+      test_slack: Тест
+      telegram_title: Telegram
+      telegram_hint: Напиши /start боту компании (его @username даст HR / IT), бот пришлёт твой chat_id — впиши его ниже.
+      telegram_chat_id_label: Telegram chat_id
+      test_telegram: Тест
+      updated: Интеграции сохранены
+      no_slack: Сначала впиши Slack webhook URL
+      no_telegram: Сначала впиши Telegram chat_id
+      no_bot_token: Админ не настроил бота. Обратись в HR/IT
+      slack_test_ok: Тестовое сообщение ушло в Slack
+      slack_test_fail: Не получилось — Slack вернул %{code}
+      telegram_test_ok: Тестовое сообщение ушло в Telegram
+      telegram_test_fail: Не получилось — Telegram вернул %{code}
+      connect: подключить
+      note: Выбор какие уведомления приходят в каждый канал — на вкладке Уведомления.
   navigation:
     workspace: Рабочее место
     org: Организация
@@ -159,6 +182,7 @@ ru:
     prev: Назад
     next: Дальше
     copy: Скопировать
+    connected: подключено
   auth:
     sign_in: Войти
     sign_up: Регистрация
@@ -1820,6 +1844,10 @@ ru:
       coming_soon: В разработке
       about_title: О разделе
       about_text: Здесь будут шаблоны писем и сообщений для разных каналов.
+      telegram_section: Telegram-бот компании
+      telegram_hint_html: Создай бота через <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a>, получи токен и впиши его сюда. Сотрудники привязывают свой chat_id через /profile/integrations.
+      telegram_token_label: Bot Token
+      about_text_v2: Каждое событие в воронке найма шлёт письма по выбранным каналам. Email через настройки SMTP. Telegram-уведомления сотрудникам — через Bot-токен выше + chat_id юзера в Интеграциях профиля. Slack — через личный incoming-webhook юзера.
     careers:
       title: Страница найма
       subtitle: Публичная страница вакансий, бренд, доступы

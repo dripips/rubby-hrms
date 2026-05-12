@@ -70,13 +70,86 @@ class ProfileController < ApplicationController
     cleaned = {}
     User::NOTIFICATION_KINDS.each do |kind, _defaults|
       pref = raw[kind].to_h
-      cleaned[kind] = {
-        "in_app" => pref["in_app"] == "1",
-        "email"  => pref["email"]  == "1"
-      }
+      cleaned[kind] = User::NOTIFICATION_CHANNELS.each_with_object({}) do |ch, h|
+        h[ch.to_s] = pref[ch.to_s] == "1"
+      end
     end
     current_user.update!(notification_preferences: cleaned)
     redirect_to notifications_profile_path, notice: t("profile.notifications.updated", default: "Настройки уведомлений сохранены")
+  end
+
+  # ── Integrations: Slack webhook + Telegram chat_id ─────────────────────
+  def integrations; end
+
+  def update_integrations
+    raw = params.require(:user).permit(:slack_webhook_url, :telegram_chat_id)
+    if current_user.update(raw)
+      redirect_to integrations_profile_path,
+                  notice: t("profile.integrations.updated", default: "Интеграции сохранены")
+    else
+      render :integrations, status: :unprocessable_entity
+    end
+  end
+
+  # Тест: послать тестовое сообщение в Slack для текущего юзера.
+  def test_slack
+    webhook = current_user.slack_webhook_url.to_s
+    if webhook.blank?
+      redirect_to integrations_profile_path,
+                  alert: t("profile.integrations.no_slack", default: "Сначала впиши Slack webhook URL")
+      return
+    end
+
+    require "net/http"
+    response = Net::HTTP.post(
+      URI(webhook),
+      { text: "✓ HRMS test — Slack-интеграция работает!" }.to_json,
+      "Content-Type" => "application/json"
+    )
+    if response.is_a?(Net::HTTPSuccess)
+      redirect_to integrations_profile_path,
+                  notice: t("profile.integrations.slack_test_ok", default: "Тестовое сообщение ушло в Slack")
+    else
+      redirect_to integrations_profile_path,
+                  alert: t("profile.integrations.slack_test_fail", default: "Не получилось — Slack вернул %{code}", code: response.code)
+    end
+  rescue StandardError => e
+    redirect_to integrations_profile_path,
+                alert: "Slack error: #{e.message.first(120)}"
+  end
+
+  # Тест: послать тестовое сообщение в Telegram.
+  def test_telegram
+    chat_id   = current_user.telegram_chat_id.to_s
+    bot_token = telegram_bot_token
+
+    if chat_id.blank?
+      redirect_to integrations_profile_path,
+                  alert: t("profile.integrations.no_telegram", default: "Сначала впиши Telegram chat_id")
+      return
+    end
+    if bot_token.blank?
+      redirect_to integrations_profile_path,
+                  alert: t("profile.integrations.no_bot_token", default: "Админ не настроил бота. Обратись в HR/IT")
+      return
+    end
+
+    require "net/http"
+    response = Net::HTTP.post(
+      URI("https://api.telegram.org/bot#{bot_token}/sendMessage"),
+      { chat_id: chat_id, text: "✓ HRMS test — Telegram-интеграция работает!" }.to_json,
+      "Content-Type" => "application/json"
+    )
+    if response.is_a?(Net::HTTPSuccess)
+      redirect_to integrations_profile_path,
+                  notice: t("profile.integrations.telegram_test_ok", default: "Тестовое сообщение ушло в Telegram")
+    else
+      redirect_to integrations_profile_path,
+                  alert: t("profile.integrations.telegram_test_fail", default: "Не получилось — Telegram вернул %{code}", code: response.code)
+    end
+  rescue StandardError => e
+    redirect_to integrations_profile_path,
+                alert: "Telegram error: #{e.message.first(120)}"
   end
 
   # ── GDPR / 152-ФЗ: Privacy ──────────────────────────────────────────────
@@ -109,6 +182,13 @@ class ProfileController < ApplicationController
   end
 
   private
+
+  def telegram_bot_token
+    ENV["TELEGRAM_BOT_TOKEN"].presence || begin
+      company = Company.kept.first
+      company && AppSetting.find_by(company: company, category: "communication")&.data&.dig("telegram_bot_token")
+    end
+  end
 
   def load_employee
     @employee = current_user.employee

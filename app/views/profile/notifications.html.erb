@@ -5,7 +5,7 @@
     <div class="page-header__eyebrow">🔔 <%= t("profile.eyebrow", default: "Мой профиль") %></div>
     <h1 class="page-header__title m-0"><%= t("profile.notifications.title", default: "Уведомления") %></h1>
     <p class="page-header__subtitle">
-      <%= t("profile.notifications.hint", default: "Какие события и куда тебе доставлять. Уведомление не отправится если оба канала выключены.") %>
+      <%= t("profile.notifications.hint_v2", default: "Какие события и куда тебе доставлять. Slack и Telegram появляются если подключены в Интеграциях.") %>
     </p>
   </div>
   <div class="page-header__actions">
@@ -15,37 +15,54 @@
 
 <%= render "profile/tabs" %>
 
+<%
+  slack_on    = current_user.slack_webhook_url.present?
+  telegram_on = current_user.telegram_chat_id.present?
+%>
+
 <%= form_with url: update_notifications_profile_path, method: :patch, local: true,
               html: { class: "card-apple form-apple" } do %>
   <table class="table-apple m-0">
     <thead>
       <tr>
         <th><%= t("settings.notifications.event", default: "Событие") %></th>
-        <th class="text-center" style="width: 120px;"><%= t("settings.notifications.channels.in_app", default: "В приложении") %></th>
-        <th class="text-center" style="width: 120px;"><%= t("settings.notifications.channels.email", default: "Email") %></th>
+        <th class="text-center" style="width: 110px;"><%= t("settings.notifications.channels.in_app", default: "В приложении") %></th>
+        <th class="text-center" style="width: 110px;"><%= t("settings.notifications.channels.email", default: "Email") %></th>
+        <th class="text-center" style="width: 110px;">
+          Slack
+          <% unless slack_on %>
+            <div class="footnote text-tertiary"><%= link_to t("profile.integrations.connect", default: "подключить"), integrations_profile_path %></div>
+          <% end %>
+        </th>
+        <th class="text-center" style="width: 110px;">
+          Telegram
+          <% unless telegram_on %>
+            <div class="footnote text-tertiary"><%= link_to t("profile.integrations.connect", default: "подключить"), integrations_profile_path %></div>
+          <% end %>
+        </th>
       </tr>
     </thead>
     <tbody>
       <% @kinds.each do |kind, defaults| %>
         <% pref = (@prefs[kind] || {}) %>
-        <% in_app = pref.key?("in_app") ? !!pref["in_app"] : !!defaults[:in_app] %>
-        <% email  = pref.key?("email")  ? !!pref["email"]  : !!defaults[:email]  %>
+        <% values = User::NOTIFICATION_CHANNELS.each_with_object({}) do |ch, h|
+             ch_s = ch.to_s
+             h[ch_s] = pref.key?(ch_s) ? !!pref[ch_s] : !!defaults[ch]
+           end %>
         <tr>
           <td>
             <strong><%= t("settings.users.notification_kinds.#{kind}", default: t("ai.actions.#{kind}", default: kind.humanize)) %></strong>
           </td>
-          <td class="text-center">
-            <input type="hidden" name="preferences[<%= kind %>][in_app]" value="0">
-            <input type="checkbox" name="preferences[<%= kind %>][in_app]" value="1"
-                   id="pref-<%= kind %>-in_app" <%= 'checked' if in_app %>
-                   class="form-check-input">
-          </td>
-          <td class="text-center">
-            <input type="hidden" name="preferences[<%= kind %>][email]" value="0">
-            <input type="checkbox" name="preferences[<%= kind %>][email]" value="1"
-                   id="pref-<%= kind %>-email" <%= 'checked' if email %>
-                   class="form-check-input">
-          </td>
+          <% [["in_app", true], ["email", true], ["slack", slack_on], ["telegram", telegram_on]].each do |channel, available| %>
+            <td class="text-center">
+              <input type="hidden" name="preferences[<%= kind %>][<%= channel %>]" value="0">
+              <input type="checkbox" name="preferences[<%= kind %>][<%= channel %>]" value="1"
+                     id="pref-<%= kind %>-<%= channel %>"
+                     <%= 'checked' if values[channel] && available %>
+                     <%= 'disabled' unless available %>
+                     class="form-check-input">
+            </td>
+          <% end %>
         </tr>
       <% end %>
     </tbody>

@@ -5,9 +5,11 @@ class Settings::CommunicationsController < SettingsController
   end
 
   def update
-    matrix = params.dig(:app_setting, :data) || {}
-    matrix = matrix.respond_to?(:permit!) ? matrix.permit!.to_h : matrix.to_h
-    cleaned = clean_matrix(matrix)
+    raw = params.dig(:app_setting, :data) || {}
+    raw = raw.respond_to?(:permit!) ? raw.permit!.to_h : raw.to_h
+    cleaned = clean_matrix(raw)
+    # Глобальный bot_token хранится в той же category=communication, рядом с матрицей
+    cleaned["telegram_bot_token"] = raw["telegram_bot_token"].to_s.strip if raw.key?("telegram_bot_token")
 
     if @setting.update(data: cleaned)
       redirect_to settings_communications_path,

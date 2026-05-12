@@ -26,6 +26,7 @@ de:
       security: Sicherheit
       notifications: Benachrichtigungen
       privacy: Datenschutz
+      integrations: Integrationen
     security:
       title: Sicherheit
       hint: E-Mail, Passwort und Sprache ändern. Zum Ändern von E-Mail oder Passwort — aktuelles Passwort zur Bestätigung eingeben.
@@ -41,6 +42,7 @@ de:
       title: Benachrichtigungen
       hint: Welche Ereignisse wohin geliefert werden. Eine Benachrichtigung wird verworfen, wenn beide Kanäle aus sind.
       updated: Benachrichtigungs-Einstellungen gespeichert
+      hint_v2: Welche Ereignisse wohin. Slack/Telegram-Spalten erscheinen, wenn in Integrationen verbunden.
     privacy:
       title: Datenschutz & Daten
       hint: Lade alle deine Daten als JSON herunter oder lösche dein Konto. DSGVO Art.15+17 / 152-FZ.
@@ -84,6 +86,27 @@ de:
       manual_entry: 'Gib das Secret manuell ein:'
       status_on: 'Aktiviert. Verbleibende Backup-Codes: %{n}'
       status_off: Nicht aktiviert — empfohlen zum Schutz deines Kontos.
+    integrations:
+      title: Integrationen
+      hint: Verbinde Slack und Telegram, um Benachrichtigungen im Messenger zu erhalten, nicht nur im HRMS.
+      slack_title: Slack
+      slack_hint_html: Gehe zu <a href='https://api.slack.com/messaging/webhooks' target='_blank' rel='noopener'>api.slack.com/messaging/webhooks</a>, erstelle einen Incoming Webhook für den gewünschten Kanal und füge die URL unten ein.
+      slack_url_label: Slack Webhook URL
+      test_slack: Test
+      telegram_title: Telegram
+      telegram_hint: Sende /start an den Firmenbot (HR / IT gibt dir den @username), der Bot antwortet mit deiner chat_id — füge sie unten ein.
+      telegram_chat_id_label: Telegram chat_id
+      test_telegram: Test
+      updated: Integrationen gespeichert
+      no_slack: Trage zuerst die Slack-Webhook-URL ein
+      no_telegram: Trage zuerst die Telegram chat_id ein
+      no_bot_token: Admin hat den Bot nicht konfiguriert. HR/IT fragen
+      slack_test_ok: Testnachricht an Slack gesendet
+      slack_test_fail: Fehlgeschlagen — Slack antwortete %{code}
+      telegram_test_ok: Testnachricht an Telegram gesendet
+      telegram_test_fail: Fehlgeschlagen — Telegram antwortete %{code}
+      connect: verbinden
+      note: Welche Benachrichtigungen wohin gehen — auf der Registerkarte Benachrichtigungen wählen.
   navigation:
     workspace: Arbeitsbereich
     org: Organisation
@@ -159,6 +182,7 @@ de:
     prev: Zurück
     next: Weiter
     copy: Kopieren
+    connected: verbunden
   auth:
     sign_in: Anmelden
     sign_up: Registrieren
@@ -2297,6 +2321,10 @@ de:
       subtitle: Nachrichten-Vorlagen für Kandidaten und Mitarbeiter
       title: Kommunikation
       updated: Kommunikations-Einstellungen gespeichert
+      telegram_section: Firmen-Telegram-Bot
+      telegram_hint_html: Bot über <a href='https://t.me/BotFather' target='_blank' rel='noopener'>@BotFather</a> erstellen, Token holen und hier einfügen. Mitarbeiter binden ihre chat_id in /profile/integrations.
+      telegram_token_label: Bot Token
+      about_text_v2: Jedes Hiring-Event verschickt Nachrichten über aktivierte Kanäle. E-Mail per SMTP-Einstellungen. Telegram für Mitarbeiter — über Bot-Token oben + chat_id des Users in den Profil-Integrationen. Slack — über persönlichen Incoming-Webhook des Users.
     notifications:
       about_text: Aktiviere oder deaktiviere Kanäle für jeden Ereignistyp — gilt für alle Empfänger.
       about_title: Über die Einstellungen
