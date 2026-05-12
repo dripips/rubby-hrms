@@ -15,10 +15,12 @@ export default class extends Controller {
     this._snapshot = null
     this._dragging = null
 
-    this._onDragStart = this._onDragStart.bind(this)
-    this._onDragOver  = this._onDragOver.bind(this)
-    this._onDragEnd   = this._onDragEnd.bind(this)
-    this._onKeydown   = this._onKeydown.bind(this)
+    this._onDragStart   = this._onDragStart.bind(this)
+    this._onDragOver    = this._onDragOver.bind(this)
+    this._onDragEnd     = this._onDragEnd.bind(this)
+    this._onDrop        = this._onDrop.bind(this)
+    this._onKeydown     = this._onKeydown.bind(this)
+    this._onClickIntercept = this._onClickIntercept.bind(this)
   }
 
   // ── Edit mode ──────────────────────────────────────────────────────────
@@ -31,7 +33,11 @@ export default class extends Controller {
 
     this.gridTarget.addEventListener("dragstart", this._onDragStart)
     this.gridTarget.addEventListener("dragover",  this._onDragOver)
+    this.gridTarget.addEventListener("dragenter", this._onDragOver)
+    this.gridTarget.addEventListener("drop",      this._onDrop)
     this.gridTarget.addEventListener("dragend",   this._onDragEnd)
+    // Capture-фаза, чтобы перехватить клики до Turbo / native handler'ов
+    this.gridTarget.addEventListener("click", this._onClickIntercept, true)
     document.addEventListener("keydown", this._onKeydown)
   }
 
@@ -42,7 +48,10 @@ export default class extends Controller {
 
     this.gridTarget.removeEventListener("dragstart", this._onDragStart)
     this.gridTarget.removeEventListener("dragover",  this._onDragOver)
+    this.gridTarget.removeEventListener("dragenter", this._onDragOver)
+    this.gridTarget.removeEventListener("drop",      this._onDrop)
     this.gridTarget.removeEventListener("dragend",   this._onDragEnd)
+    this.gridTarget.removeEventListener("click",     this._onClickIntercept, true)
     document.removeEventListener("keydown", this._onKeydown)
   }
 
@@ -127,32 +136,84 @@ export default class extends Controller {
   // ── Drag-and-drop reorder (insertion-based) ────────────────────────────
   _onDragStart(e) {
     const item = e.target.closest("[data-widget-key]")
-    if (!item) return
+    if (!item) {
+      console.warn("[live-edit] dragstart fired but no widget found from", e.target)
+      return
+    }
     this._dragging = item
     item.classList.add("is-dragging")
     e.dataTransfer.effectAllowed = "move"
     e.dataTransfer.setData("text/plain", item.dataset.widgetKey || "")
+    console.log("[live-edit] dragstart:", item.dataset.widgetKey)
   }
 
   _onDragOver(e) {
-    e.preventDefault()
     if (!this._dragging) return
-    const target = e.target.closest("[data-widget-key]")
-    if (!target || target === this._dragging) return
+    e.preventDefault()
+    e.dataTransfer.dropEffect = "move"
+
+    // Курсор почти всегда над перетаскиваемым (он остаётся в DOM на месте),
+    // поэтому e.target.closest() возвращает source. elementsFromPoint даёт
+    // весь z-стек — берём первый виджет, который НЕ source.
+    const stack = document.elementsFromPoint(e.clientX, e.clientY)
+    let target = null
+    for (const el of stack) {
+      const w = el.closest?.("[data-widget-key]")
+      if (w && w !== this._dragging && this.gridTarget.contains(w)) {
+        target = w
+        break
+      }
+    }
+
+    // Визуальный highlight — БЕЗ DOM-мутации (DOM-changes во время drag
+    // дёргают и иногда отменяют drag в Chrome).
+    this._clearDropTarget()
+    if (!target) {
+      this._dropTarget = null
+      this._dropBefore = false
+      return
+    }
 
     const rect = target.getBoundingClientRect()
-    // 2D-сравнение: считаем точку на половине прямоугольника. Если курсор
-    // выше или левее (в верхней половине + левой половине) — вставляем перед.
-    const midX = rect.left + rect.width  / 2
-    const midY = rect.top  + rect.height / 2
-    const before = (e.clientY < midY) || (e.clientY < rect.bottom && e.clientX < midX)
+    this._dropTarget = target
+    this._dropBefore = e.clientY < rect.top + rect.height / 2
+    target.classList.add("is-drop-target")
+  }
 
-    this.gridTarget.insertBefore(this._dragging, before ? target : target.nextSibling)
+  // Реальная перестановка DOM — на drop. Стабильнее чем live-insertBefore.
+  _onDrop(e) {
+    if (!this._dragging) return
+    e.preventDefault()
+    if (this._dropTarget && this._dropTarget !== this._dragging) {
+      this.gridTarget.insertBefore(
+        this._dragging,
+        this._dropBefore ? this._dropTarget : this._dropTarget.nextSibling
+      )
+    }
+    this._clearDropTarget()
   }
 
   _onDragEnd() {
     if (this._dragging) this._dragging.classList.remove("is-dragging")
+    this._clearDropTarget()
     this._dragging = null
+    this._dropTarget = null
+  }
+
+  _clearDropTarget() {
+    this.gridTarget.querySelectorAll(".is-drop-target")
+        .forEach((el) => el.classList.remove("is-drop-target"))
+  }
+
+  // В edit-mode клики по ссылкам/кнопкам внутри виджета (не overlay) НЕ должны
+  // навигировать — иначе пользователь случайно "перейдёт" вместо drag'а.
+  _onClickIntercept(e) {
+    if (e.target.closest(".dashboard-widget__edit-overlay")) return  // overlay-кнопки разрешены
+    const link = e.target.closest("a, button[type='submit']")
+    if (link && this.gridTarget.contains(link)) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
   }
 
   _onKeydown(e) {
