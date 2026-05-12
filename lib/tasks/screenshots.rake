@@ -18,6 +18,7 @@ namespace :screenshots do
   APP_URL      = ENV["APP_URL"].presence || "http://localhost:4000"
   EMAIL        = ENV["ADMIN_EMAIL"].presence    || "admin@hrms.local"
   PASSWORD     = ENV["ADMIN_PASSWORD"].presence || "password123"
+  LOCALES      = (ENV["LOCALES"].presence&.split(",") || %w[ru en de]).map(&:strip)
 
   # Список страниц для скрина: filename → URL path + optional wait/scroll/etc.
   SHOTS = [
@@ -38,17 +39,22 @@ namespace :screenshots do
     { file: "15-ai-runs",              path: "/ai_runs" }
   ].freeze
 
-  desc "Take all README screenshots (logs in as admin)"
+  # Какие странички повторить в тёмной теме (только эстетически-показательные —
+  # dashboard / kanban / KPI). Файлы получают суффикс -dark.
+  DARK_SHOT_FILES = %w[01-dashboard 03-recruitment-kanban 07-kpi-dashboard 04-recruitment-calendar].freeze
+
+  desc "Take all README screenshots (per locale, light + dark)"
   task all: :environment do
     only = ENV["ONLY"].to_s.split(",").map(&:strip)
     shots = only.any? ? SHOTS.select { |s| only.include?(s[:file]) } : SHOTS
-    drive(shots)
+    dark_shots = SHOTS.select { |s| DARK_SHOT_FILES.include?(s[:file]) }
+    dark_shots = [] if only.any? && (only & DARK_SHOT_FILES).empty?
+    drive(shots, dark_shots)
   end
 
-  def drive(shots)
+  def drive(shots, dark_shots = [])
     require "selenium-webdriver"
     require "fileutils"
-    FileUtils.mkdir_p(SCREENS_DIR)
 
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument("--headless=new")
@@ -62,19 +68,40 @@ namespace :screenshots do
 
     sign_in!(driver)
 
-    shots.each do |shot|
-      url  = "#{APP_URL}#{shot[:path]}"
-      file = SCREENS_DIR.join("#{shot[:file]}.png")
-      puts "→ #{shot[:file].ljust(28)} #{url}"
-      driver.navigate.to(url)
-      sleep(shot[:wait] || WAIT)
-      driver.save_screenshot(file.to_s)
-      puts "  ✓ #{file.basename}"
-    rescue StandardError => e
-      puts "  ✗ #{e.class}: #{e.message.first(120)}"
+    LOCALES.each do |locale|
+      locale_dir = SCREENS_DIR.join(locale)
+      FileUtils.mkdir_p(locale_dir)
+
+      puts "\n═══ locale: #{locale.upcase} ═══"
+      set_theme!(driver, "light")
+
+      shots.each { |shot| capture(driver, shot, locale: locale, suffix: "") }
+
+      if dark_shots.any?
+        puts "→ switching to dark theme"
+        set_theme!(driver, "dark")
+        dark_shots.each { |shot| capture(driver, shot, locale: locale, suffix: "-dark") }
+      end
     end
   ensure
     driver&.quit
+  end
+
+  def capture(driver, shot, locale:, suffix:)
+    url  = "#{APP_URL}/#{locale}#{shot[:path]}"
+    file = SCREENS_DIR.join(locale, "#{shot[:file]}#{suffix}.png")
+    puts "→ #{(shot[:file] + suffix).ljust(34)} #{url}"
+    driver.navigate.to(url)
+    sleep(shot[:wait] || WAIT)
+    driver.save_screenshot(file.to_s)
+    puts "  ✓ #{file.basename}"
+  rescue StandardError => e
+    puts "  ✗ #{e.class}: #{e.message.first(120)}"
+  end
+
+  # Set theme via cookie (matches ApplicationController#current_theme).
+  def set_theme!(driver, theme)
+    driver.manage.add_cookie(name: "theme", value: theme, path: "/")
   end
 
   def sign_in!(driver)

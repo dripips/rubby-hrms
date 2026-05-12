@@ -30,6 +30,78 @@ Rails 8 · Hotwire · 24 AI-агента · Apple-HIG · Три локали · 
 - 📧 **Email-уведомления** с настраиваемым через UI SMTP.
 - 🐳 **Установка одной командой** через Docker, секреты генерируются автоматически.
 
+## Скриншоты
+
+### Дашборд
+![Дашборд](docs/screenshots/ru/01-dashboard.png)
+
+### Канбан найма
+Drag-and-drop пайплайн. AI скорит каждого кандидата при загрузке резюме.
+![Канбан найма](docs/screenshots/ru/03-recruitment-kanban.png)
+
+### Аналитика найма
+Воронка конверсии, время в стадии, перформанс рекрутеров.
+![Аналитика найма](docs/screenshots/ru/05-recruitment-analytics.png)
+
+### Календарь интервью
+FullCalendar 6 с hover-popover, drag-to-create, agenda.
+![Календарь](docs/screenshots/ru/04-recruitment-calendar.png)
+
+### KPI Dashboard
+Недельные назначения, оценки, тренд, AI-генератор брифа.
+![KPI](docs/screenshots/ru/07-kpi-dashboard.png)
+
+### Тёмная тема
+Полностью поддерживается — применяется ко всем экранам.
+
+| Дашборд | Канбан найма |
+|---|---|
+| ![Дашборд dark](docs/screenshots/ru/01-dashboard-dark.png) | ![Канбан dark](docs/screenshots/ru/03-recruitment-kanban-dark.png) |
+
+| KPI | Календарь интервью |
+|---|---|
+| ![KPI dark](docs/screenshots/ru/07-kpi-dashboard-dark.png) | ![Календарь dark](docs/screenshots/ru/04-recruitment-calendar-dark.png) |
+
+<details>
+<summary><strong>Ещё скриншоты</strong></summary>
+
+#### Сотрудники
+![Сотрудники](docs/screenshots/ru/02-employees.png)
+
+#### Отпуска
+![Отпуска](docs/screenshots/ru/06-leave-requests.png)
+
+#### Документы
+Загрузка → разбор (pdf-reader + Tesseract + Vision API) → ревью → применение.
+![Документы](docs/screenshots/ru/08-documents.png)
+
+#### Онбординг процессы
+![Онбординг](docs/screenshots/ru/09-onboarding.png)
+
+#### Audit log
+Каждое изменение модели отслеживается + revertable.
+![Audit](docs/screenshots/ru/10-audit.png)
+
+#### Self-service профиль
+![Профиль](docs/screenshots/ru/11-profile.png)
+
+#### Slack + Telegram интеграции
+![Интеграции](docs/screenshots/ru/12-profile-integrations.png)
+
+#### Настройки — Языки
+![Языки](docs/screenshots/ru/13-settings-languages.png)
+
+#### Настройки — AI-провайдер
+![AI](docs/screenshots/ru/14-settings-ai.png)
+
+#### AI Runs log
+Каждый AI-запуск с токенами, стоимостью, моделью, prompt'ом, response'ом и статусом.
+![AI Runs](docs/screenshots/ru/15-ai-runs.png)
+
+</details>
+
+> Хочешь пересобрать? При работающем сервере запусти `bin/rails screenshots`. Rake-таск заходит как admin и снимает все ключевые страницы в 1440×900 на трёх локалях (RU / EN / DE) + dark-варианты hero-экранов в `docs/screenshots/{ru,en,de}/`.
+
 ## Быстрая установка (Docker)
 
 ```bash

@@ -30,6 +30,78 @@ Die meisten HR-Systeme verankern das Vokabular einer Branche im Code. Ein Mitarb
 - 📧 **E-Mail-Benachrichtigungen** mit zur Laufzeit konfigurierbarem SMTP über UI.
 - 🐳 **Ein-Befehl-Docker-Installation** mit automatisch generierten Secrets.
 
+## Screenshots
+
+### Dashboard
+![Dashboard](docs/screenshots/de/01-dashboard.png)
+
+### Recruitment Kanban
+Drag-and-Drop Pipeline. KI bewertet jeden Kandidaten beim Lebenslauf-Upload.
+![Recruitment Kanban](docs/screenshots/de/03-recruitment-kanban.png)
+
+### Recruitment Analytics
+Conversion-Funnel, Zeit in Phase, Recruiter-Performance.
+![Recruitment Analytics](docs/screenshots/de/05-recruitment-analytics.png)
+
+### Interview-Kalender
+FullCalendar 6 mit Hover-Popover, Drag-to-Create, Agenda.
+![Kalender](docs/screenshots/de/04-recruitment-calendar.png)
+
+### KPI Dashboard
+Wöchentliche Zuweisungen, Bewertungen, Trend, KI-Brief-Generator.
+![KPI](docs/screenshots/de/07-kpi-dashboard.png)
+
+### Dark Mode
+Volle Unterstützung — gilt für alle Bildschirme.
+
+| Dashboard | Recruitment Kanban |
+|---|---|
+| ![Dashboard dark](docs/screenshots/de/01-dashboard-dark.png) | ![Kanban dark](docs/screenshots/de/03-recruitment-kanban-dark.png) |
+
+| KPI | Interview-Kalender |
+|---|---|
+| ![KPI dark](docs/screenshots/de/07-kpi-dashboard-dark.png) | ![Kalender dark](docs/screenshots/de/04-recruitment-calendar-dark.png) |
+
+<details>
+<summary><strong>Mehr Screenshots</strong></summary>
+
+#### Mitarbeiter
+![Mitarbeiter](docs/screenshots/de/02-employees.png)
+
+#### Urlaubsanträge
+![Urlaub](docs/screenshots/de/06-leave-requests.png)
+
+#### Dokumente
+Upload → parsen (pdf-reader + Tesseract + Vision API) → Review → Anwenden.
+![Dokumente](docs/screenshots/de/08-documents.png)
+
+#### Onboarding-Prozesse
+![Onboarding](docs/screenshots/de/09-onboarding.png)
+
+#### Audit-Log
+Jede Modelländerung verfolgt + reversibel.
+![Audit](docs/screenshots/de/10-audit.png)
+
+#### Self-Service-Profil
+![Profil](docs/screenshots/de/11-profile.png)
+
+#### Slack + Telegram Integrationen
+![Integrationen](docs/screenshots/de/12-profile-integrations.png)
+
+#### Einstellungen — Sprachen
+![Sprachen](docs/screenshots/de/13-settings-languages.png)
+
+#### Einstellungen — KI-Provider
+![KI](docs/screenshots/de/14-settings-ai.png)
+
+#### KI-Runs-Log
+Jeder KI-Aufruf: Tokens, Kosten, Modell, Prompt, Response, Status.
+![KI Runs](docs/screenshots/de/15-ai-runs.png)
+
+</details>
+
+> Neu generieren? Bei laufendem Server `bin/rails screenshots` ausführen. Der Rake-Task meldet sich als Admin an und erstellt alle Hauptseiten in 1440×900 für drei Locales (RU / EN / DE) + Dark-Varianten der Hero-Screens unter `docs/screenshots/{ru,en,de}/`.
+
 ## Schnellinstallation (Docker)
 
 ```bash

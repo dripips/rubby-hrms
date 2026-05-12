@@ -33,63 +33,74 @@ Most HR systems hardcode one industry's vocabulary. A hire is a "developer", a l
 ## Screenshots
 
 ### Dashboard
-![Dashboard](docs/screenshots/01-dashboard.png)
+![Dashboard](docs/screenshots/en/01-dashboard.png)
 
 ### Recruitment Kanban
 Drag-and-drop pipeline. AI scores each applicant on resume upload.
-![Recruitment Kanban](docs/screenshots/03-recruitment-kanban.png)
+![Recruitment Kanban](docs/screenshots/en/03-recruitment-kanban.png)
 
 ### Recruitment Analytics
 Conversion funnel + time-in-stage + recruiter performance.
-![Recruitment Analytics](docs/screenshots/05-recruitment-analytics.png)
+![Recruitment Analytics](docs/screenshots/en/05-recruitment-analytics.png)
 
 ### Interview Calendar
 FullCalendar 6 with hover-popover, drag-to-create, agenda.
-![Recruitment Calendar](docs/screenshots/04-recruitment-calendar.png)
+![Recruitment Calendar](docs/screenshots/en/04-recruitment-calendar.png)
 
 ### KPI Dashboard
 Weekly assignments, evaluations, trend, AI brief generator.
-![KPI Dashboard](docs/screenshots/07-kpi-dashboard.png)
+![KPI Dashboard](docs/screenshots/en/07-kpi-dashboard.png)
+
+### Dark mode
+Full dark theme — applies to every screen.
+
+| Dashboard | Recruitment Kanban |
+|---|---|
+| ![Dashboard dark](docs/screenshots/en/01-dashboard-dark.png) | ![Kanban dark](docs/screenshots/en/03-recruitment-kanban-dark.png) |
+
+| KPI Dashboard | Interview Calendar |
+|---|---|
+| ![KPI dark](docs/screenshots/en/07-kpi-dashboard-dark.png) | ![Calendar dark](docs/screenshots/en/04-recruitment-calendar-dark.png) |
 
 <details>
 <summary><strong>More screenshots</strong></summary>
 
 #### Employees
-![Employees](docs/screenshots/02-employees.png)
+![Employees](docs/screenshots/en/02-employees.png)
 
 #### Leave Requests
-![Leave Requests](docs/screenshots/06-leave-requests.png)
+![Leave Requests](docs/screenshots/en/06-leave-requests.png)
 
 #### Documents
 Upload → parse (pdf-reader + Tesseract + Vision API) → review → apply.
-![Documents](docs/screenshots/08-documents.png)
+![Documents](docs/screenshots/en/08-documents.png)
 
 #### Onboarding Processes
-![Onboarding](docs/screenshots/09-onboarding.png)
+![Onboarding](docs/screenshots/en/09-onboarding.png)
 
 #### Audit log
 Every model change tracked + revertable.
-![Audit](docs/screenshots/10-audit.png)
+![Audit](docs/screenshots/en/10-audit.png)
 
 #### Self-service profile
-![Profile](docs/screenshots/11-profile.png)
+![Profile](docs/screenshots/en/11-profile.png)
 
 #### Slack + Telegram integrations
-![Integrations](docs/screenshots/12-profile-integrations.png)
+![Integrations](docs/screenshots/en/12-profile-integrations.png)
 
 #### Settings — Languages
-![Settings Languages](docs/screenshots/13-settings-languages.png)
+![Settings Languages](docs/screenshots/en/13-settings-languages.png)
 
 #### Settings — AI provider
-![Settings AI](docs/screenshots/14-settings-ai.png)
+![Settings AI](docs/screenshots/en/14-settings-ai.png)
 
 #### AI Runs log
 Every AI invocation tracked: tokens, cost, model, prompt, response, status.
-![AI Runs](docs/screenshots/15-ai-runs.png)
+![AI Runs](docs/screenshots/en/15-ai-runs.png)
 
 </details>
 
-> Want to regenerate these screenshots? With the server running, execute `bin/rails screenshots`. The Rake task signs in as admin and captures all key pages at 1440×900 into `docs/screenshots/`.
+> Want to regenerate? With the server running, execute `bin/rails screenshots`. The Rake task signs in as admin and captures all key pages at 1440×900 in three locales (RU / EN / DE) + dark variants of hero shots, saving to `docs/screenshots/{ru,en,de}/`.
 
 ## Quick install (Docker)
 
