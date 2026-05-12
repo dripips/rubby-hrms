@@ -2405,6 +2405,8 @@ ru:
       state: Статус
       when: Когда
       interviewer: Интервьюер
+    ics_btn: Экспорт в .ics
+    ics_hint: Скачай .ics и подпишись в Google Calendar / Outlook / Apple Calendar
   recruitment_analytics:
     subtitle: Воронка найма, метрики и нагрузка рекрутёров
     candidates: Кандидаты

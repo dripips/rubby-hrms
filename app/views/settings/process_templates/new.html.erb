@@ -1,10 +1,18 @@
 <% content_for(:page_title) { t("settings.process_templates.new", default: "Новый шаблон") } %>
 
 <header class="page-header">
-  <h1 class="title-1 m-0"><%= t("settings.process_templates.new", default: "Новый шаблон") %></h1>
-  <p class="footnote text-secondary-apple m-0">
-    <%= t("settings.process_templates.kinds.#{@template.kind}", default: @template.kind.humanize) %>
-  </p>
+  <div>
+    <div class="page-header__eyebrow"><%= t("navigation.settings", default: "Настройки") %></div>
+    <h1 class="page-header__title m-0"><%= t("settings.process_templates.new", default: "Новый шаблон") %></h1>
+    <p class="page-header__subtitle">
+      <%= t("settings.process_templates.kinds.#{@template.kind}", default: @template.kind.humanize) %>
+    </p>
+  </div>
+  <div class="page-header__actions">
+    <%= link_to t("common.back"), settings_process_templates_path, class: "btn btn-ghost" %>
+  </div>
 </header>
+
+<%= render "shared/settings_tabs" %>
 
 <%= render "form", template: @template %>

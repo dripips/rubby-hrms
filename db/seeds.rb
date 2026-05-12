@@ -3,26 +3,17 @@
 # Languages first — они нужны раньше всего для I18n.
 load Rails.root.join("db", "seeds", "languages.rb").to_s
 
-# Затем компания → структура → справочники → сотрудники.
+# Company перед users — для company-scoped FK (хотя у User'а её нет напрямую,
+# но employees.rb ниже сразу ищет users по email).
 load Rails.root.join("db", "seeds", "company.rb").to_s
-load Rails.root.join("db", "seeds", "departments.rb").to_s
-load Rails.root.join("db", "seeds", "positions_and_grades.rb").to_s
-load Rails.root.join("db", "seeds", "leave_types.rb").to_s
-load Rails.root.join("db", "seeds", "employees.rb").to_s
-load Rails.root.join("db", "seeds", "recruitment.rb").to_s
-load Rails.root.join("db", "seeds", "kpi.rb").to_s
-load Rails.root.join("db", "seeds", "leave_approval_rules.rb").to_s
-load Rails.root.join("db", "seeds", "process_templates.rb").to_s
-load Rails.root.join("db", "seeds", "processes.rb").to_s
-load Rails.root.join("db", "seeds", "document_types.rb").to_s
 
-# В development засеиваем фиксированный пароль "password123" чтобы dev-юзеры
-# могли логиниться. В production этот код запускается только если БД пустая —
-# для каждого юзера генерируется случайный пароль и логируется.
-# Для prod-инсталляций пароли всё равно лучше задать через
-# scripts/install.sh — он создаёт ОДНОГО superadmin'а с генерируемым паролем
-# и не сидирует demo-юзеров.
-default_password = Rails.env.development? ? "password123" : SecureRandom.alphanumeric(20)
+# Users создаются ДО employees.rb — иначе employees.rb падает с
+# User.find_by!(email: ...) RecordNotFound на свежей БД.
+# В development / test засеиваем фиксированный пароль "password123" чтобы
+# dev-юзеры могли логиниться + smoke-spec мог логиниться в CI. В production
+# этот код запускается только если БД пустая — для каждого юзера генерируется
+# случайный пароль и логируется.
+default_password = (Rails.env.development? || Rails.env.test?) ? "password123" : SecureRandom.alphanumeric(20)
 
 users = [
   { email: "admin@hrms.local",   password: default_password, role: :superadmin },
@@ -48,3 +39,15 @@ users.each do |attrs|
 end
 
 puts "[seed] users: created=#{created} updated=#{updated} total=#{User.count}"
+
+# Структура → справочники → сотрудники → найм → KPI → отпуска → процессы → документы.
+load Rails.root.join("db", "seeds", "departments.rb").to_s
+load Rails.root.join("db", "seeds", "positions_and_grades.rb").to_s
+load Rails.root.join("db", "seeds", "leave_types.rb").to_s
+load Rails.root.join("db", "seeds", "employees.rb").to_s
+load Rails.root.join("db", "seeds", "recruitment.rb").to_s
+load Rails.root.join("db", "seeds", "kpi.rb").to_s
+load Rails.root.join("db", "seeds", "leave_approval_rules.rb").to_s
+load Rails.root.join("db", "seeds", "process_templates.rb").to_s
+load Rails.root.join("db", "seeds", "processes.rb").to_s
+load Rails.root.join("db", "seeds", "document_types.rb").to_s

@@ -135,22 +135,6 @@
 
           <li><hr class="dropdown-divider"></li>
 
-          <li class="dropdown-menu-apple__group"><%= t("user_menu.language", default: "Язык") %></li>
-          <li>
-            <div class="theme-segments">
-              <%= link_to url_for(locale: :ru), class: "theme-segment #{'active' if I18n.locale == :ru}" do %>
-                <span class="theme-segment__code">RU</span>
-                <span class="footnote">Русский</span>
-              <% end %>
-              <%= link_to url_for(locale: :en), class: "theme-segment #{'active' if I18n.locale == :en}" do %>
-                <span class="theme-segment__code">EN</span>
-                <span class="footnote">English</span>
-              <% end %>
-            </div>
-          </li>
-
-          <li><hr class="dropdown-divider"></li>
-
           <li>
             <%= button_to destroy_user_session_path, method: :delete, class: "dropdown-item dropdown-item--danger", form: { class: "d-block" } do %>
               <span class="dropdown-item__icon"><%= render "shared/icons/logout" %></span>

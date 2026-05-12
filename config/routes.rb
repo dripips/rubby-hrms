@@ -90,6 +90,7 @@ Rails.application.routes.draw do
     get "recruitment/analytics", to: "recruitment_analytics#index", as: :recruitment_analytics
     get "recruitment/calendar",  to: "recruitment_calendar#index", as: :recruitment_calendar
     get "recruitment/calendar/events", to: "recruitment_calendar#events", as: :recruitment_calendar_events
+    get "recruitment/calendar.ics",    to: "recruitment_calendar#ics",    as: :recruitment_calendar_ics, defaults: { format: :ics }
 
     resources :notifications, only: %i[index destroy] do
       member     { post :read }

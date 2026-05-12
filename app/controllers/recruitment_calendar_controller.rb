@@ -24,6 +24,51 @@ class RecruitmentCalendarController < ApplicationController
     render json: rounds.map { |r| calendar_event(r) }
   end
 
+  # .ics экспорт — все upcoming-интервью (60 дней) или одно конкретное
+  # (?round_id=...). Подходит для Google Calendar / Outlook / Apple Calendar.
+  def ics
+    authorize InterviewRound, :index?
+
+    builder = IcalendarBuilder.new(prod_id: "HRMS Interview Calendar")
+
+    rounds = if params[:round_id].present?
+      InterviewRound.kept.where(id: params[:round_id])
+    else
+      filtered_rounds
+        .where(scheduled_at: Time.current..60.days.from_now)
+        .where.not(state: %w[cancelled no_show])
+    end
+
+    helpers = Rails.application.routes.url_helpers
+    rounds.includes(:job_applicant, :interviewer, job_applicant: :job_opening).each do |r|
+      applicant = r.job_applicant
+      url       = helpers.job_applicant_url(applicant&.id,
+                                            host: request.host_with_port,
+                                            protocol: request.protocol,
+                                            anchor: "interviews") if applicant
+
+      desc_parts = []
+      desc_parts << "#{r.kind_label}: #{applicant&.full_name}"
+      desc_parts << "Vacancy: #{applicant.job_opening.title}" if applicant&.job_opening
+      desc_parts << "Interviewer: #{r.interviewer&.display_name || '—'}"
+      desc_parts << "State: #{I18n.t("interview_rounds.states.#{r.state}")}"
+      desc_parts << "Meeting URL: #{r.meeting_url}" if r.meeting_url.present?
+
+      builder.add_event(
+        uid:         "interview-#{r.id}@hrms",
+        summary:     "#{r.kind_label}: #{applicant&.full_name}",
+        start_at:    r.scheduled_at,
+        end_at:      r.scheduled_at + r.duration_minutes.minutes,
+        description: desc_parts.join("\n"),
+        location:    r.location.presence || r.meeting_url.presence,
+        url:         url
+      )
+    end
+
+    filename = params[:round_id].present? ? "interview-#{params[:round_id]}.ics" : "hrms-interviews.ics"
+    send_data builder.to_s, type: "text/calendar; charset=utf-8", filename: filename, disposition: "attachment"
+  end
+
   private
 
   def filtered_rounds

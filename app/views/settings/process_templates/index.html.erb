@@ -2,12 +2,13 @@
 
 <header class="page-header">
   <div>
-    <h1 class="title-1 m-0"><%= t("settings.process_templates.title", default: "Шаблоны процессов") %></h1>
-    <p class="footnote text-secondary-apple m-0"><%= t("settings.process_templates.subtitle", default: "Чек-листы для онбординга и офбординга — материализуются в задачи при запуске.") %></p>
+    <div class="page-header__eyebrow"><%= t("navigation.settings", default: "Настройки") %></div>
+    <h1 class="page-header__title m-0"><%= t("settings.process_templates.title", default: "Шаблоны процессов") %></h1>
+    <p class="page-header__subtitle"><%= t("settings.process_templates.subtitle", default: "Чек-листы для онбординга и офбординга — материализуются в задачи при запуске.") %></p>
   </div>
 </header>
 
-<%= render "settings/subnav" if lookup_context.exists?("settings/subnav", [], true) %>
+<%= render "shared/settings_tabs" %>
 
 <% %w[onboarding offboarding].each do |kind| %>
   <section class="card-apple mb-3" id="<%= kind %>">

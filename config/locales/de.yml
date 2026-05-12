@@ -781,6 +781,8 @@ de:
       kind: Runde
       interviewer: Interviewer
       state: Status
+    ics_btn: ".ics exportieren"
+    ics_hint: ".ics herunterladen und in Google Calendar / Outlook / Apple Calendar abonnieren"
   employee_notes:
     title: Notizen
     add: Hinzufügen

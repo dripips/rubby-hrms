@@ -70,7 +70,7 @@ class Settings::CommunicationsController < SettingsController
     require "json"
     response = Net::HTTP.post(
       URI("https://api.telegram.org/bot#{token}/setWebhook"),
-      { url: webhook, secret_token: secret, allowed_updates: ["message"] }.to_json,
+      { url: webhook, secret_token: secret, allowed_updates: [ "message" ] }.to_json,
       "Content-Type" => "application/json"
     )
     body = JSON.parse(response.body) rescue {}

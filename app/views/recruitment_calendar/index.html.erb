@@ -13,6 +13,13 @@
       <%= t("recruitment_calendar.subtitle", default: "Все запланированные раунды интервью на таймлайне. Цвета — статус. Hover на событии — подробности.") %>
     </p>
   </div>
+  <div class="page-header__actions">
+    <%= link_to recruitment_calendar_ics_path(format: :ics),
+                class: "btn btn-ghost",
+                title: t("recruitment_calendar.ics_hint", default: "Скачай .ics и подпишись в Google Calendar / Outlook / Apple Calendar") do %>
+      📅 <%= t("recruitment_calendar.ics_btn", default: "Экспорт в .ics") %>
+    <% end %>
+  </div>
 </header>
 
 <%= render "shared/recruitment_tabs" %>

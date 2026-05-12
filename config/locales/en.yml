@@ -781,6 +781,8 @@ en:
       kind: Round
       interviewer: Interviewer
       state: Status
+    ics_btn: Export .ics
+    ics_hint: Download .ics and subscribe in Google Calendar / Outlook / Apple Calendar
   employee_notes:
     title: Notes
     add: Add note

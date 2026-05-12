@@ -98,5 +98,8 @@ jobs:
       - name: Prepare database
         run: bin/rails db:test:prepare
 
-      - name: Run RSpec
+      - name: Zeitwerk autoload check (catches class-naming mismatches)
+        run: bin/rails zeitwerk:check
+
+      - name: Run RSpec (incl. smoke spec)
         run: bundle exec rspec --format documentation
