@@ -1365,6 +1365,7 @@ de:
       week: "⏰ «%{title}» (%{owner}) läuft in %{days} Tagen ab — bitte handeln"
       today: "⚠ «%{title}» (%{owner}) läuft heute ab"
       expired: "⚠ «%{title}» (%{owner}) ist seit %{days} Tagen abgelaufen"
+    aria_label_unread: Benachrichtigungen, %{count} ungelesen
   document_mailer:
     expiring:
       subject_month: Dokument «%{title}» läuft in %{days} Tagen ab
@@ -2669,3 +2670,5 @@ de:
     discussion_title: Diskussion
     discussion_empty: Diskussion starten — alle Teilnehmer erhalten eine Benachrichtigung im HRMS / per E-Mail.
     participants_count: "%{count} Teilnehmer"
+  a11y:
+    skip_to_main: Zum Inhalt springen

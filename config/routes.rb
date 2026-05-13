@@ -25,6 +25,9 @@ Rails.application.routes.draw do
   # ── Telegram bot webhook (no auth, no locale, no CSRF) ─────────────────
   post "telegram/webhook", to: "telegram_webhooks#receive", as: :telegram_webhook
 
+  # CSP violation reports from browsers (report-only mode)
+  post "csp_violations", to: "csp_violations#create"
+
   # ── Public Careers API v1 (CORS, без auth) ───────────────────────────────
   # Позволяет встраивать список вакансий и форму подачи на любой внешний сайт.
   namespace :api do

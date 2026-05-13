@@ -4,9 +4,18 @@
 # отсутствовать — в таком случае возвращаем пустую строку, не падаем).
 #
 # Returns: { text: "...", method: "pdf-reader|ocr|none", error: nil|String }
+require "open3"
+require "tmpdir"
+
 module Documents
   class TextExtractor
     MIN_USEFUL_TEXT_LENGTH = 50  # если PDF дал меньше — считаем что это скан
+
+    @poppler_available = nil  # singleton-кэш на процесс
+
+    class << self
+      attr_accessor :poppler_available
+    end
 
     def self.call(blob)
       new(blob).call
@@ -64,11 +73,69 @@ module Documents
       end
     end
 
+    # Скан-PDF — конвертируем pdftoppm'ом каждую страницу в PNG,
+    # прогоняем через Tesseract, объединяем текст.
+    #
+    # Зависимости (есть в Dockerfile, на Windows локально могут отсутствовать):
+    #   • pdftoppm (из poppler-utils)
+    #   • tesseract + языковые модели (rus, eng)
+    #
+    # Возвращает пустой результат если poppler не установлен — это валидная
+    # ситуация для dev-окружения без OCR-инструментов.
     def extract_from_image_pdf
-      # Конвертация PDF → image для OCR требует pdftoppm/poppler.
-      # На Windows локально может не быть — тогда возвращаем пусто, и пользователь
-      # может в Settings/документе указать, что разбор недоступен.
-      empty_result("ocr_pdf_not_implemented_locally")
+      return empty_result("poppler_not_installed") unless poppler_available?
+
+      with_local_file do |pdf_path|
+        Dir.mktmpdir("hrms_ocr_") do |tmpdir|
+          prefix = File.join(tmpdir, "page")
+          stdout, stderr, status = Open3.capture3(
+            "pdftoppm", "-r", "300", "-png", pdf_path, prefix
+          )
+
+          unless status.success?
+            Rails.logger.warn("[TextExtractor pdftoppm] #{stderr.first(200)}")
+            return empty_result("pdftoppm_failed:#{stderr.first(60)}")
+          end
+
+          pages = Dir.glob(File.join(tmpdir, "page-*.png")).sort
+          return empty_result("pdftoppm_no_pages") if pages.empty?
+
+          parts = []
+          pages.each do |png|
+            text, err = run_tesseract(png)
+            if text.present?
+              parts << text
+            elsif err
+              Rails.logger.info("[TextExtractor ocr-pdf page] #{err}")
+            end
+          end
+
+          combined = parts.join("\n\n--- page break ---\n\n").strip
+          if combined.present?
+            { text: combined, method: "ocr-pdf", error: nil }
+          else
+            empty_result("ocr_yielded_empty")
+          end
+        end
+      end
+    rescue StandardError => e
+      Rails.logger.warn("[TextExtractor extract_from_image_pdf] #{e.class}: #{e.message}")
+      empty_result("ocr_pdf_failed:#{e.class.name.demodulize}")
+    end
+
+    # pdftoppm доступен? Кэшируем результат на класс — не меняется в runtime.
+    def poppler_available?
+      cached = self.class.poppler_available
+      return cached unless cached.nil?
+
+      result = begin
+        _stdout, _stderr, status = Open3.capture3("pdftoppm", "-v")
+        status.success? || status.exitstatus == 99
+      rescue Errno::ENOENT, StandardError
+        false
+      end
+      self.class.poppler_available = result
+      result
     end
 
     # Returns [text, error]. На Windows без установленного Tesseract.exe сюда

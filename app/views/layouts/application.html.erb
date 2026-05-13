@@ -34,12 +34,13 @@
   </head>
 
   <body>
+    <a href="#main-content" class="skip-to-main"><%= t("a11y.skip_to_main", default: "Skip to main content") %></a>
     <%= render "shared/flash" %>
 
     <div class="app-shell">
       <%= render "shared/sidebar" %>
       <%= render "shared/topbar" %>
-      <main class="main-apple">
+      <main class="main-apple" id="main-content" tabindex="-1">
         <%= yield %>
       </main>
     </div>

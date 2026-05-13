@@ -977,6 +977,7 @@ ru:
       expired: "⚠ «%{title}» (%{owner}) уже просрочен на %{days} дн"
     interview_soon: 'Через 30 мин: %{kind}-интервью с %{name} в %{time}'
     interview_tomorrow: 'Сегодня: %{kind}-интервью с %{name} в %{time}'
+    aria_label_unread: Уведомления, %{count} непрочитанных
   document_mailer:
     expiring:
       subject_month: Документ «%{title}» истекает через %{days} дн
@@ -2669,3 +2670,5 @@ ru:
     discussion_title: Обсуждение
     discussion_empty: Начни обсуждение — все участники получат уведомление в HRMS / по почте.
     participants_count: "%{count} участников"
+  a11y:
+    skip_to_main: Перейти к содержимому

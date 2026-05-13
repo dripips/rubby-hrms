@@ -1365,6 +1365,7 @@ en:
       week: "⏰ «%{title}» (%{owner}) expires in %{days} days — time to act"
       today: "⚠ «%{title}» (%{owner}) expires today"
       expired: "⚠ «%{title}» (%{owner}) is %{days} days overdue"
+    aria_label_unread: Notifications, %{count} unread
   document_mailer:
     expiring:
       subject_month: Document «%{title}» expires in %{days} days
@@ -2669,3 +2670,5 @@ en:
     discussion_title: Discussion
     discussion_empty: Start the discussion — all participants get a notification in HRMS / by email.
     participants_count: "%{count} participants"
+  a11y:
+    skip_to_main: Skip to main content
