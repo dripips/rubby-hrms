@@ -3,7 +3,7 @@ class DashboardController < ApplicationController
 
   def show
     @greeting = greeting_by_hour
-    @company  = Company.kept.first
+    @company  = current_company
 
     @kpi_tiles       = build_kpi_tiles
     @recent_activity = recent_activity

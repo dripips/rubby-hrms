@@ -17,7 +17,7 @@ class OnboardingProcessesController < ApplicationController
     employee = Employee.kept.find(params[:employee_id]) if params[:employee_id].present?
     @process = OnboardingProcess.new(employee: employee, started_on: Date.current)
     authorize @process
-    @templates = ProcessTemplate.for_company(Company.kept.first).onboarding.active.ordered
+    @templates = ProcessTemplate.for_company(current_company).onboarding.active.ordered
   end
 
   def create
@@ -28,7 +28,7 @@ class OnboardingProcessesController < ApplicationController
       @process.activate! if @process.may_activate?
       redirect_to onboarding_process_path(@process), notice: t("flash.created", default: "Создано")
     else
-      @templates = ProcessTemplate.for_company(Company.kept.first).onboarding.active.ordered
+      @templates = ProcessTemplate.for_company(current_company).onboarding.active.ordered
       render :new, status: :unprocessable_entity
     end
   end

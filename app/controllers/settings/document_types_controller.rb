@@ -40,7 +40,7 @@ class Settings::DocumentTypesController < ApplicationController
 
   private
 
-  def set_company  = (@company  = Company.kept.first)
+  def set_company  = (@company  = current_company)
   def set_type
     @type = DocumentType.find(params[:id])
     authorize @type

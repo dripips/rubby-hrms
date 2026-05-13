@@ -210,7 +210,7 @@ class Api::V1::OpeningsController < ActionController::API
   end
 
   def set_company
-    @company = Company.kept.first
+    @company = Current.company || Company.kept.first
     head(:service_unavailable) and return unless @company
   end
 

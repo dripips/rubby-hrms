@@ -4,7 +4,7 @@ class StaffMailer < ApplicationMailer
   def new_application
     @applicant = params[:applicant]
     @opening   = params[:opening]
-    @company   = params[:company] || Company.kept.first
+    @company   = params[:company] || current_company
     @to        = params[:to]
     return unless @to.present?
 

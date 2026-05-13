@@ -62,7 +62,7 @@ class MessageDispatcher
     end
 
     def communication_setting
-      company = Company.kept.first
+      company = Current.company || Company.kept.first
       return nil unless company
 
       AppSetting.find_by(company: company, category: "communication")

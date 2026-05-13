@@ -103,7 +103,7 @@ class AiRunCompletedNotifier < ApplicationNotifier
       elsif AiRunCompletedNotifier::DICTIONARY_KINDS.include?(ar.kind)
         ar.dictionary&.name || "—"
       elsif AiRunCompletedNotifier::COMPANY_KINDS.include?(ar.kind)
-        Company.kept.first&.name || "—"
+        Current.company || Company.kept.first&.name || "—"
       else
         ar.job_applicant&.full_name || "—"
       end

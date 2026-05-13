@@ -42,7 +42,7 @@ class Settings::PositionsController < ApplicationController
 
   private
 
-  def set_company  = (@company  = Company.kept.first)
+  def set_company  = (@company  = current_company)
   def set_position
     @position = Position.find(params[:id])
     authorize @position

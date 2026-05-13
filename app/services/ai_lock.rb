@@ -162,7 +162,7 @@ class AiLock
     end
 
     def broadcast_kpi_team_controls(scope_type, scope_id, *)
-      company_id = Company.kept.first&.id or return
+      company_id = Current.company || Company.kept.first&.id or return
       Turbo::StreamsChannel.broadcast_replace_to(
         [ "company-#{company_id}", "kpi_team" ],
         target:  "ai-controls-kpi-team",

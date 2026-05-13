@@ -53,7 +53,7 @@ class Settings::LeaveApprovalRulesController < SettingsController
   private
 
   def set_company
-    @company = Company.kept.first
+    @company = current_company
   end
 
   def set_rule

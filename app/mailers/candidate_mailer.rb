@@ -4,7 +4,7 @@ class CandidateMailer < ApplicationMailer
   def test_assignment_sent
     @applicant  = params[:applicant]
     @assignment = params[:assignment]
-    @company    = Company.kept.first
+    @company    = current_company
     return unless deliverable?
 
     mail to: @applicant.email,
@@ -14,7 +14,7 @@ class CandidateMailer < ApplicationMailer
   def rejected
     @applicant = params[:applicant]
     @comment   = params[:comment]
-    @company   = Company.kept.first
+    @company   = current_company
     return unless deliverable?
 
     mail to: @applicant.email,
@@ -25,7 +25,7 @@ class CandidateMailer < ApplicationMailer
     @applicant   = params[:applicant]
     @new_stage   = params[:new_stage]
     @comment     = params[:comment]
-    @company     = Company.kept.first
+    @company     = current_company
     return unless deliverable?
 
     stage_label  = I18n.t("job_applicants.stages.#{@new_stage}", default: @new_stage)
@@ -36,7 +36,7 @@ class CandidateMailer < ApplicationMailer
   def application_received
     @applicant = params[:applicant]
     @opening   = params[:opening]
-    @company   = params[:company] || Company.kept.first
+    @company   = params[:company] || current_company
     return unless deliverable?
 
     mail to: @applicant.email,

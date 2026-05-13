@@ -45,7 +45,7 @@ class ApplicationMailer < ActionMailer::Base
   end
 
   def current_smtp_setting
-    company = Company.kept.first
+    company = current_company
     return nil if company.nil?
 
     AppSetting.find_by(company: company, category: "smtp")

@@ -12,7 +12,7 @@ class Ai::RoundsController < ApplicationController
   end
 
   def setting
-    @setting ||= AppSetting.fetch(company: Company.kept.first, category: "ai")
+    @setting ||= AppSetting.fetch(company: current_company, category: "ai")
   end
 
   def ai

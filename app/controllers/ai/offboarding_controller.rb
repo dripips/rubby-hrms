@@ -19,7 +19,7 @@ class Ai::OffboardingController < ApplicationController
     department = process.employee.department
 
     opening = JobOpening.new(
-      company:       Company.kept.first,
+      company: current_company,
       title:         payload["title"].to_s.first(180),
       summary:       payload["summary"].to_s,
       description:   ([
@@ -80,7 +80,7 @@ class Ai::OffboardingController < ApplicationController
     end
   end
 
-  def setting = (@setting ||= AppSetting.fetch(company: Company.kept.first, category: "ai"))
+  def setting = (@setting ||= AppSetting.fetch(company: current_company, category: "ai"))
   def ai      = (@ai ||= RecruitmentAi.new(setting: setting))
 
   def ensure_ai_enabled

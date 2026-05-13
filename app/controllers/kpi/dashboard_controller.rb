@@ -23,7 +23,7 @@ module Kpi
     private
 
     def set_company
-      @company = Company.kept.first
+      @company = current_company
       redirect_to root_path, alert: t("errors.company_missing", default: "Компания не настроена") if @company.nil?
     end
 

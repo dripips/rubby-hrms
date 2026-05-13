@@ -71,7 +71,7 @@ class Ai::OnboardingController < ApplicationController
     end
   end
 
-  def setting = (@setting ||= AppSetting.fetch(company: Company.kept.first, category: "ai"))
+  def setting = (@setting ||= AppSetting.fetch(company: current_company, category: "ai"))
   def ai      = (@ai ||= RecruitmentAi.new(setting: setting))
 
   def ensure_ai_enabled

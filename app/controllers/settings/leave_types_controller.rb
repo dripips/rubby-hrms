@@ -42,7 +42,7 @@ class Settings::LeaveTypesController < ApplicationController
 
   private
 
-  def set_company    = (@company    = Company.kept.first)
+  def set_company    = (@company    = current_company)
   def set_leave_type
     @leave_type = LeaveType.find(params[:id])
     authorize @leave_type

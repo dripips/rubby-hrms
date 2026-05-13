@@ -182,7 +182,7 @@ class AiRun < ApplicationRecord
 
   def broadcast_company_bootstrap
     safe_broadcast("broadcast_company_bootstrap") do
-      company = Company.kept.first or return
+      company = Current.company || Company.kept.first or return
       Turbo::StreamsChannel.broadcast_replace_to(
         [ company, "company_bootstrap" ],
         target:  "company-bootstrap",

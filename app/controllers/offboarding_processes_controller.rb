@@ -17,7 +17,7 @@ class OffboardingProcessesController < ApplicationController
     employee = Employee.kept.find(params[:employee_id]) if params[:employee_id].present?
     @process = OffboardingProcess.new(employee: employee, last_day: 14.days.from_now.to_date, reason: "voluntary")
     authorize @process
-    @templates = ProcessTemplate.for_company(Company.kept.first).offboarding.active.ordered
+    @templates = ProcessTemplate.for_company(current_company).offboarding.active.ordered
   end
 
   def create
@@ -28,7 +28,7 @@ class OffboardingProcessesController < ApplicationController
       @process.activate! if @process.may_activate?
       redirect_to offboarding_process_path(@process), notice: t("flash.created")
     else
-      @templates = ProcessTemplate.for_company(Company.kept.first).offboarding.active.ordered
+      @templates = ProcessTemplate.for_company(current_company).offboarding.active.ordered
       render :new, status: :unprocessable_entity
     end
   end

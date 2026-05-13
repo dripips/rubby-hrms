@@ -51,7 +51,7 @@ class Settings::AisController < SettingsController
   private
 
   def company
-    @company ||= Company.kept.first
+    @company ||= current_company
   end
 
   def load_setting

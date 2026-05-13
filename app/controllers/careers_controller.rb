@@ -143,7 +143,7 @@ class CareersController < ApplicationController
   end
 
   def set_company_and_careers
-    @company  = Company.kept.first
+    @company  = current_company
     @careers  = CareersSettings.for(@company)
   end
 

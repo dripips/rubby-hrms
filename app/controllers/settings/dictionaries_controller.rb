@@ -402,7 +402,7 @@ class Settings::DictionariesController < ApplicationController
 
   private
 
-  def set_company    = (@company = Company.kept.first)
+  def set_company    = (@company = current_company)
   def set_dictionary
     @dictionary = Dictionary.find(params[:id])
     authorize @dictionary

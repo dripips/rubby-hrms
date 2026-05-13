@@ -69,7 +69,7 @@ class JobOpeningsController < ApplicationController
   private
 
   def set_company
-    @company = Company.kept.first
+    @company = current_company
     redirect_to root_path, alert: "Компания не настроена" if @company.nil?
   end
 

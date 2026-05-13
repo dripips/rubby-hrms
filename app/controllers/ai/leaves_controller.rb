@@ -72,7 +72,7 @@ class Ai::LeavesController < ApplicationController
       AiLock.broadcast_controls(scope)
     end
 
-    analytics    = LeaveAnalytics.new(company: Company.kept.first)
+    analytics    = LeaveAnalytics.new(company: current_company)
     burnout_rows = analytics.burnout_at_risk(limit: 100).index_by { |r| r[:employee].id }
 
     streams = employees.map do |emp|
@@ -133,7 +133,7 @@ class Ai::LeavesController < ApplicationController
   end
 
   def setting
-    @setting ||= AppSetting.fetch(company: Company.kept.first, category: "ai")
+    @setting ||= AppSetting.fetch(company: current_company, category: "ai")
   end
 
   def ai

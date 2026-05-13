@@ -41,7 +41,7 @@ class Settings::ProcessTemplatesController < ApplicationController
 
   private
 
-  def set_company  = (@company  = Company.kept.first)
+  def set_company  = (@company  = current_company)
   def set_template
     @template = ProcessTemplate.find(params[:id])
     authorize @template

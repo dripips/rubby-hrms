@@ -23,7 +23,7 @@ module CustomFieldsHelper
     @lookup_cache ||= {}
     return @lookup_cache[code] if @lookup_cache.key?(code)
 
-    company = Company.kept.first
+    company = Current.company || Company.kept.first
     return @lookup_cache[code] = (fallback || []) unless company
 
     dict = Dictionary.lookups.kept.where(company: company, code: code).first
@@ -38,7 +38,7 @@ module CustomFieldsHelper
   # Кэшируем по (company_id, code) на запрос — partial может вызываться много раз.
   def custom_field_entries(target_model:, target_scope:)
     @custom_field_cache ||= {}
-    company = Company.kept.first
+    company = Current.company || Company.kept.first
     return [] unless company
 
     code = "#{target_model}:#{target_scope}"

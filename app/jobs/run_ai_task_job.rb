@@ -29,7 +29,7 @@ class RunAiTaskJob < ApplicationJob
     # process-bound agents имеют employee через связь
     employee ||= onboarding_process&.employee || offboarding_process&.employee
 
-    setting = AppSetting.fetch(company: Company.kept.first, category: "ai")
+    setting = AppSetting.fetch(company: Current.company || Company.kept.first, category: "ai")
     ai      = RecruitmentAi.new(setting: setting, output_locale: user.locale)
 
     # ── Hard-cap по бюджету (защита от runaway costs / abuse) ──────────────
@@ -67,7 +67,7 @@ class RunAiTaskJob < ApplicationJob
       when "document_extract_assist" then ai.document_extract_assist(document)
       when "dictionary_seed"         then ai.dictionary_seed(dictionary, hint: hint)
       when "company_bootstrap"
-        company = Company.kept.first
+        company = Current.company || Company.kept.first
         history = AiRun.where(kind: "company_bootstrap").successful.order(:created_at).map do |r|
           payload = r.payload.is_a?(Hash) ? r.payload : {}
           [
